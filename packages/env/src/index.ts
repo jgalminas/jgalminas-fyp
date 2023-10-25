@@ -16,6 +16,13 @@ export const apiEnvSchema = z.object({
   JWT_SECRET_TOKEN: z.string(),
 
   // DATABASE
+  POSTGRES_USER: z.string(),
+  POSTGRES_PASSWORD: z.string(),
+  POSTGRES_DB: z.string(),
+  POSTGRES_URL: z.string(),
+  POSTGRESQL_CONNECTION_URI: z.string(),
+
+  // DATABASE
   MONGODB_USER: z.string(),
   MONGODB_PASS: z.string(),
   MONGODB_CONNECTION_STRING: z.string(),
