@@ -1,0 +1,29 @@
+{
+  "name": "@fyp/db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "db:generate": "pnpm with-env drizzle-kit generate:pg",
+    "db:push": "pnpm with-env drizzle-kit push:pg",
+    "db:pull": "pnpm with-env drizzle-kit introspect:pg",
+    "with-env": "dotenv -e ../../.env --"
+  },
+  "dependencies": {
+    "@fyp/env": "workspace:*",
+    "drizzle-orm": "^0.28.2",
+    "nanoid": "3",
+    "postgres": "^3.3.5"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@fyp/config": "workspace:*",
+    "@types/node": "^20.5.0",
+    "drizzle-kit": "^0.19.12",
+    "typescript": "^5.1.6"
+  }
+}

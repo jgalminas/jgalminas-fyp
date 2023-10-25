@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "lib": ["ES6"],
+    "module": "ESNext",
+    "outDir": "./dist",
+    "rootDir": "./"
+  },
+  "exclude": ["node_modules"],
+  "extends": "@fyp/config/tsconfig.base.json",
+  "include": ["src"]
+}

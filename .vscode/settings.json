@@ -1,0 +1,12 @@
+{
+    "files.autoSave": "onFocusChange",
+    "eslint.workingDirectories": [
+        "./apps/api",
+        "./apps/web"
+    ],
+    "editor.codeLensFontFamily": "",
+    "editor.fontLigatures": true,
+    "editor.inlayHints.fontFamily": "",
+    "editor.fontFamily": "\"Fira Code\", monospace",
+    "editor.tabSize": 2
+}
