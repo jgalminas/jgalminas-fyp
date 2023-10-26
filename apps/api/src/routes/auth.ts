@@ -1,4 +1,4 @@
-import { UserRepository } from '@fyp/mongodb';
+import { UserRepository } from '@fyp/db';
 import { Router } from 'express';
 import passport, { AuthenticateCallback } from 'passport';
 import { requireAuth } from '../auth/middleware';
@@ -42,7 +42,7 @@ router.post('/signup', async(req, res) => {
       res.status(200).json({
         message: "Successfully registered",
         session: {
-          userId: user._id,
+          userId: user.id,
           sessionId: req.session.id
         }
       });
@@ -68,10 +68,10 @@ router.get('/logout', (req, res) => {
 
 router.get('/session', requireAuth, async(req, res) => {
 
-  const user = await UserRepository.findUserById(req.user?._id);
+  const user = await UserRepository.findUserById(req.user?.id as string);
   
   res.status(200).json({
-    userId: user?._id,
+    userId: user?.id,
     sessionId: req.session.id
   });
 

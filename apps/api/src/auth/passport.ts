@@ -1,6 +1,6 @@
 import { PassportStatic } from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
-import { UserRepository } from '@fyp/mongodb'
+import { UserRepository } from '@fyp/db';
 import bcrypt from 'bcrypt';
 
 export const passportConfig = (passport: PassportStatic) => {
@@ -26,7 +26,7 @@ export const passportConfig = (passport: PassportStatic) => {
   );
 
   passport.serializeUser((user, callback) => {
-    callback(null, user._id)
+    callback(null, user.id)
   })
 
   passport.deserializeUser<string>(async(id, callback) => {

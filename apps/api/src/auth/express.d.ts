@@ -1,4 +1,4 @@
-import { IUser } from '@fyp/mongodb';
+import { User as IUser } from '@fyp/db';
 
 
 declare global {
