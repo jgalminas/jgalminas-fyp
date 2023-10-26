@@ -13,6 +13,7 @@
     },
     "db:generate": {},
     "db:push": {},
-    "clean": {}
+    "clean": {},
+    "test": {}
   }
 }

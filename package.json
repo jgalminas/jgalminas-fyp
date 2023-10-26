@@ -9,7 +9,8 @@
     "preview": "turbo run preview",
     "clean": "turbo run clean",
     "db:generate": "turbo run db:generate",
-    "db:push": "turbo run db:push"
+    "db:push": "turbo run db:push",
+    "test": "turbo run test"
   },
   "devDependencies": {
     "@turbo/gen": "^1.9.7",
