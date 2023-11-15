@@ -1,4 +1,5 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
+import env from "../../../env";
 
 export type User = {
   userId: string
@@ -51,8 +52,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const getSession = async() => {
       
-      try {
-        const res = await fetch('/api/v1/auth/session');
+      try {        
+
+        const res = await fetch(env.VITE_API_URL + '/api/v1/auth/session');
         const data = await res.json();
   
         if (res.ok) {
@@ -108,6 +110,11 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signIn = async(credentials: Credentials) => {
     
+    const x = window.api.auth.getSession();
+    const y = window.api.auth.logIn("x");
+
+    
+
     try {
       const res = await fetch('/api/v1/auth/login', {
         method: 'POST',
