@@ -27,9 +27,11 @@ const Recordings = () => {
   return ( 
     <Page>
         Recordings
-        { videos.map((v, key) => (
-          <RecordingCard video={v} key={key}/>
-        )) }
+        <div className="flex flex-col gap-6">
+          { videos.map((v, key) => (
+            <RecordingCard video={v} key={key}/>
+          )) }
+        </div>
     </Page>
   )
 }

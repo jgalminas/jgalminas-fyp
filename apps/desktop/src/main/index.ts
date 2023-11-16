@@ -1,9 +1,8 @@
-import { app, shell, BrowserWindow, ipcMain, desktopCapturer } from 'electron';
+import { app, shell, BrowserWindow, ipcMain, desktopCapturer, protocol, net } from 'electron';
 import path, { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import { readdir, stat } from 'fs/promises';
-import { Stats } from 'fs';
 
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
@@ -75,9 +74,13 @@ app.on('window-all-closed', () => {
   }
 })
 
+app.whenReady().then(() => {
+  protocol.handle('local', (req) => net.fetch(req.url.replace('local:\\', 'file:\\')));
+});
+
+
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
-
 
 ipcMain.handle('sources', async(e) => {
   return await desktopCapturer.getSources({ types: ['window'] });
@@ -108,7 +111,7 @@ ipcMain.handle('file:getVideos', async() => {
 
       files.push({
         name: fn,
-        path: filePath,
+        path: path.join('local:' + filePath.replace('mkv', 'jpg')),
         size: stats.size,
         created: stats.birthtime,
         length: data.format.duration
@@ -118,11 +121,6 @@ ipcMain.handle('file:getVideos', async() => {
   }
 
   return files;
-});
-
-protocol.registerFileProtocol('file', (request, callback) => {
-  const pathname = decodeURI(request.url.replace('file:///', ''));
-  callback(pathname);
 });
 
 ipcMain.handle('file:getThumbnails', async() => {

@@ -6,7 +6,10 @@
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self' {{ VITE_API_URL }}; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;"
+      content="default-src 'self' {{ VITE_API_URL }}; script-src 'self';
+      style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
+      font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;
+      img-src 'self' local:"
     />
   </head>
 
