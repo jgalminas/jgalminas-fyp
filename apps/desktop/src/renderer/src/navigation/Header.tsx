@@ -5,12 +5,8 @@ const Header = () => {
   const { signOut, user } = useAuth();
 
   return (
-    <div className="border-b border-slate-200 py-3 px-5 flex">
-      Header
-      <p className="px-5">
-      { user?.userId }
-      </p>
-      <button onClick={signOut} className="ml-auto">
+    <div className="py-3 px-5 flex">
+      <button onClick={signOut} className="ml-auto text-star-dust-300">
         Sign Out
       </button>
     </div>

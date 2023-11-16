@@ -36,7 +36,8 @@ export default ({ mode }) => {
       resolve: {
         alias: {
           '@renderer': resolve('src/renderer/src'),
-          '@root': resolve('src')
+          '@root': resolve('src'),
+          '@assets': resolve('src/renderer/src/assets')
         }
       },
       plugins: [

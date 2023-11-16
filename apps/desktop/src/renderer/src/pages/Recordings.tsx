@@ -1,12 +1,12 @@
 import Page from "../layouts/Page";
 
-const Home = () => {
+const Recordings = () => {
 
   return ( 
     <Page>
-        Home
+        Recordings
     </Page>
   )
 }
 
-export default Home;
+export default Recordings;

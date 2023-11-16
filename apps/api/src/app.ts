@@ -28,7 +28,7 @@ app.use(session({
   saveUninitialized: true,
   rolling: false,
   cookie: {
-    maxAge: 604800
+    maxAge: 604_800 // 1 week
   }
 }));
 

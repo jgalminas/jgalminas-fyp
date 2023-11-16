@@ -5,7 +5,7 @@ import Header from "../navigation/Header";
 const Main = () => {
 
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex h-screen w-full bg-woodsmoke-900">
       <Sidebar/>
       <div className="flex flex-col flex-grow">
         <Header/>

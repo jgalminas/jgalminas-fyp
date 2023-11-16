@@ -1,12 +1,12 @@
 import Page from "../layouts/Page";
 
-const Home = () => {
+const Highlights = () => {
 
   return ( 
     <Page>
-        Home
+        Highlights
     </Page>
   )
 }
 
-export default Home;
+export default Highlights;

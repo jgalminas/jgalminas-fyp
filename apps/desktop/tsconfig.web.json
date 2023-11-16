@@ -7,9 +7,6 @@
     "src/preload/*.d.ts"
     , "src/env.ts"
   ],
-  // "exclude": [
-  //   "src/preload/index.d.ts"
-  // ],
   "compilerOptions": {
     "types": [
       "vite-plugin-svgr/client"
@@ -24,6 +21,9 @@
       ],
       "@root/*": [
         "src/*",
+      ],
+      "@assets/*": [
+        "src/renderer/src/assets/*"
       ]
     }
   }
