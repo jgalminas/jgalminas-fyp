@@ -69,7 +69,7 @@ router.get('/logout', (req, res) => {
 router.get('/session', requireAuth, async(req, res) => {
 
   const user = await UserRepository.findUserById(req.user?.id as string);
-  
+    
   res.status(200).json({
     userId: user?.id,
     sessionId: req.session.id

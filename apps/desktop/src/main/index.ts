@@ -1,9 +1,7 @@
-import { app, shell, BrowserWindow, ipcMain, desktopCapturer } from 'electron';
+import { app, shell, BrowserWindow, ipcMain, desktopCapturer, session } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
-
-export const ipcM = ipcMain;
 
 function createWindow(): void {
   // Create the browser window.
@@ -75,6 +73,6 @@ app.on('window-all-closed', () => {
 // code. You can also put them in separate files and require them here.
 
 
-ipcM.handle('sources', async(e) => {
+ipcMain.handle('sources', async(e) => {
   return await desktopCapturer.getSources({ types: ['window'] });
 });

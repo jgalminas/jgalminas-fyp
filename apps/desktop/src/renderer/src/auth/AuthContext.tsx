@@ -49,12 +49,17 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const [session, setSession] = useState<{ loading: boolean, session: Session | null }>({ loading: true, session: null });
 
   useEffect(() => {
-
     const getSession = async() => {
       
       try {        
 
-        const res = await fetch(api('/v1/auth/session'));
+        const res = await fetch(api('/v1/auth/session'), {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
         const data = await res.json();
   
         if (res.ok) {
@@ -113,8 +118,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const res = await fetch(api('/v1/auth/login'), {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          "content-type": "application/json"
+          "content-type": "application/json",
         },
         body: JSON.stringify(credentials)
       })
@@ -143,7 +149,13 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const signOut = async() => {
 
     try {
-      const res = await fetch(api('/v1/auth/logout'));
+      const res = await fetch(api('/v1/auth/logout'), {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
       if (res.ok) {
         setSession({ ...session, session: null });

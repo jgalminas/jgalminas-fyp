@@ -17,6 +17,7 @@ app.use(morgan('dev'));
 app.use(helmet());
 app.use(cors({
   origin: env.WEB_URL,
+  credentials: true
 }));
 app.use(express.json());
 app.use(cookieParser())
@@ -24,7 +25,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(session({
   secret: env.SECRET,
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  rolling: false,
+  cookie: {
+    maxAge: 604800
+  }
 }));
 
 

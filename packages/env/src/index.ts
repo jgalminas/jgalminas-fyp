@@ -13,6 +13,8 @@ export const apiEnvSchema = z.object({
   WEB_URL: z.string(),
   API_URL: z.string(),
 
+  MODE: z.string(),
+
   JWT_SECRET_TOKEN: z.string(),
 
   // DATABASE
