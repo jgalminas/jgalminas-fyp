@@ -1,5 +1,5 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
-import env from "../../../env";
+import { api } from "@renderer/util/api";
 
 export type User = {
   userId: string
@@ -54,7 +54,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       
       try {        
 
-        const res = await fetch(env.VITE_API_URL + '/api/v1/auth/session');
+        const res = await fetch(api('/v1/auth/session'));
         const data = await res.json();
   
         if (res.ok) {
@@ -79,7 +79,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const signUp = async(userData: SignUpData) => {
 
     try {
-      const res = await fetch('/api/v1/auth/signup', {
+      const res = await fetch(api('/v1/auth/signup'), {
         method: 'POST',
         headers: {
           "content-type": "application/json"
@@ -109,14 +109,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const signIn = async(credentials: Credentials) => {
-    
-    const x = window.api.auth.getSession();
-    const y = window.api.auth.logIn("x");
-
-    
 
     try {
-      const res = await fetch('/api/v1/auth/login', {
+      const res = await fetch(api('/v1/auth/login'), {
         method: 'POST',
         headers: {
           "content-type": "application/json"
@@ -148,7 +143,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const signOut = async() => {
 
     try {
-      const res = await fetch('/api/v1/auth/logout');
+      const res = await fetch(api('/v1/auth/logout'));
 
       if (res.ok) {
         setSession({ ...session, session: null });

@@ -20,7 +20,10 @@
     "outDir": "out/preload",
     "paths": {
       "@renderer/*": [
-        "src/renderer/src/*"
+        "src/renderer/src/*",
+      ],
+      "@root/*": [
+        "src/*",
       ]
     }
   }

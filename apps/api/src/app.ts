@@ -14,8 +14,10 @@ import env from './env';
 const app = express();
 
 app.use(morgan('dev'));
-app.use(helmet({ contentSecurityPolicy: (process.env.NODE_ENV === 'production') ? undefined : false }));
-app.use(cors());
+app.use(helmet());
+app.use(cors({
+  origin: env.WEB_URL,
+}));
 app.use(express.json());
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }));

@@ -1,7 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { Readable } from 'stream';
-import { auth } from './api/auth';
 
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
@@ -102,7 +101,6 @@ const api = {
     
   },
 
-  auth
 }
 
 // const api = 

@@ -2,6 +2,7 @@ import path, { resolve } from 'path'
 import { defineConfig, externalizeDepsPlugin, loadEnv } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr';
+import htmlEnv from 'vite-plugin-html-env';
 
 /**
 * @type {import('electron-vite').UserConfig}
@@ -9,7 +10,7 @@ import svgr from 'vite-plugin-svgr';
 
 export default ({ mode }) => {
   
-  const env = loadEnv(mode, path.join(process.cwd(), '..', '..'), 'VITE'); 
+  const env = loadEnv(mode, path.join(__dirname, '..', '..'), 'VITE'); 
   const processEnvValues = {
     'process.env': Object.entries(env).reduce(
       (prev, [key, val]) => {
@@ -26,7 +27,7 @@ export default ({ mode }) => {
 
   return defineConfig({
     main: {
-      plugins: [externalizeDepsPlugin()]
+      plugins: [externalizeDepsPlugin()],
     },
     preload: {
       plugins: [externalizeDepsPlugin()],
@@ -34,11 +35,19 @@ export default ({ mode }) => {
     renderer: {
       resolve: {
         alias: {
-          '@renderer': resolve('src/renderer/src')
+          '@renderer': resolve('src/renderer/src'),
+          '@root': resolve('src')
         }
       },
-      plugins: [svgr(), react()],
-      define: processEnvValues,
+      plugins: [
+        htmlEnv({
+          prefix: '{{',
+          suffix: '}}'
+        }),
+        svgr(),
+        react()
+      ],
+      define: processEnvValues
     }
   });
 }
