@@ -8,7 +8,7 @@ import SignUp from './pages/SignUp';
 import UnauthedOnlyRoute from './auth/UnauthedOnlyRoute';
 import Matches from './pages/matches/Matches';
 import Highlights from './pages/Highlights';
-import Recordings from './pages/Recordings';
+import Recordings from './pages/recordings/Recordings';
 import Settings from './pages/Settings';
 
 const App = () => {

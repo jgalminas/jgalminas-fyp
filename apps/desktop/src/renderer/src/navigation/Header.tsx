@@ -2,7 +2,7 @@ import { useAuth } from "../auth/AuthContext";
 
 const Header = () => {
 
-  const { signOut, user } = useAuth();
+  const { signOut } = useAuth();
 
   return (
     <div className="py-3 px-5 flex">

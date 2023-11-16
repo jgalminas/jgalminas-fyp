@@ -9,7 +9,7 @@ const Main = () => {
       <Sidebar/>
       <div className="flex flex-col flex-grow">
         <Header/>
-        <div className="overflow-y-auto">
+        <div className="overflow-y-auto w-full max-w-[60rem] self-center">
           <Outlet/>
         </div>
       </div>

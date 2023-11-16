@@ -1,5 +1,5 @@
-import Card from "@renderer/core/Card";
 import Page from "../../layouts/Page";
+import MatchCard from "./MatchCard";
 
 const Matches = () => {
 
@@ -7,9 +7,7 @@ const Matches = () => {
     <Page>
         Matches
 
-        {/* <Card>
-          hello
-        </Card> */}
+        <MatchCard/>
 
     </Page>
   )

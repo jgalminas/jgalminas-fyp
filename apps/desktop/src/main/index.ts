@@ -1,7 +1,13 @@
 import { app, shell, BrowserWindow, ipcMain, desktopCapturer, session } from 'electron';
-import { join } from 'path';
+import path, { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
+import { readdir, stat } from 'fs/promises';
+import { Stats } from 'fs';
+
+import ffmpeg from 'fluent-ffmpeg';
+import ffmpegStatic from 'ffmpeg-static';
+ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
 function createWindow(): void {
   // Create the browser window.
@@ -76,3 +82,75 @@ app.on('window-all-closed', () => {
 ipcMain.handle('sources', async(e) => {
   return await desktopCapturer.getSources({ types: ['window'] });
 });
+
+export type VideoData = {
+  name: string,
+  size: number, 
+  created: Date
+  length?: number
+}
+
+export type ThumbnailData = {
+  name: string
+}
+
+ipcMain.handle('file:getVideos', async() => {
+
+  const videosDir = path.join(app.getPath('videos'), 'Fyp');
+  const fileNames = await readdir(videosDir);
+  const files: VideoData[] = [];
+
+  for (const fn of fileNames) {
+
+    const filePath = path.join(videosDir, fn);
+
+    // if video
+    if (fn.split('.')[1] === 'mkv') {
+      const stats = await stat(filePath);
+      const data = await getMetadata(filePath);
+
+      files.push({
+        name: fn,
+        size: stats.size,
+        created: stats.birthtime,
+        length: data.format.duration
+      });
+    }
+
+  }
+
+  return files;
+});
+
+ipcMain.handle('file:getThumbnails', async() => {
+
+  const videosDir = path.join(app.getPath('videos'), 'Fyp');
+  const fileNames = await readdir(videosDir);
+  const files: ThumbnailData[] = [];
+
+  for (const fn of fileNames) {
+
+    const filePath = path.join(videosDir, fn);
+
+    // if image
+    if (fn.split('.')[1] === 'jpg') {
+      const data = await getMetadata(filePath);
+
+      files.push({
+        name: fn
+      });
+    }
+
+  }
+
+  return files;
+});
+
+const getMetadata = (filePath: string): Promise<ffmpeg.FfprobeData> => {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(filePath, (err, data) => {
+      if (err) reject(err);
+      else resolve(data);
+    })
+  })
+}

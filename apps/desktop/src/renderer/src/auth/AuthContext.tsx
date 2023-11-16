@@ -51,6 +51,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     const getSession = async() => {
       
+      console.log(await window.api.file.getVideos());
+
+
       try {        
 
         const res = await fetch(api('/v1/auth/session'), {
