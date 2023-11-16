@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, desktopCapturer, session } from 'electron';
+import { app, shell, BrowserWindow, ipcMain, desktopCapturer } from 'electron';
 import path, { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
@@ -85,13 +85,10 @@ ipcMain.handle('sources', async(e) => {
 
 export type VideoData = {
   name: string,
-  size: number, 
+  size: number,
+  path: string,
   created: Date
   length?: number
-}
-
-export type ThumbnailData = {
-  name: string
 }
 
 ipcMain.handle('file:getVideos', async() => {
@@ -111,6 +108,7 @@ ipcMain.handle('file:getVideos', async() => {
 
       files.push({
         name: fn,
+        path: filePath,
         size: stats.size,
         created: stats.birthtime,
         length: data.format.duration
@@ -122,28 +120,15 @@ ipcMain.handle('file:getVideos', async() => {
   return files;
 });
 
-ipcMain.handle('file:getThumbnails', async() => {
+protocol.registerFileProtocol('file', (request, callback) => {
+  const pathname = decodeURI(request.url.replace('file:///', ''));
+  callback(pathname);
+});
 
+ipcMain.handle('file:getThumbnails', async() => {
   const videosDir = path.join(app.getPath('videos'), 'Fyp');
   const fileNames = await readdir(videosDir);
-  const files: ThumbnailData[] = [];
-
-  for (const fn of fileNames) {
-
-    const filePath = path.join(videosDir, fn);
-
-    // if image
-    if (fn.split('.')[1] === 'jpg') {
-      const data = await getMetadata(filePath);
-
-      files.push({
-        name: fn
-      });
-    }
-
-  }
-
-  return files;
+  return fileNames.filter(fn => fn.split('.')[1] === 'jpg');
 });
 
 const getMetadata = (filePath: string): Promise<ffmpeg.FfprobeData> => {

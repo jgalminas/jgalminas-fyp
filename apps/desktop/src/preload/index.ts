@@ -102,7 +102,7 @@ const api = {
   },
 
   file: {
-    getVideos: async() => await ipcRenderer.invoke('file:getThumbnails')
+    getVideos: async() => await ipcRenderer.invoke('file:getVideos')
   }
 }
 
