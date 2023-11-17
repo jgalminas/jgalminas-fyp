@@ -1,6 +1,10 @@
 import Card from "@renderer/core/Card";
 import { VideoData } from "./Recordings";
-import Play from '@assets/icons/Play.svg?react';
+import ThumbnailPlay from "@renderer/core/video/ThumbnailPlay";
+import LinkButton from "@renderer/core/LinkButton";
+import RoundImage from "@renderer/core/RoundImage";
+import PrettyDate from "@renderer/core/PrettyDate";
+import { RoleIcons } from "@renderer/util/role";
 
 export type RecordingCardProps = {
   video: VideoData
@@ -9,13 +13,26 @@ export type RecordingCardProps = {
 const RecordingCard = ({ video }: RecordingCardProps) => {
 
   return (
-    <Card className="p-0 h-40">
+    <Card className="flex p-0">
       
-      <div className="relative w-fit">
-        <div className="min-h-[10rem] w-full bg-gradient-to-l from-woodsmoke-700 from-[7%] to-transparent absolute right-0"/>
-        <img className="h-40 rounded-l-lg" src={video.path}/>
-        <Play className="absolute text-star-dust-100 w-8 h-8 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-        hover:scale-125 transition-all cursor-pointer"/>
+      <ThumbnailPlay imgSrc={video.path} to='/'/>
+
+      <div className="flex flex-col py-5 justify-between">
+        <div className="flex items-center gap-4">
+          <RoundImage src='https://raw.communitydragon.org/latest/game/assets/characters/braum/hud/braum_circle.png'/>
+          <h2 className="text-star-dust-200 font-semibold"> Game #2 </h2>
+          <PrettyDate date={video.created}/>
+        </div>
+
+        <div className="flex gap-3 text-star-dust-300 items-center">
+          <RoleIcons.Support/>
+          <p className="font-medium text-sm"> Support </p>
+        </div>
+
+        <div className="flex gap-3">
+          <LinkButton to='/'> Create Highlight </LinkButton>
+          <LinkButton to='/' type='text'> View Game </LinkButton>
+        </div>
       </div>
 
     </Card>

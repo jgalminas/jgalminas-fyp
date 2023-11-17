@@ -7,7 +7,7 @@ export type PageProps = {
 const Page = ({ children }: PageProps) => {
 
   return (
-    <div className="p-5">
+    <div className="flex flex-col gap-7 p-5">
       { children }
     </div>
   )

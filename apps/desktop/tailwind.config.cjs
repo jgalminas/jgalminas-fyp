@@ -3,6 +3,9 @@ module.exports = {
   content: ["./src/**/*.{html,tsx,ts}"],
   theme: {
     extend: {
+      borderRadius: {
+        'sm2': '0.188rem'
+      },
       colors: {
         'woodsmoke': {
           '50': '#2B2F37',

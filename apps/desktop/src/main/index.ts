@@ -8,6 +8,8 @@ import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
+import { matchObserver } from './matchObserver';
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -76,6 +78,9 @@ app.on('window-all-closed', () => {
 
 app.whenReady().then(() => {
   protocol.handle('local', (req) => net.fetch(req.url.replace('local:\\', 'file:\\')));
+
+  console.log(matchObserver.isInGame());
+
 });
 
 
@@ -111,7 +116,7 @@ ipcMain.handle('file:getVideos', async() => {
 
       files.push({
         name: fn,
-        path: path.join('local:' + filePath.replace('mkv', 'jpg')),
+        path: 'local:\\' + filePath.replace('mkv', 'jpg'),
         size: stats.size,
         created: stats.birthtime,
         length: data.format.duration
