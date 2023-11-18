@@ -8,9 +8,7 @@ import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
-import { matchObserver } from './matchObserver';
-import { GAME_CLIENT_NAME } from './util/constants';
-import { MatchRecorder } from './matchRecorder';
+import { MatchRecorder } from '../preload/matchRecorder';
 
 function createWindow(): void {
   // Create the browser window.
@@ -80,13 +78,7 @@ app.on('window-all-closed', () => {
 
 app.whenReady().then(async() => {
   protocol.handle('local', (req) => net.fetch(req.url.replace('local:\\', 'file:\\')));
-
-  const x = new MatchRecorder();
-
 });
-
-
-
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
@@ -146,3 +138,7 @@ const getMetadata = (filePath: string): Promise<ffmpeg.FfprobeData> => {
     })
   })
 }
+
+ipcMain.on('getPath', (e, path: Parameters<typeof app.getPath>[0]) => {
+  e.returnValue = app.getPath(path);
+})

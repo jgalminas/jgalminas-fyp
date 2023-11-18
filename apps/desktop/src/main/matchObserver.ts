@@ -27,16 +27,12 @@ export type Subscription = {
   callback: () => void
 }
 
-class MatchObserver {
+export class MatchObserver {
   
   private subscribers: Subscription[] = [];
   private gameData: GameData | null = null;
 
-  constructor() {
-    this.init();
-  }
-
-  private init = async() => {
+  public observe = async() => {
     
     const credentials = await authenticate({ awaitConnection: true });
     const ws = await createWebSocketConnection();
@@ -99,5 +95,3 @@ class MatchObserver {
   };
 
 }
-
-export const matchObserver = new MatchObserver();
