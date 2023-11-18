@@ -1,0 +1,1 @@
+export const GAME_CLIENT_NAME = 'League of Legends (TM) Client';

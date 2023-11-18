@@ -1,93 +1,91 @@
-import { readFile } from "fs/promises";
-import path from "path";
-import https from 'https';
+import { authenticate, createHttp1Request, createWebSocketConnection } from "league-connect";
 
-export enum LCEvent {
-  GAME_START = 0,
-  GAME_END = 9
+export enum GameEvent {
+  START = "GameStart",
+  FINISH = "WaitingForStats"
 }
 
-export type GameEvent = {
-  EventID: number,
-  EventName: string,
-  EventTime: number
+export type GameData = {
+  gameId: number,
+  isCustomGame: boolean,
+  queue: {
+    id: number,
+    mapId: number,
+    gameMode: string,
+    isRanked: boolean,
+    type: string
+  }
 }
 
-export type SubscriptionEvent = 'start' | 'end';
+export type SubscriptionEvent = Subscription['event'];
 
 export type Subscription = {
-  event: SubscriptionEvent,
+  event: 'start',
+  callback: (game: GameData) => void
+} | {
+  event: 'finish',
   callback: () => void
 }
 
 class MatchObserver {
   
-  static MS_FREQUENCY = 1000;
-  static BASE_URL = 'https://127.0.0.1:2999/liveclientdata/eventdata';
-  static CERT_PATH = path.join(process.cwd(), '..', '..', 'riotgames.pem');
-  private inGame = false;
-  private cert: Buffer | undefined; 
   private subscribers: Subscription[] = [];
+  private gameData: GameData | null = null;
 
   constructor() {
-    this.readCert();
-    this.loop();
+    this.init();
   }
 
-  private readCert = async() => {
-    this.cert = await readFile(MatchObserver.CERT_PATH);
-  }
+  private init = async() => {
+    
+    const credentials = await authenticate({ awaitConnection: true });
+    const ws = await createWebSocketConnection();
 
-  private loop = async() => {
-    setInterval(async() => {
+    ws.subscribe('/lol-gameflow/v1/gameflow-phase', async(data) => {
 
-      //TODO: handle game leaving
+      if (data === GameEvent.START) {
 
-      if (!this.inGame) {
-        const events = await this.fetchEventByID(LCEvent.GAME_START);
-        if (events && events.Events.find(e => e.EventID === LCEvent.GAME_START)) {
-          this.inGame = true;
+        try {
+          const req = await createHttp1Request({
+            method: 'GET',
+            url: '/lol-gameflow/v1/session',
+          }, credentials);
+
+          const data: any = await req.json()['gameData'];
+
+          this.gameData = {
+            gameId: data.gameId,
+            isCustomGame: data.isCustomGame,
+            queue: {
+              id: data.queue.id,
+              gameMode: data.queue.gameMode,
+              isRanked: data.queue.isRanked,
+              mapId: data.queue.mapId,
+              type: data.queue.type
+            }
+          };
+
+          this.subscribers.forEach(sub => sub.event === 'start' && sub.callback(this.gameData as GameData));
+
+        } catch (err) {
+          console.log(err);
         }
-      } else {
-        const events = await this.fetchEventByID(LCEvent.GAME_END);
-        if (events && events.Events.find(e => e.EventID === LCEvent.GAME_END)) {
-          this.inGame = false;
-        }
+        
+      } else if (data === GameEvent.FINISH) {
+        this.gameData = null;
+        this.subscribers.forEach(sub => sub.event === 'finish' && sub.callback());
       }
 
-    }, MatchObserver.MS_FREQUENCY);
-  }
+    });
 
-  private fetchEventByID = async(id: LCEvent) => {
-    try {
-      // TODO: use zod to verify returned data as first few frames seem to be invalid
-      return await this.fetch(`${MatchObserver.BASE_URL}?eventID=${id}`) as { Events: GameEvent[] };
-    } catch {
-      return null;
-    }
-  }
+  };
 
-  private fetch = async (url: string, method: 'GET' | 'POST' = 'GET'): Promise<any> => {
-    return new Promise((resolve, reject) => {
-      if (!this.cert) {
-        reject(new Error("Certificate not loaded"))
-      } else {
-        https.get(url, { method, agent: new https.Agent({ ca: [this.cert] }) }, (res) => {
-          let data = '';
-  
-          res.on('data', (chunk) => data += chunk);
-          res.on('end', () => resolve(Promise.resolve(JSON.parse(data))));
-          res.on('error', (err) => reject(err));
-        }).on('error', (err) => reject(err));
-      }
-    })
-  }
+  public isInGame = () => this.gameData === null ? false : true;
+  public getGameData = () => this.gameData;
 
-  public isInGame = () => this.inGame;
+  public on = <E extends SubscriptionEvent>(event: E, callback: Extract<Subscription, { event: E }>['callback']) => {
 
-  public on = (event: SubscriptionEvent, callback: () => void) => {
-
-    this.subscribers.push({ event, callback });
+    this.subscribers.push({ event, callback } as Subscription);
 
     return {
       unsubscribe: () => {
@@ -102,4 +100,4 @@ class MatchObserver {
 
 }
 
-export const matchObserver = new MatchObserver(); 
+export const matchObserver = new MatchObserver();

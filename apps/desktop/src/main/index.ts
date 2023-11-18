@@ -9,6 +9,8 @@ import ffmpegStatic from 'ffmpeg-static';
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
 import { matchObserver } from './matchObserver';
+import { GAME_CLIENT_NAME } from './util/constants';
+import { MatchRecorder } from './matchRecorder';
 
 function createWindow(): void {
   // Create the browser window.
@@ -76,12 +78,14 @@ app.on('window-all-closed', () => {
   }
 })
 
-app.whenReady().then(() => {
+app.whenReady().then(async() => {
   protocol.handle('local', (req) => net.fetch(req.url.replace('local:\\', 'file:\\')));
 
-  console.log(matchObserver.isInGame());
+  const x = new MatchRecorder();
 
 });
+
+
 
 
 // In this file you can include the rest of your app"s specific main process
