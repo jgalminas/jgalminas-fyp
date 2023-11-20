@@ -2,10 +2,12 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
-import { MatchRecorder } from './matchRecorder';
+import { MatchRecorder } from './match/matchRecorder';
+import { ClientManager } from './clientManager';
+import { LolApi } from 'twisted';
+import { RecordingChannels } from '../main/ipc';
+
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
-
-
 
 export type PreloadAPI = typeof api;
 
@@ -13,7 +15,7 @@ export type PreloadAPI = typeof api;
 
 const api = {
   file: {
-    getVideos: async() => await ipcRenderer.invoke('file:getVideos')
+    getVideos: async() => await ipcRenderer.invoke(RecordingChannels.Videos)
   }
 }
 
@@ -34,4 +36,15 @@ if (process.contextIsolated) {
   window.api = api;
 }
 
-new MatchRecorder().init();
+
+
+export const clientManager = new ClientManager();
+export const lolAPI = new LolApi();
+
+
+const init = async() => {
+  await clientManager.init();
+  await new MatchRecorder().init();
+}
+
+init();

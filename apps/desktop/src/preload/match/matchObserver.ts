@@ -1,4 +1,6 @@
-import { authenticate, createHttp1Request, createWebSocketConnection } from "league-connect";
+import { createHttp1Request, createWebSocketConnection } from "league-connect";
+import { PubSub } from "../core/pubsub";
+import { clientManager } from "..";
 
 export enum GameEvent {
   START = "GameStart",
@@ -17,24 +19,17 @@ export type GameData = {
   }
 }
 
-export type SubscriptionEvent = Subscription['event'];
-
-export type Subscription = {
-  event: 'start',
-  callback: (game: GameData) => void
-} | {
-  event: 'finish',
-  callback: () => void
+export type MatchObserverEvents = {
+  'start': (game: GameData) => void,
+  'finish': () => void
 }
 
-export class MatchObserver {
+export class MatchObserver extends PubSub<MatchObserverEvents> {
   
-  private subscribers: Subscription[] = [];
   private gameData: GameData | null = null;
 
   public observe = async() => {
     
-    const credentials = await authenticate({ awaitConnection: true });
     const ws = await createWebSocketConnection();
 
     ws.subscribe('/lol-gameflow/v1/gameflow-phase', async(data) => {
@@ -45,7 +40,7 @@ export class MatchObserver {
           const req = await createHttp1Request({
             method: 'GET',
             url: '/lol-gameflow/v1/session',
-          }, credentials);
+          }, await clientManager.getCredentials());
 
           const data: any = await req.json()['gameData'];
 
@@ -61,7 +56,7 @@ export class MatchObserver {
             }
           };
 
-          this.subscribers.forEach(sub => sub.event === 'start' && sub.callback(this.gameData as GameData));
+          this.emit('start', this.gameData);
 
         } catch (err) {
           console.log(err);
@@ -69,7 +64,7 @@ export class MatchObserver {
         
       } else if (data === GameEvent.FINISH) {
         this.gameData = null;
-        this.subscribers.forEach(sub => sub.event === 'finish' && sub.callback());
+        this.emit('finish');
       }
 
     });
@@ -78,20 +73,5 @@ export class MatchObserver {
 
   public isInGame = () => this.gameData === null ? false : true;
   public getGameData = () => this.gameData;
-
-  public on = <E extends SubscriptionEvent>(event: E, callback: Extract<Subscription, { event: E }>['callback']) => {
-
-    this.subscribers.push({ event, callback } as Subscription);
-
-    return {
-      unsubscribe: () => {
-        const index = this.subscribers.length - 1;
-        this.subscribers = [
-          ...this.subscribers.slice(0, index),
-          ...this.subscribers.slice(index + 1, this.subscribers.length)
-        ];
-      }
-    }
-  };
 
 }

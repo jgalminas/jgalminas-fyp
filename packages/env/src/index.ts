@@ -2,9 +2,9 @@ import { z } from "zod";
 
 export const webEnvSchema = z.object({
   // URLS
-  VITE_PORT: z.string(),
-  VITE_APP_URL: z.string(),
-  VITE_API_URL: z.string(),
+  RENDERER_VITE_PORT: z.string(),
+  RENDERER_VITE_APP_URL: z.string(),
+  RENDERER_VITE_API_URL: z.string()
 });
 
 export const apiEnvSchema = z.object({
