@@ -4,6 +4,8 @@ import { app, ipcMain } from 'electron';
 import path from 'path';
 import { readdir, stat } from 'fs/promises';
 import { THUMBNAIL_FORMAT, VIDEO_FORMAT } from '../../../constants';
+import { fileExists } from '../../util/file';
+import { captureThumbnail } from '../../../shared/util/recording';
 
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
@@ -40,6 +42,12 @@ export default () => {
       if (fn.split('.')[1] === VIDEO_FORMAT) {
         const stats = await stat(filePath);
         const data = await getMetadata(filePath);
+
+        const thumbnailPath = filePath.replace(VIDEO_FORMAT, THUMBNAIL_FORMAT);
+
+        if (!fileExists(thumbnailPath)) {
+          await captureThumbnail(filePath);
+        }
   
         files.push({
           name: fn,
@@ -55,12 +63,4 @@ export default () => {
     return files;
   });
   
-  ipcMain.handle("recording:thumbnails", async() => {
-    const videosDir = path.join(app.getPath('videos'), 'Fyp');
-    const fileNames = await readdir(videosDir);
-    return fileNames.filter(fn => fn.split('.')[1] === THUMBNAIL_FORMAT);
-  });
-  
-
 }
-

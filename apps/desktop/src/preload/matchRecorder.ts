@@ -1,9 +1,10 @@
 import { ipcRenderer } from "electron";
-import { GAME_CLIENT_NAME, THUMBNAIL_FORMAT, VIDEO_FORMAT } from "../constants";
+import { GAME_CLIENT_NAME, VIDEO_FORMAT } from "../constants";
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
 import { Readable } from "stream";
 import path from "path";
+import { captureThumbnail } from "../shared/util/recording";
 
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
@@ -79,7 +80,7 @@ export class MatchRecorder {
     .videoCodec('libx264')
     .audioCodec('aac')
     .output(videoPath)
-    .on('end', () => this.captureThumbnail(videoPath))
+    .on('end', async() => await captureThumbnail(videoPath))
     .run();
     
   }
@@ -104,16 +105,6 @@ export class MatchRecorder {
       }, 1000);
   
     });
-  }
-
-  private captureThumbnail = (filePath: string) => {
-    ffmpeg()
-    .input(filePath)
-    .inputFormat('mp4')
-    .videoCodec('mjpeg')
-    .frames(1)
-    .output(filePath.replace(VIDEO_FORMAT, THUMBNAIL_FORMAT))
-    .run()
   }
 
 }
