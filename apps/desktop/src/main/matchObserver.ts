@@ -1,6 +1,5 @@
-import { createHttp1Request, createWebSocketConnection } from "league-connect";
-import { PubSub } from "../core/pubsub";
-import { clientManager } from "..";
+import { createHttp1Request, createWebSocketConnection, authenticate } from "league-connect";
+import { mainWindow } from "./index";
 
 export enum GameEvent {
   START = "GameStart",
@@ -19,12 +18,7 @@ export type GameData = {
   }
 }
 
-export type MatchObserverEvents = {
-  'start': (game: GameData) => void,
-  'finish': () => void
-}
-
-export class MatchObserver extends PubSub<MatchObserverEvents> {
+export class MatchObserver {
   
   private gameData: GameData | null = null;
 
@@ -40,7 +34,7 @@ export class MatchObserver extends PubSub<MatchObserverEvents> {
           const req = await createHttp1Request({
             method: 'GET',
             url: '/lol-gameflow/v1/session',
-          }, await clientManager.getCredentials());
+          }, await authenticate({ awaitConnection: true }));
 
           const data: any = await req.json()['gameData'];
 
@@ -56,7 +50,7 @@ export class MatchObserver extends PubSub<MatchObserverEvents> {
             }
           };
 
-          this.emit('start', this.gameData);
+          mainWindow?.webContents.send('match:start', this.gameData);
 
         } catch (err) {
           console.log(err);
@@ -64,7 +58,7 @@ export class MatchObserver extends PubSub<MatchObserverEvents> {
         
       } else if (data === GameEvent.FINISH) {
         this.gameData = null;
-        this.emit('finish');
+        mainWindow?.webContents.send('match:finish');
       }
 
     });

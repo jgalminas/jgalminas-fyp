@@ -3,12 +3,21 @@ import path from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import { registerChannels } from './ipc/index';
+import { ClientManager } from './clientManager';
+import { LolApi } from 'twisted';
+import { MatchObserver } from './matchObserver';
 
 registerChannels();
 
+export let mainWindow: BrowserWindow | undefined;
+
+export const lolApi = new LolApi(process.env.MAIN_VITE_LOL_KEY as string);
+export const clientManager = new ClientManager();
+export const matchObserver = new MatchObserver();
+
 function createWindow(): void {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
@@ -23,7 +32,7 @@ function createWindow(): void {
   mainWindow.webContents.openDevTools();
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    mainWindow?.show()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -61,6 +70,10 @@ app.whenReady().then(async() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  await clientManager.init();
+  await matchObserver.observe()
+
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -73,5 +86,5 @@ app.on('window-all-closed', () => {
 })
 
 app.whenReady().then(async() => {
-  protocol.handle('local', (req) => net.fetch(req.url.replace('local:\\', 'file:\\')));  
+  protocol.handle('local', (req) => net.fetch(req.url.replace('local:\\', 'file:\\')));
 });

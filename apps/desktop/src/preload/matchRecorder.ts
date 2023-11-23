@@ -1,11 +1,9 @@
 import { ipcRenderer } from "electron";
-import { GAME_CLIENT_NAME, THUMBNAIL_FORMAT, VIDEO_FORMAT } from "../../constants";
-import { MatchObserver } from "./matchObserver";
+import { GAME_CLIENT_NAME, THUMBNAIL_FORMAT, VIDEO_FORMAT } from "../constants";
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
 import { Readable } from "stream";
 import path from "path";
-import { PathChannels, RecordingChannels } from "../../channels";
 
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
@@ -14,20 +12,17 @@ export class MatchRecorder {
   private readable: Readable | undefined;
   private recorder: MediaRecorder | undefined;
   private running: boolean = false;
-  private videosPath = path.join(ipcRenderer.sendSync(PathChannels.Get, 'videos'), 'Fyp');
+  private videosPath = path.join(ipcRenderer.sendSync("path:get", 'videos'), 'Fyp');
   private gameId: string | undefined; 
 
   public init = async() => {
-    const matchObserver = new MatchObserver();
-    matchObserver.observe();
-
-    matchObserver.on('start', async(game) => {
+    ipcRenderer.on('match:start', async(_, game) => {
       const client = await this.getGameClient(); 
       this.gameId = game.gameId.toString();
-      await this.start(client, this.gameId);
+      await this.start(client, this.gameId as string);
     });
 
-    matchObserver.on('finish', () => {
+    ipcRenderer.on('match:finish', () => {
       this.stop();
     })
   }
@@ -98,7 +93,7 @@ export class MatchRecorder {
   private getGameClient = async(): Promise<Electron.DesktopCapturerSource> => {
     return new Promise((resolve, _) => {
       const interval = setInterval(async() => {
-        const sources: Electron.DesktopCapturerSource[] = await ipcRenderer.invoke(RecordingChannels.Sources);
+        const sources: Electron.DesktopCapturerSource[] = await ipcRenderer.invoke("recording:sources");
         const client = sources.find((x) => x.name === GAME_CLIENT_NAME);
         
         if (client) {

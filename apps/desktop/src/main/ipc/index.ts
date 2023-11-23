@@ -1,9 +1,9 @@
-import riot from './riot/';
 import path from './path';
 import recording from './recording';
+import client from './client';
 
 export const registerChannels = () => {
-  riot();
   path();
   recording();
+  client();
 }
