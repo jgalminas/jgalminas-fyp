@@ -1,13 +1,9 @@
-import summoner from './riot/summoner';
+import riot from './riot/';
 import path from './path';
-import recording from './recording/index';
+import recording from './recording';
 
 export const registerChannels = () => {
-  summoner();
+  riot();
   path();
   recording();
 }
-
-export { PathChannels } from './path';
-export { RecordingChannels } from './recording/index';
-export { SummonerChannels } from './riot/index';

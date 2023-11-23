@@ -1,4 +1,5 @@
+import summoner from './summoner';
 
-export enum SummonerChannels {
-  Info = "summoner:info"
+export default () => {
+  summoner();
 }

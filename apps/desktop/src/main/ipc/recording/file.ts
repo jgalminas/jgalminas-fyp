@@ -4,7 +4,8 @@ import { app, ipcMain } from 'electron';
 import path from 'path';
 import { readdir, stat } from 'fs/promises';
 import { THUMBNAIL_FORMAT, VIDEO_FORMAT } from '../../../constants';
-import { RecordingChannels } from './index';
+import { RecordingChannels } from '../../../channels';
+
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
 export type VideoData = {
@@ -24,7 +25,7 @@ const getMetadata = (filePath: string): Promise<ffmpeg.FfprobeData> => {
   })
 }
 
-const registerHandlers = () => {
+export default () => {
 
   ipcMain.handle(RecordingChannels.Videos, async() => {
   
@@ -63,7 +64,4 @@ const registerHandlers = () => {
   
 
 }
-
-export default registerHandlers;
-
 

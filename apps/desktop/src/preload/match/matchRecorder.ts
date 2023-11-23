@@ -5,7 +5,7 @@ import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
 import { Readable } from "stream";
 import path from "path";
-import { PathChannels, RecordingChannels } from "../../main/ipc";
+import { PathChannels, RecordingChannels } from "../../channels";
 
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 

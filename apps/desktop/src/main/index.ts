@@ -2,9 +2,9 @@ import { app, shell, BrowserWindow, protocol, net } from 'electron';
 import path from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
-import { registerChannels } from './ipc';
+import { registerChannels } from './ipc/index';
 
-
+registerChannels();
 
 function createWindow(): void {
   // Create the browser window.
@@ -75,6 +75,3 @@ app.on('window-all-closed', () => {
 app.whenReady().then(async() => {
   protocol.handle('local', (req) => net.fetch(req.url.replace('local:\\', 'file:\\')));  
 });
-
-// register IPC channels
-registerChannels();

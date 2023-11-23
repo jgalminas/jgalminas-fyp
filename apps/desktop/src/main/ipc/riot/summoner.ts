@@ -1,16 +1,14 @@
 import { ipcMain } from "electron";
-import { SummonerChannels } from "./index";
+import { Regions } from "twisted/dist/constants";
+import { lolApi } from "../../api";
+import { SummonerChannels } from "../../../channels";
 
+export default () => {
 
-
-const registerHandlers = () => {
-
-  ipcMain.on(SummonerChannels.Info, (e) => {
-    e.returnValue = 10;
-  });
+  ipcMain.handle(SummonerChannels.Info, async() => {
+    const x = await lolApi.Summoner.getByName("name", Regions.EU_WEST);
+    console.log(x);
+    return x;
+  })
   
 }
-
-export default registerHandlers;
-
-

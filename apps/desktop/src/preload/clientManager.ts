@@ -1,4 +1,6 @@
+import { ipcRenderer } from "electron";
 import { Credentials, authenticate, LeagueClient } from "league-connect";
+import { SummonerChannels } from "../channels";
 
 export type Player = {
   username: string,
@@ -34,6 +36,10 @@ export class ClientManager {
   private onConnect = async(credentials: Credentials) => {
     this.credentials = credentials;
     
+    const res = await ipcRenderer.invoke(SummonerChannels.Info);
+    console.log(res);
+    
+
     // const summonerReq = await createHttp1Request({
     //   method: 'GET',
     //   url: '/lol-summoner/v1/current-summoner',

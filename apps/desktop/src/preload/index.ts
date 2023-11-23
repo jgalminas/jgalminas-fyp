@@ -4,8 +4,7 @@ import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
 import { MatchRecorder } from './match/matchRecorder';
 import { ClientManager } from './clientManager';
-import { LolApi } from 'twisted';
-import { RecordingChannels } from '../main/ipc';
+import { RecordingChannels } from '../channels';
 
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
@@ -39,8 +38,6 @@ if (process.contextIsolated) {
 
 
 export const clientManager = new ClientManager();
-export const lolAPI = new LolApi();
-
 
 const init = async() => {
   await clientManager.init();
