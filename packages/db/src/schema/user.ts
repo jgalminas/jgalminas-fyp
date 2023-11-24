@@ -1,17 +1,22 @@
 import mongoose, { Document } from "mongoose";
-import { Schema } from "../db";
+import { ObjectId, Schema } from "../db";
 import bcrypt from 'bcrypt';
+import { IMatch } from "./index";
 
 export type IUser = {
   email: string,
   username: string,
-  password: string
+  password: string,
+  createdAt: Date,
+  matches: IMatch[]
 } & Document
 
-const UserSchema = new Schema({
+const UserSchema = new Schema<IUser>({
   email: { type: String, required: true, index: true , unique: true },
   username: { type: String, required: true },
-  password: { type: String, required: true }
+  password: { type: String, required: true },
+  createdAt: { type: Date, required: true, default: Date.now() },
+  matches: [{ type: ObjectId, ref: 'Match', required: true }]
 });
 
 
