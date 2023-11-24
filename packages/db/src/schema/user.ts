@@ -1,15 +1,37 @@
-import { InferModel } from "drizzle-orm";
-import { pgTable, varchar, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import mongoose, { Document } from "mongoose";
+import { Schema } from "../db";
+import bcrypt from 'bcrypt';
 
-export type User = InferModel<typeof user>;
+export type IUser = {
+  email: string,
+  username: string,
+  password: string
+} & Document
 
-export const user = pgTable("user", {
-	id: varchar("id", { length: 21 }).primaryKey().notNull(),
-	email: varchar("email", { length: 360 }).notNull().unique(),
-	password: varchar("password", { length: 72 }).notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull()
-}, (table) => {
-	return {
-		emailInedx: uniqueIndex("user_email_index").on(table.email)
-	}
+const UserSchema = new Schema({
+  email: { type: String, required: true, index: true , unique: true },
+  username: { type: String, required: true },
+  password: { type: String, required: true }
 });
+
+
+// Middlewere for hashing the password whenever it is changed or a new user is created
+UserSchema.pre('save', async function(next) {
+  
+  const user = this;
+
+  if (!user.isModified('password')) {
+    return next();
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    user.password = hashedPassword;
+    next();
+  } catch (err) {
+    next(err as any);
+  }
+
+});
+
+export const User = mongoose.model<IUser>('User', UserSchema);

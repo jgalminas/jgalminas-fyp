@@ -38,8 +38,7 @@ export type AuthProviderProps = {
 }
 
 export type SignUpData = {
-  firstName: string,
-  lastName: string,
+  username: string,
   email: string,
   password: string
 }

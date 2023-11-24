@@ -10,8 +10,7 @@ import { Link } from "react-router-dom";
 
 const formSchema = z.object({
   email: z.string().email("Invalid email").min(1, "Email is required"),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
+  username: z.string().min(3, "Username is required (min 3 letters)"),
   password: z
     .string()
     .min(1, "Password is required")
@@ -41,12 +40,11 @@ const SignUp = () => {
     setLoading(true);
     setResponseError(null);
     
-    // @ts-ignore
-    const res = await signUp(data);
+    const error = await signUp(data);
 
-    // if (res?.status === 400) {
-    //   setResponseError(res.message);
-    // }
+    if (error) {
+      setResponseError(error.message);
+    }
 
     setLoading(false);
   });
@@ -71,18 +69,11 @@ const SignUp = () => {
           {...register("email", { required: true })}/>
 
           <Input
-          label="First Name"
-          placeholder="your name"
-          autoComplete="given-name"
-          error={errors.firstName?.message}
-          {...register("firstName", { required: true })}/>
-
-          <Input
-          label="Last Name"
-          placeholder="your last name"
-          autoComplete="family-name"
-          error={errors.lastName?.message}
-          {...register("lastName", { required: true })}/>
+          label="Username"
+          placeholder="your username"
+          autoComplete="username"
+          error={errors.username?.message}
+          {...register("username", { required: true })}/>
 
           <Input
           label="Password"

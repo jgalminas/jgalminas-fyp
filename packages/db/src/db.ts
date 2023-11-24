@@ -1,8 +1,7 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
-import * as schema from './schema/user';
+import mongoose from 'mongoose';
 import env from './env';
 
-const connection = postgres(env.POSTGRESQL_CONNECTION_URI);
+export const db = mongoose.connect(env.MONGODB_CONNECTION_STRING);
 
-export const db = drizzle(connection, { schema, logger: true });
+export const Schema = mongoose.Schema;
+export const ObjectId = Schema.ObjectId;

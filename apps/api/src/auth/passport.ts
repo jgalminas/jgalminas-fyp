@@ -26,7 +26,7 @@ export const passportConfig = (passport: PassportStatic) => {
   );
 
   passport.serializeUser((user, callback) => {
-    callback(null, user.id)
+    callback(null, user._id)
   })
 
   passport.deserializeUser<string>(async(id, callback) => {
@@ -35,7 +35,11 @@ export const passportConfig = (passport: PassportStatic) => {
       const user = await UserRepository.findUserById(id);
 
       if (user) {
-        callback(null, user);
+        callback(null, {
+          _id: user._id,
+          email: user.email,
+          username: user.username
+        });
       } else {
         callback(null, false);
       }

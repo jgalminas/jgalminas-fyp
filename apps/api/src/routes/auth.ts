@@ -28,21 +28,20 @@ router.post('/login', (req, res, next) => {
 
 router.post('/signup', async(req, res) => {
 
-  const { email, password } = req.body;
-  const existingUser = await UserRepository.findUserByEmail(email);
+  const existingUser = await UserRepository.findUserByEmail(req.body.email);
 
   if (existingUser) {
     return res.status(400).json({
       message: "User with this email already exists."
     });
   } else {
-    const user = await UserRepository.createUser(email, password);
+    const user = await UserRepository.createUser(req.body);
 
     req.logIn(user, () => {
       res.status(200).json({
         message: "Successfully registered",
         session: {
-          userId: user.id,
+          userId: user._id,
           sessionId: req.session.id
         }
       });
@@ -68,10 +67,10 @@ router.get('/logout', (req, res) => {
 
 router.get('/session', requireAuth, async(req, res) => {
 
-  const user = await UserRepository.findUserById(req.user?.id as string);
+  const user = await UserRepository.findUserById(req.user?._id as string);
     
   res.status(200).json({
-    userId: user?.id,
+    userId: user?._id,
     sessionId: req.session.id
   });
 

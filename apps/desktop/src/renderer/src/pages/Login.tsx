@@ -31,15 +31,14 @@ const Login = () => {
     setLoading(true);
     setResponseError(null);
     
-    // @ts-ignore
-    const res = await signIn({
+    const error = await signIn({
       email: data.email,
       password: data.password
     });
 
-    // if (res?.status === 400) {
-    //   setResponseError(res.message);
-    // }
+    if (error) {
+      setResponseError(error.message);
+    }
 
     setLoading(false);
   });
