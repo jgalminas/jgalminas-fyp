@@ -20,6 +20,7 @@ export const apiEnvSchema = z.object({
   // DATABASE
   MONGODB_USER: z.string(),
   MONGODB_PASS: z.string(),
+  MONGODB_CLUSTER: z.string(),
   MONGODB_CONNECTION_STRING: z.string(),
   MONGODB_PORT: z.string(),
   MONGODB_DATABASE: z.string()
