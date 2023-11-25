@@ -1,10 +1,20 @@
 import mongoose from "mongoose";
 import { Schema } from "../db";
-import { EventType } from "./index";
 import { BUILDING, Building, EVENT_TYPE, LANE, Lane, MONSTER, Monster, SPECIAL_KILL_TYPE, SpecialKillType } from "./enums";
 
 export type IEvent = {
-  type: EventType,
+  type: 'CHAMPION_KILL'
+} & IKillEvent | {
+  type: 'ELITE_MONSTER_KILL'
+} & IEliteKillEvent | {
+  type: 'BUILDING_KILL',
+} & IBuildingKillEvent | {
+  type: 'TURRET_PLATE_DESTROYED'
+} & IPlateDestroyedEvent | {
+  type: 'CHAMPION_SPECIAL_KILL'
+} & ISpecialKillEvent
+
+export type IBaseEvent = {
   timestamp: number,
 } & Document
 
@@ -12,31 +22,31 @@ export type IKillEvent = {
   killerId: number,
   victimId: number,
   assistingParticipantIds: number[]
-} & IEvent
+} & IBaseEvent
 
 export type IEliteKillEvent = {
   killerId: number,
   monsterType: Monster,
   assistingParticipantIds: number[]
-} & IEvent
+} & IBaseEvent
 
 export type IBuildingKillEvent = {
   killerId: number,
   lane: Lane
   buildingType: Building,
   assistingParticipantIds: number[]
-} & IEvent
+} & IBaseEvent
 
 export type IPlateDestroyedEvent = {
   killerId: number,
   lane: Lane
-} & IEvent
+} & IBaseEvent
 
 export type ISpecialKillEvent = {
   killerId: number,
   multiKillLength: number,
   killType: SpecialKillType
-} & IEvent
+} & IBaseEvent
 
 const EventSchema = new Schema<IEvent>({
   type: { type: String, enum: EVENT_TYPE, required: true },
