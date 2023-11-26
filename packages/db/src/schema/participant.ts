@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ObjectId, Schema } from "../db";
+import { Schema } from "../db";
 import { IParticipantItem, IRune, Position, SummonerSpell, Team } from "./index";
 import { POSITION, SUMMONER_SPELL, TEAM } from "./enums";
 import { ParticipantItemSchema } from "./participantItem";
@@ -15,7 +15,10 @@ export type IParticipant = {
   primaryRune: IRune,
   secondaryRune: IRune,
   items: IParticipantItem[],
-  bannedChampionId: number
+  bannedChampionId: number,
+  // kills: number,
+  // assists: number,
+  // deaths: number
 } & Document
 
 const ParticipantSchema = new Schema<IParticipant>({
@@ -30,6 +33,9 @@ const ParticipantSchema = new Schema<IParticipant>({
   secondaryRune: { type: Number, required: true },
   items: [{ type: ParticipantItemSchema, required: true }],
   bannedChampionId: { type: Number, required: true },
+  // kills: { type: Number, required: true },
+  // assists: { type: Number, required: true },
+  // deaths: { type: Number, required: true }
 });
 
 export const Participant = mongoose.model<IParticipant>('Participant', ParticipantSchema);
