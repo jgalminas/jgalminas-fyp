@@ -291,16 +291,7 @@ return await User.aggregate([
             from: 'participants',
             localField: 'participants',
             foreignField: '_id',
-            as: 'participants',
-            pipeline: [
-              {
-                $addFields: {
-                  test: {
-                    $size: '$$ROOT'
-                  }
-                }
-              }
-            ]
+            as: 'participants'
           }
         },
         {
@@ -315,16 +306,101 @@ return await User.aggregate([
                   from: 'events',
                   localField: 'events',
                   foreignField: '_id',
-                  as: 'events',
-                  pipeline: []
+                  as: 'events'
                 }
-              }
+              },
             ]
           }
-        }
+        },
+        {
+          $addFields: {
+            participants: {
+              allEvents: {
+                $size: { // count kills here
+                  $reduce: {
+                    input: "$frames.events",
+                    initialValue: [],
+                    in: {
+                      $concatArrays: ["$$value", "$$this"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
       ]
     }
   },
+  // {
+  //   $addFields: {
+  //     matches: {
+  //       $map: {
+  //         input: '$matches',
+  //         as: 'match',
+  //         in: {
+  //           $mergeObjects: [
+  //             '$$match',
+  //             "participants" 
+  //             {
+  //               value: 0
+  //             }
+  //           ]
+  //         }
+  //       }
+  //       // kills: {
+
+  //       //   // $size: {
+  //       //   //   $filter: {
+  //       //   //     input: '$frames.allEvents',
+  //       //   //     as: 'event',
+  //       //   //     cond: {
+  //       //   //       $eq: [
+  //       //   //         1,
+  //       //   //         1
+  //       //   //       ]
+  //       //   //     }
+  //       //   //   }
+  //       //   // }
+  //       // }
+  //     }
+  //   }
+  // }
 ]);
 
 }
+
+// {
+//   $lookup: {
+//     from: 'frames',
+//     localField: 'frames',
+//     foreignField: '_id',
+//     as: 'frames',
+//     pipeline: [
+//       {
+//         $lookup: {
+//           from: 'events',
+//           localField: 'events',
+//           foreignField: '_id',
+//           as: 'events',
+//           pipeline: []
+//         }
+//       }
+//     ]
+//   }
+// }
+
+              // count: {
+              //   $size: {
+              //     $filter: {
+              //       input: '$$ROOT.frames.events',
+              //       as: 'event',
+              //       cond: {
+              //         $eq: [
+              //           '$$event.killerId',
+              //           1
+              //         ]
+              //       }
+              //     }
+              //   }
+              // }
