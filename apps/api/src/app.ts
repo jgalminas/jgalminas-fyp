@@ -11,7 +11,7 @@ import { passportConfig } from './auth/passport';
 import session from 'express-session';
 import env from './env';
 
-const app = express();
+export const app = express();
 
 app.use(morgan('dev'));
 app.use(helmet());
@@ -44,5 +44,3 @@ app.use('/v1', v1);
 // middleware
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);
-
-export default app;

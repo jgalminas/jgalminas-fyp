@@ -62,345 +62,141 @@ export const insertMatch = async(userId: string, data: InsertMatch) => {
 
 export const getMatchById = async(id: string) => await Match.findById(id);
 
+export type Match = {
+  participants: ({
+    kills: number,
+    deaths: number,
+    assists: number
+  } & IParticipant)[]
+} & Omit<IMatch, 'frames'>
+
 export const getUserMatches = async(userId: string, offset: number = 0, count: number = 10) => {
 
-  const puuid = 'string';
+  const addStatsFieldToParticipant =  (stat: 'kills' | 'deaths' | 'assists') => {
 
-// return await User.aggregate([
-//   {
-//     $match: {
-//       _id: userId
-//     }
-//   },
-//   {
-//     $lookup: {
-//       from: 'matches',
-//       localField: 'matches',
-//       foreignField: '_id',
-//       as: 'matches',
-//     }
-//   },
-//   {
-//     $lookup: {
-//       from: 'participants',
-//       localField: 'matches.participants',
-//       foreignField: '_id',
-//       as: 'participants',
-//     }
-//   },
-//   {
-//     $lookup: {
-//       from: 'frames',
-//       localField: 'matches.frames',
-//       foreignField: '_id',
-//       as: 'frames'
-//     }
-//   },
-//   {
-//     $lookup: {
-//       from: 'events',
-//       localField: 'frames.events',
-//       foreignField: '_id',
-//       as: 'events'
-//     }
-//   },
-//   {
-//     $addFields: {
-//       player: {
-//         $let: {
-//           vars: {
-//             participant: {
-//               $arrayElemAt: [
-//                 {
-//                   $filter: {
-//                     input: '$participants',
-//                     as: 'participant',
-//                     cond: {
-//                       $eq: ['$$participant.puuid', puuid]
-//                     }
-//                   }
-//                 },
-//                 0
-//               ]
-//             },
-//           },
-//           in: {
-//             $mergeObjects: [
-//               '$$participant',
-//               {
-//                 kills: {
-//                   $size: {
-//                     $filter: {
-//                       input: '$events',
-//                       as: 'event',
-//                       cond: {
-//                         $eq: [
-//                           '$$event.killerId',
-//                           '$$participant.participantId'
-//                         ]
-//                       }
-//                     }
-//                   }
-//                 },
-//                 deaths: {
-//                   $size: {
-//                     $filter: {
-//                       input: '$events',
-//                       as: 'event',
-//                       cond: {
-//                         $eq: [
-//                           '$$event.victimId',
-//                           '$$participant.participantId'
-//                         ]
-//                       }
-//                     }
-//                   }
-//                 },
-//                 assists: {
-//                   $size: {
-//                     $filter: {
-//                       input: '$events',
-//                       as: 'event',
-//                       cond: {
-//                         $in: [
-//                           '$$participant.participantId',
-//                           '$$event.assistingParticipantIds'
-//                         ]
-//                       }
-//                     }
-//                   }
-//                 }
-//               }
-//             ],
-//           }
-//         }
-//       }
-//     }
-//   }
-// ])
+    const eventField = () => {
+      switch (stat) {
+        case 'kills':
+          return 'killerId';
+        case 'assists':
+          return 'assistingParticipantIds';
+        case 'deaths':
+          return 'victimId';
+      }
+    };
 
-// return await User.aggregate([
-//   {
-//     $match: {
-//       _id: userId
-//     }
-//   },
-//   {
-//     $lookup: {
-//       from: 'matches',
-//       localField: 'matches',
-//       foreignField: '_id',
-//       as: 'matches',
-//     }
-//   },
-//   {
-//     $addFields: {
-//       matchesWithPlayer: {
-//         $map: {
-//           input: '$matches',
-//           as: 'match',
-//           in: {
-//             $mergeObjects: [
-//               '$$match',
-//               {
-//                 players: {
-//                   $map: {
-//                     input: '$$match.participants',
-//                     as: 'participant',
-//                     in: {
-//                       $mergeObjects: [
-//                         '$$participant',
-//                         {
-//                           kills: {
-//                             $size: {
-//                               $filter: {
-//                                 input: '$$match.frames.events',
-//                                 as: 'event',
-//                                 cond: {
-//                                   $eq: [
-//                                     '$$event.killerId',
-//                                     '$$participant.participantId'
-//                                   ]
-//                                 }
-//                               }
-//                             }
-//                           },
-//                           deaths: {
-//                             $size: {
-//                               $filter: {
-//                                 input: '$$match.frames.events',
-//                                 as: 'event',
-//                                 cond: {
-//                                   $eq: [
-//                                     '$$event.victimId',
-//                                     '$$participant.participantId'
-//                                   ]
-//                                 }
-//                               }
-//                             }
-//                           },
-//                           assists: {
-//                             $size: {
-//                               $filter: {
-//                                 input: '$$match.frames.events',
-//                                 as: 'event',
-//                                 cond: {
-//                                   $in: [
-//                                     '$$participant.participantId',
-//                                     '$$event.assistingParticipantIds'
-//                                   ]
-//                                 }
-//                               }
-//                             }
-//                           }
-//                         }
-//                       ]
-//                     }
-//                   }
-//                 }
-//               }
-//             ]
-//           }
-//         }
-//       }
-//     }
-//   },
-//   // {
-//   //   $project: {
-//   //     matchesWithPlayer: 1
-//   //   }
-//   // }
-// ]);
-
-
-return await User.aggregate([
-  {
-    $match: {
-      _id: userId
-    }
-  },
-  {
-    $lookup: {
-      from: 'matches',
-      localField: 'matches',
-      foreignField: '_id',
-      as: 'matches',
-      pipeline: [
-        {
-          $lookup: {
-            from: 'participants',
-            localField: 'participants',
-            foreignField: '_id',
-            as: 'participants'
-          }
-        },
-        {
-          $lookup: {
-            from: 'frames',
-            localField: 'frames',
-            foreignField: '_id',
-            as: 'frames',
-            pipeline: [
-              {
-                $lookup: {
-                  from: 'events',
-                  localField: 'events',
-                  foreignField: '_id',
-                  as: 'events'
-                }
-              },
-            ]
-          }
-        },
-        {
-          $addFields: {
-            participants: {
-              allEvents: {
-                $size: { // count kills here
-                  $reduce: {
-                    input: "$frames.events",
-                    initialValue: [],
-                    in: {
-                      $concatArrays: ["$$value", "$$this"]
+    return {
+      $addFields: {
+        participants: {
+          $map: {
+            input: "$participants",
+            as: "participant",
+            in: {
+              $mergeObjects: [
+                "$$participant",
+                {
+                  [`${stat}`]: {
+                    $size: {
+                      $filter: {
+                        input: {
+                          $reduce: {
+                            input: "$frames.events",
+                            initialValue: [],
+                            in: {
+                              $concatArrays: ["$$value", "$$this"]
+                            }
+                          }
+                        },
+                        as: 'event',
+                        cond: {
+                          [`${stat === 'assists' ? '$in': '$eq'}`]: [
+                            '$$participant.participantId',
+                            `$$event.${eventField()}`
+                          ]
+                        }
+                      }
                     }
                   }
                 }
-              }
+              ]
             }
           }
-        },
-      ]
+        }
+      }
     }
-  },
-  // {
-  //   $addFields: {
-  //     matches: {
-  //       $map: {
-  //         input: '$matches',
-  //         as: 'match',
-  //         in: {
-  //           $mergeObjects: [
-  //             '$$match',
-  //             "participants" 
-  //             {
-  //               value: 0
-  //             }
-  //           ]
-  //         }
-  //       }
-  //       // kills: {
+  }; 
 
-  //       //   // $size: {
-  //       //   //   $filter: {
-  //       //   //     input: '$frames.allEvents',
-  //       //   //     as: 'event',
-  //       //   //     cond: {
-  //       //   //       $eq: [
-  //       //   //         1,
-  //       //   //         1
-  //       //   //       ]
-  //       //   //     }
-  //       //   //   }
-  //       //   // }
-  //       // }
-  //     }
-  //   }
-  // }
-]);
+  const result = await User.aggregate<{ matches: Match[] }>([
+    {
+      $match: {
+        _id: userId
+      }
+    },
+    {
+      $lookup: {
+        from: 'matches',
+        localField: 'matches',
+        foreignField: '_id',
+        as: 'matches',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'participants',
+              localField: 'participants',
+              foreignField: '_id',
+              as: 'participants'
+            }
+          },
+          {
+            $lookup: {
+              from: 'frames',
+              localField: 'frames',
+              foreignField: '_id',
+              as: 'frames',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'events',
+                    localField: 'events',
+                    foreignField: '_id',
+                    as: 'events'
+                  }
+                }
+              ]
+            }
+          },
+          addStatsFieldToParticipant('kills'),
+          addStatsFieldToParticipant('deaths'),
+          addStatsFieldToParticipant('assists'),
+          {
+            $sort: {
+              finish: 1
+            }
+          },
+          {
+            $skip: offset
+          },
+          {
+            $limit: count
+          }
+        ]
+      }
+    },
+    {
+      $project: {
+        matches: {
+          frames: 0
+        }
+      }
+    },
+    {
+      $replaceRoot: {
+        newRoot: {
+          matches: '$matches'
+        }
+      }
+    },
+  ]);
 
+  return result[0].matches;
 }
-
-// {
-//   $lookup: {
-//     from: 'frames',
-//     localField: 'frames',
-//     foreignField: '_id',
-//     as: 'frames',
-//     pipeline: [
-//       {
-//         $lookup: {
-//           from: 'events',
-//           localField: 'events',
-//           foreignField: '_id',
-//           as: 'events',
-//           pipeline: []
-//         }
-//       }
-//     ]
-//   }
-// }
-
-              // count: {
-              //   $size: {
-              //     $filter: {
-              //       input: '$$ROOT.frames.events',
-              //       as: 'event',
-              //       cond: {
-              //         $eq: [
-              //           '$$event.killerId',
-              //           1
-              //         ]
-              //       }
-              //     }
-              //   }
-              // }
