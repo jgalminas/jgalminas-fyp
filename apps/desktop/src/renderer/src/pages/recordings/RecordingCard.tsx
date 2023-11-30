@@ -26,7 +26,7 @@ const RecordingCard = ({ video }: RecordingCardProps) => {
         </div>
 
         <div className="flex gap-3 text-star-dust-300 items-center">
-          <RoleIcons.Support/>
+          <RoleIcons.SUPPORT/>
           <p className="font-medium text-sm"> Support </p>
         </div>
 

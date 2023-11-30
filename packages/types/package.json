@@ -2,14 +2,13 @@
   "name": "@fyp/types",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
-  "types": "index.ts",
-  "scripts": {},
+  "main": "src/index.ts",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@fyp/config": "workspace:*",
+    "@fyp/db": "workspace:*",
     "typescript": "^5.1.6"
   }
 }

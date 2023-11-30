@@ -6,10 +6,10 @@ import Support from '@assets/icons/Support.svg?react';
 import Fill from '@assets/icons/Fill.svg?react';
 
 export const RoleIcons = {
-  Top: Top,
-  Jungle: Jungle,
-  Mid: Mid,
-  Bottom: Bottom,
-  Support: Support,
-  Fill: Fill
+  TOP: Top,
+  JUNGLE: Jungle,
+  MID: Mid,
+  BOTTOM: Bottom,
+  SUPPORT: Support,
+  FILL: Fill
 };

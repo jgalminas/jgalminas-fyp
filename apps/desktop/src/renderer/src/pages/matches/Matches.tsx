@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import Page from "../../layouts/Page";
 import MatchCard from "./MatchCard";
 import { api } from "@renderer/util/api";
+import { Match } from '@fyp/types';
 
 const Matches = () => {
 
-  const [matches, setMatches] = useState([]);
+  const [matches, setMatches] = useState<Match[]>([]);
 
   useEffect(() => {
 
@@ -22,9 +23,9 @@ const Matches = () => {
   return ( 
     <Page>
       Matches
-      { matches.map((m) => {
+      { matches.map((m, key) => {
         return (
-          <MatchCard/>
+          <MatchCard match={m} key={key}/>
         )
       }) }
     </Page>

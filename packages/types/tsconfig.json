@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "lib": ["ES2015"],
-    "module": "CommonJS",
+    "module": "NodeNext",
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "moduleResolution": "NodeNext"
   },
   "exclude": ["node_modules"],
   "extends": "@fyp/config/tsconfig.base.json",

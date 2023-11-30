@@ -16,6 +16,9 @@ const api = {
     getVideos: async() => {      
       return await ipcRenderer.invoke("recording:videos")
     }
+  },
+  client: {
+    player: () => ipcRenderer.invoke('client:player')
   }
 }
 

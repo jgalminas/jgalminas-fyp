@@ -34,13 +34,6 @@ export const insertMatch = async(userId: string, data: InsertMatch) => {
 
       // create events
       frame.events = await Event.insertMany(frame.events, { session });
-
-      // calculate kills, deaths and assists
-      // for (const event in frame.events) {
-
-
-      // }
-
     }
 
     data.participants = participants;
@@ -161,7 +154,7 @@ export const getUserMatches = async(userId: string, offset: number = 0, count: n
                     foreignField: '_id',
                     as: 'events'
                   }
-                }
+                },
               ]
             }
           },

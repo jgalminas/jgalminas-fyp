@@ -4,10 +4,8 @@ import { MatchRepository } from "@fyp/db";
 
 const router = Router();
 
-router.post('/test', requireAuth, async(req, res) => {
+router.post('/post', requireAuth, async(req, res) => {
 
-  console.log(req.user?._id);
-  
   const match = await MatchRepository.insertMatch(req.user?._id, req.body);
 
   res.send({
