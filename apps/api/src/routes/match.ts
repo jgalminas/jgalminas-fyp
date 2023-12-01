@@ -6,10 +6,12 @@ const router = Router();
 
 router.post('/post', requireAuth, async(req, res) => {
 
-  const match = await MatchRepository.insertMatch(req.body);
+  console.log(req.body);
+
+  // const match = await MatchRepository.insertMatch(req.body);
 
   res.send({
-    match
+    
   })
 })
 

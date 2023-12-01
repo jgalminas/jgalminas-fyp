@@ -23,7 +23,7 @@ const Matches = () => {
   return ( 
     <Page>
       Matches
-      { matches.map((m, key) => {
+      { matches?.map((m, key) => {
         return (
           <MatchCard match={m} key={key}/>
         )

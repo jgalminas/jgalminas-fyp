@@ -6,6 +6,7 @@ import { registerChannels } from './ipc/index';
 import { ClientManager } from './clientManager';
 import { LolApi } from 'twisted';
 import { MatchObserver } from './matchObserver';
+import { api } from './util/api';
 
 registerChannels();
 
