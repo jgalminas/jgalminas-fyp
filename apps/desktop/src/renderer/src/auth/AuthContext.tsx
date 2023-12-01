@@ -1,14 +1,12 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { api } from "@renderer/util/api";
 
-export type User = {
-  userId: string
-}
-
 export type Session = {
   sessionId: string
-  userId: string
-}; //TODO
+  userId: string,
+  username: string,
+  puuid: string | undefined
+};
 
 export type AuthError = {
   message: string
@@ -20,14 +18,14 @@ export type Credentials = {
 }
 
 export type AuthContext = {
-  user: User | null,
+  session: Session | null,
   signOut: () => void,
   signUp: (data: SignUpData) => Promise<AuthError | null>,
   signIn: (credentials: Credentials) => Promise<AuthError | null>,
 };
 
 const AuthContext = createContext<AuthContext>({
-  user: null,
+  session: null,
   signOut: () => {},
   signIn: () => new Promise((_, reject) => reject(null)),
   signUp: () => new Promise((_, reject) => reject(null))
@@ -62,7 +60,15 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         const data = await res.json();
   
         if (res.ok) {
-          setSession({ loading: false, session: { userId: data.id, sessionId: data.sessionId } });
+          setSession({
+            loading: false,
+            session: {
+              username: data.user.username,
+              userId: data.user._id,
+              sessionId: data.sessionId,
+              puuid: data.user.puuid
+            }
+          });
         } else {
           setSession({ ...session, loading: false });
         }
@@ -75,10 +81,6 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     getSession();
 
   }, [])
-
-  const user = (!session.session) ? null : {
-    userId: session.session.userId
-  };
 
   const signUp = async(userData: SignUpData) => {
 
@@ -94,7 +96,15 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       const data = await res.json();
 
       if (res.ok) {
-        setSession({ loading: false, session: { userId: data.id, sessionId: data.sessionId } });
+        setSession({
+          loading: false,
+          session: {
+            username: data.user.username,
+            userId: data.user._id,
+            sessionId: data.sessionId,
+            puuid: data.user.puuid
+          }
+        });
         return null;
       } else {
         setSession({ ...session, loading: false });
@@ -127,7 +137,15 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       const data = await res.json();
 
       if (res.ok) {
-        setSession({ loading: false, session: { userId: data.id, sessionId: data.sessionId } });
+        setSession({
+          loading: false,
+          session: {
+            username: data.user.username,
+            userId: data.user._id,
+            sessionId: data.sessionId,
+            puuid: data.user.puuid
+          }
+        });
         return null;
       } else {
         setSession({ ...session, loading: false });
@@ -148,7 +166,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const signOut = async() => {
 
     try {
-      const res = await fetch(api('/v1/auth/logout'), {
+      await fetch(api('/v1/auth/logout'), {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -156,16 +174,14 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         },
       });
 
-      if (res.ok) {
-        setSession({ ...session, session: null });
-      }
+      setSession({ ...session, session: null });
 
     } catch {  }
 
   };
 
   const context: AuthContext = {
-    user: user,
+    session: session.session,
     signOut,
     signUp,
     signIn

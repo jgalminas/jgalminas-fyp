@@ -6,7 +6,7 @@ const router = Router();
 
 router.post('/post', requireAuth, async(req, res) => {
 
-  const match = await MatchRepository.insertMatch(req.user?._id, req.body);
+  const match = await MatchRepository.insertMatch(req.body);
 
   res.send({
     match
@@ -15,7 +15,7 @@ router.post('/post', requireAuth, async(req, res) => {
 
 router.get('/list', requireAuth, async(req, res) => {
 
-  const match = await MatchRepository.getUserMatches(req.user?._id);
+  const match = await MatchRepository.getUserMatches(req.user?.puuid as string);
 
   res.send(match)
 })

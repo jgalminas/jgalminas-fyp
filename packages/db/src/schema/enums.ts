@@ -9,6 +9,7 @@ export type Lane = typeof LANE[number];
 export type Building = typeof BUILDING[number];
 export type SpecialKillType = typeof SPECIAL_KILL_TYPE[number];
 export type Monster = typeof MONSTER[number];
+export type QueueType = typeof QUEUE[number];
 
 export const POSITION = ['TOP', 'JUNGLE', 'MID', 'BOTTOM', 'SUPPORT'] as const;
 export const GAME_TYPE = ['CLASSIC'] as const;
@@ -20,3 +21,9 @@ export const LANE = ['TOP_LANE', 'BOT_LANE', 'MID_LANE'] as const;
 export const BUILDING = ['TOWER_BUILDING', 'INHIBITOR_BUILDING'] as const;
 export const SPECIAL_KILL_TYPE = ['KILL_ACE', 'KILL_FIRST_BLOOD', 'KILL_MULTI'] as const;
 export const MONSTER = ['DRAGON', 'RIFTHERALD', 'BARON_NASHOR'] as const;
+export const  QUEUE = [
+  400, // Normal Draft
+  420, // Ranked Solo/Duo
+  430, // Normal Blind
+  440 // Ranked Flex
+] as const;

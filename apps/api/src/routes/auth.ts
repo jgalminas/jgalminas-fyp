@@ -16,6 +16,12 @@ router.post('/login', (req, res, next) => {
     } else {
       req.logIn(user, () => {
         res.status(200).json({
+          sessionId: req.session.id,
+          user: {
+            username: user.username,
+            _id: user._id,
+            puuid: user.puuid,
+          },
           message: "Successfully logged in"
         });
       })
@@ -39,11 +45,13 @@ router.post('/signup', async(req, res) => {
 
     req.logIn(user, () => {
       res.status(200).json({
+        sessionId: req.session.id,
+        user: {
+          username: user.username,
+          _id: user._id,
+          puuid: user.puuid,
+        },
         message: "Successfully registered",
-        session: {
-          userId: user._id,
-          sessionId: req.session.id
-        }
       });
     });
 
@@ -66,12 +74,14 @@ router.get('/logout', (req, res) => {
 });
 
 router.get('/session', requireAuth, async(req, res) => {
-
-  const user = await UserRepository.findUserById(req.user?._id as string);
     
   res.status(200).json({
-    userId: user?._id,
-    sessionId: req.session.id
+    sessionId: req.session.id,
+    user: {
+      username: req.user?.username,
+      _id: req.user?._id,
+      puuid: req.user?.puuid,
+    },
   });
 
 })

@@ -5,9 +5,8 @@ import { Frame } from "../schema/frame";
 import { Match } from "../schema/match";
 import { IParticipant, Participant } from "../schema/participant";
 import { ParticipantStats } from "../schema/participantStats";
-import { User } from "../schema/user";
 
-export const insertMatch = async(userId: string, data: IMatch) => {
+export const insertMatch = async(data: IMatch) => {
 
   const session = await (await db).startSession();
   session.startTransaction();
@@ -26,7 +25,6 @@ export const insertMatch = async(userId: string, data: IMatch) => {
     data.frames = await Frame.insertMany(data.frames, { session });
 
     match = (await Match.create([data], { session }))[0];
-    await User.findByIdAndUpdate(userId, { $push: { matches: match } });
 
     await session.commitTransaction();
     session.endSession();
@@ -51,7 +49,7 @@ export type Match = {
   } & IParticipant)[]
 } & Omit<IMatch, 'frames'>
 
-export const getUserMatches = async(userId: string, offset: number = 0, count: number = 10) => {
+export const getUserMatches = async(puuid: string, offset: number = 0, count: number = 10) => {
 
   const addStatsFieldToParticipant =  (stat: 'kills' | 'deaths' | 'assists') => {
 
@@ -88,138 +86,112 @@ export const getUserMatches = async(userId: string, offset: number = 0, count: n
         }
       }
     }
-  }; 
+  };
 
-  const result = await User.aggregate<{ matches: Match[] }>([
+  return await Match.aggregate([
+    {
+      $lookup: {
+        from: 'participants',
+        localField: 'participants',
+        foreignField: '_id',
+        as: 'participants'
+      }
+    },
     {
       $match: {
-        _id: userId
+        'participants.puuid': puuid
       }
     },
     {
       $lookup: {
-        from: 'matches',
-        localField: 'matches',
+        from: 'frames',
+        localField: 'frames',
         foreignField: '_id',
-        as: 'matches',
+        as: 'frames',
         pipeline: [
           {
             $lookup: {
-              from: 'participants',
-              localField: 'participants',
+              from: 'events',
+              localField: 'events',
               foreignField: '_id',
-              as: 'participants'
+              as: 'events'
             }
           },
           {
             $lookup: {
-              from: 'frames',
-              localField: 'frames',
+              from: 'participantstats',
+              localField: 'participantStats',
               foreignField: '_id',
-              as: 'frames',
-              pipeline: [
-                {
-                  $lookup: {
-                    from: 'events',
-                    localField: 'events',
-                    foreignField: '_id',
-                    as: 'events'
-                  }
-                },
-                {
-                  $lookup: {
-                    from: 'participantstats',
-                    localField: 'participantStats',
-                    foreignField: '_id',
-                    as: 'participantStats'
-                  }
-                },
-              ]
+              as: 'participantStats'
             }
           },
-          {
-            $addFields: {
-              participants: {
-                $map: {
-                  input: "$participants",
-                  as: "participant",
-                  in: {
-                    $let: {
-                      vars: {
-                        lastFrame: { $arrayElemAt: ['$frames', -1] },
-                      },
-                      in: {
-                        $let: {
-                          vars: {
-                            stats: {
-                              $arrayElemAt: [
-                                {
-                                  $filter: {
-                                    input: '$$lastFrame.participantStats',
-                                    as: 'stats',
-                                    cond: {
-                                      $eq: [
-                                        '$$participant.participantId',
-                                        '$$stats.participantId'
-                                      ]
-                                    }
-                                  }
-                                },
-                                0
-                              ]
+        ]
+      }
+    },
+    {
+      $addFields: {
+        participants: {
+          $map: {
+            input: "$participants",
+            as: "participant",
+            in: {
+              $let: {
+                vars: {
+                  lastFrame: { $arrayElemAt: ['$frames', -1] },
+                },
+                in: {
+                  $let: {
+                    vars: {
+                      stats: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$$lastFrame.participantStats',
+                              as: 'stats',
+                              cond: {
+                                $eq: [
+                                  '$$participant.participantId',
+                                  '$$stats.participantId'
+                                ]
+                              }
                             }
                           },
-                          in: {
-                            $mergeObjects: [
-                              '$$participant',
-                              {
-                                cs: {
-                                  $add: ['$$stats.jungleMinionsKilled', '$$stats.minionsKilled']
-                                },
-                                level: '$$stats.level',
-                                kills: addStatsFieldToParticipant('kills'),
-                                assists: addStatsFieldToParticipant('assists'),
-                                deaths: addStatsFieldToParticipant('deaths')
-                              }
-                            ]
-                          }
-                        }
+                          0
+                        ]
                       }
+                    },
+                    in: {
+                      $mergeObjects: [
+                        '$$participant',
+                        {
+                          cs: {
+                            $add: ['$$stats.jungleMinionsKilled', '$$stats.minionsKilled']
+                          },
+                          level: '$$stats.level',
+                          kills: addStatsFieldToParticipant('kills'),
+                          assists: addStatsFieldToParticipant('assists'),
+                          deaths: addStatsFieldToParticipant('deaths')
+                        }
+                      ]
                     }
                   }
                 }
               }
             }
-          },
-          {
-            $sort: {
-              finish: 1
-            }
-          },
-          {
-            $skip: offset
-          },
-          {
-            $limit: count
           }
-        ]
-      }
-    },
-    {
-      $project: {
-        matches: {
-          frames: 0
         }
       }
     },
     {
-      $replaceRoot: {
-        newRoot: {
-          matches: '$matches'
-        }
+      $sort: {
+        finish: 1
       }
     },
-  ]);
-
-  return result[0].matches;
+    {
+      $skip: offset
+    },
+    {
+      $limit: count
+    }
+  ])
 }

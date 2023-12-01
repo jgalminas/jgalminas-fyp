@@ -7,8 +7,8 @@ export type UnauthedOnlyRouteProps = {
 }
 
 const UnauthedOnlyRoute = ({ element, redirectTo = '/' }: UnauthedOnlyRouteProps) => {
-  const { user } = useAuth();  
-  return user ? <Navigate to={redirectTo} replace/> : element;
+  const { session } = useAuth();  
+  return session ? <Navigate to={redirectTo} replace/> : element;
 }
 
 export default UnauthedOnlyRoute;

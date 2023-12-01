@@ -1,14 +1,13 @@
 import mongoose, { Document } from "mongoose";
-import { ObjectId, Schema } from "../db";
+import { Schema } from "../db";
 import bcrypt from 'bcrypt';
-import { IMatch } from "./index";
 
 export type IUser = {
   email: string,
   username: string,
   password: string,
   createdAt: Date,
-  matches: IMatch[]
+  puuid: string | undefined
 } & Document
 
 const UserSchema = new Schema<IUser>({
@@ -16,7 +15,7 @@ const UserSchema = new Schema<IUser>({
   username: { type: String, required: true },
   password: { type: String, required: true },
   createdAt: { type: Date, required: true, default: Date.now() },
-  matches: [{ type: ObjectId, ref: 'Match', required: true }]
+  puuid: { type: String, required: false }
 });
 
 

@@ -10,6 +10,8 @@ import { formatMatchLength, formatTimeAgo, timestampToMinutes } from "@renderer/
 import { Link } from "react-router-dom";
 import { aggregateTeamKills, calcCSPM, calcKDA, calcKP } from "@renderer/util/stats";
 import SquareImage from "@renderer/core/SquareImage";
+import { queue } from "@renderer/util/queue";
+import { useAuth } from "@renderer/auth/AuthContext";
 
 
 export type MatchCardProps = {
@@ -18,7 +20,9 @@ export type MatchCardProps = {
 
 const MatchCard = ({ match }: MatchCardProps) => {
 
-  const player = match.participants[0];
+  const { session } = useAuth();
+
+  const player = match.participants.find(p => p.puuid === session?.puuid) as Match['participants'][number];
   player.items.sort((a, b) => a.slot > b.slot ? 1 : -1);
 
   const Position = RoleIcons[player.position];
@@ -35,7 +39,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
       </div>
 
       <div className="col-start-3 row-start-1 flex flex-col text-sm text-star-dust-300 pt-5">
-        <p className="font-bold"> Normal </p>
+        <p className="font-bold"> { queue(match.queueId) } </p>
         <p> { formatTimeAgo(match.finish) } </p>
       </div>
 

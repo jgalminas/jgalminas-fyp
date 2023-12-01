@@ -38,7 +38,8 @@ export const passportConfig = (passport: PassportStatic) => {
         callback(null, {
           _id: user._id,
           email: user.email,
-          username: user.username
+          username: user.username,
+          puuid: user.puuid
         });
       } else {
         callback(null, false);

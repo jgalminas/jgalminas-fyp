@@ -7,8 +7,8 @@ export type SecureRouteProps = {
 }
 
 const SecureRoute = ({ element, redirectTo = '/login' }: SecureRouteProps) => {
-  const { user } = useAuth();  
-  return user ? element : <Navigate to={redirectTo} replace/>;
+  const { session } = useAuth();  
+  return session ? element : <Navigate to={redirectTo} replace/>;
 }
 
 export default SecureRoute;
