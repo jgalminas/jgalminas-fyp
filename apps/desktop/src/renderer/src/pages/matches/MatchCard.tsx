@@ -6,9 +6,9 @@ import Stat from "@renderer/core/match/Stat";
 import KDA from "@renderer/core/match/KDA";
 import { Asset } from "@renderer/util/asset";
 import { RoleIcons } from "@renderer/util/role";
-import { formatMatchLength, formatTimeAgo } from "@renderer/util/time";
+import { formatMatchLength, formatTimeAgo, timestampToMinutes } from "@renderer/util/time";
 import { Link } from "react-router-dom";
-import { aggregateTeamKills, calcKDA, calcKP } from "@renderer/util/stats";
+import { aggregateTeamKills, calcCSPM, calcKDA, calcKP } from "@renderer/util/stats";
 import SquareImage from "@renderer/core/SquareImage";
 
 
@@ -23,11 +23,8 @@ const MatchCard = ({ match }: MatchCardProps) => {
 
   const Position = RoleIcons[player.position];
 
-
-
-
   return (
-    <Card className="grid grid-cols-[auto,auto,1fr,2fr,1.5fr,1fr] items-center grid-rows-2 text-white p-0 gap-y-2.5 gap-x-5">
+    <Card className="grid grid-cols-[auto,auto,0.7fr,2.2fr,1.2fr,0.9fr] items-center grid-rows-[auto,auto] text-white p-0 gap-y-2.5 gap-x-5">
       <div className={cn(
         "w-2 min-w-[0.5rem] min-h-full rounded-l-lg row-span-2",
         match.winningTeam === player.team ? 'bg-accent-blue' : 'bg-accent-red'
@@ -42,18 +39,22 @@ const MatchCard = ({ match }: MatchCardProps) => {
         <p> { formatTimeAgo(match.finish) } </p>
       </div>
 
-      <div className="col-start-3 row-start-2 flex flex-col text-sm text-star-dust-300 self-start">
+      <div className="col-start-3 row-start-2 flex flex-col text-sm text-star-dust-300 self-start pb-5">
         <p className="font-bold"> { match.winningTeam === player.team ? 'Victory' : 'Defeat' } </p>
         <p> { formatMatchLength(match.start, match.finish) } </p>
       </div>
 
       <div className="grid grid-cols-[auto,auto,1fr] col-start-4 grid-rows-2 gap-x-5 gap-y-0.5 items-center pt-5">
-        <RoundImage className="h-11 w-11 row-span-2" src={Asset.circleImage(player.champion)}/>
+        <div className="row-span-2 relative">
+          <RoundImage className="h-11 w-11" src={Asset.champion(player.champion)}/>
+          <p className="absolute translate-x-1 translate-y-1 bottom-0 right-0 bg-woodsmoke-50 text-center w-5 h-5 text-[0.625rem] rounded-full leading-[1.25rem]">
+            { player.level }
+          </p>
+        </div>
         <KDA stats={{ kills: player.kills, assists: player.assists, deaths: player.deaths }}/>
         <Stat value={calcKDA({ kills: player.kills, assists: player.assists, deaths: player.deaths })} type='KDA'/>
         <Stat value={calcKP(player.kills, player.assists, aggregateTeamKills(match.participants, player.team))} type='KP'/>
-        {/* <Stat value={().toFixed(2)}/> */}
-        <p className="text-sm text-star-dust-300"> 58 (3.5) CS </p>
+        <Stat value={`${player.cs} (${calcCSPM(player.cs, timestampToMinutes(match.finish - match.start))})`} type='CS'/>
       </div>
 
       <div className="col-start-4 row-start-2 grid grid-cols-[auto,1fr] self-start gap-x-5 mt-1">
@@ -75,16 +76,30 @@ const MatchCard = ({ match }: MatchCardProps) => {
         </div>
       </div>
 
-      {/* <div className="grid grid-cols-2">
-        { match.participants.map((p, key) => {
-          return (
-            <PlayerIcon key={key} data={{ name: p.puuid.substring(0, 4), champion: p.champion }}/>
-          )
-        }) }
-      </div> */}
+      <div className="grid grid-cols-2 row-span-2 py-5">
+        <div className="flex flex-col gap-1">
+          { match.participants.filter(p => p.team === player.team).map((p) => {
+            return (
+              <div className="flex items-center gap-2" key={p.username}>
+                <SquareImage src={Asset.champion(p.champion)}/>
+                <p className="text-star-dust-300 text-xs max-w-[3rem] truncate"> { p.username } </p>
+              </div>
+            )
+          }) }
+        </div>
+        <div className="col-start-2 flex items-end flex-col gap-1">
+          { match.participants.filter(p => p.team !== player.team).map((p) => {
+            return (
+              <div className="flex items-center gap-2" key={p.username}>
+                <p className="text-star-dust-300 text-xs max-w-[3rem] truncate"> { p.username } </p>
+                <SquareImage src={Asset.champion(p.champion)}/>
+              </div>
+            )
+          }) }
+        </div>
+      </div>
 
-
-      <div className="p-5 row-span-2 col-start-6 font-medium text-sm text-star-dust-200">
+      <div className="row-span-2 col-start-6 font-medium text-sm text-star-dust-200 align-middle justify-self-center">
         <Link to='/matches'> View Details </Link>
       </div>
 

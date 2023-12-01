@@ -4,18 +4,10 @@ import { Event } from "../schema/event";
 import { Frame } from "../schema/frame";
 import { Match } from "../schema/match";
 import { IParticipant, Participant } from "../schema/participant";
-import { IParticipantStats, ParticipantStats } from "../schema/participantStats";
+import { ParticipantStats } from "../schema/participantStats";
 import { User } from "../schema/user";
 
-export type InsertMatch = {
-  frames: {
-    participantStats: ({
-      participantId?: number
-    } & IParticipantStats)[]
-  }[]
-} & IMatch
-
-export const insertMatch = async(userId: string, data: InsertMatch) => {
+export const insertMatch = async(userId: string, data: IMatch) => {
 
   const session = await (await db).startSession();
   session.startTransaction();
@@ -53,7 +45,9 @@ export type Match = {
   participants: ({
     kills: number,
     deaths: number,
-    assists: number
+    assists: number,
+    cs: number,
+    level: number
   } & IParticipant)[]
 } & Omit<IMatch, 'frames'>
 

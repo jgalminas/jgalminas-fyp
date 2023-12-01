@@ -6,7 +6,7 @@ export const BASE_CDN = 'https://ddragon.leagueoflegends.com/cdn';
 //https://ddragon.leagueoflegends.com/cdn/13.23.1/img/champion/Belveth.png
 
 export const Asset = {
-  circleImage: (champion: string) => {
+  champion: (champion: string) => {
     return `${BASE_CDN}/${PATCH}/img/champion/${champion[0].toUpperCase() + champion.substring(1, champion.length).toLowerCase()}.png`;
   },
   summonerSpell: (spell: SummonerSpell) => {

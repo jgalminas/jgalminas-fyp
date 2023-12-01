@@ -17,3 +17,5 @@ export const aggregateTeamKills = (participants: Match['participants'], team: Ma
 }
 
 export const calcKP = (pKills: number, pAssists: number, tKills: number) => ((pKills + pAssists) / tKills).toFixed(2);
+
+export const calcCSPM = (cs: number, gameDuration: number) => (cs / gameDuration).toFixed(2);

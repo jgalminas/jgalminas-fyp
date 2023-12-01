@@ -6,9 +6,13 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "compile": {
+      "dependsOn": ["^compile"],
+      "outputs": ["dist/**"]
+    },
     "lint": {},
     "dev": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^compile"],
       "cache": false,
       "persistent": true
     },

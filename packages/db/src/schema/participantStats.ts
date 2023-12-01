@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-import { ObjectId, Schema } from "../db";
-import { IParticipant } from "./index";
+import { Schema } from "../db";
 
 export type IParticipantStats = {
   participantId: number,

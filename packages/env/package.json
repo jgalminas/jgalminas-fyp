@@ -9,8 +9,8 @@
     "zod": "^3.22.2"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "pnpm build --watch"
+    "compile": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "pnpm compile --watch"
   },
   "keywords": [],
   "author": "",

@@ -1,8 +1,12 @@
 import mongoose from "mongoose";
 import { Schema } from "../db";
-import { IParticipantItem, Position, SummonerSpell, Team } from "./index";
+import { Position, SummonerSpell, Team } from "./index";
 import { POSITION, SUMMONER_SPELL, TEAM } from "./enums";
-import { ParticipantItemSchema } from "./participantItem";
+
+export type IParticipantItem = {
+  _id: number,
+  slot: number
+}
 
 export type IParticipant = {
   puuid: string,
@@ -32,7 +36,15 @@ const ParticipantSchema = new Schema<IParticipant>({
   summonerTwo: { type: Number, enum: SUMMONER_SPELL, required: true },
   primaryRune: { type: Number, required: true },
   secondaryRune: { type: Number, required: true },
-  items: [{ type: ParticipantItemSchema, required: true }],
+  items: [
+    {
+      type: {
+        _id: { type: Number, required: true },
+        slot: { type: Number, required: true }
+      },
+      required: true
+    }
+  ],
   bannedChampion: { type: String, required: true }
 });
 
