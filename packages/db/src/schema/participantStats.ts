@@ -3,7 +3,7 @@ import { ObjectId, Schema } from "../db";
 import { IParticipant } from "./index";
 
 export type IParticipantStats = {
-  participant: IParticipant,
+  participantId: number,
   level: number,
   jungleMinionsKilled: number,
   minionsKilled: number,
@@ -20,7 +20,7 @@ export type IParticipantStats = {
 } & Document
 
 const ParticipantStatsSchema = new Schema<IParticipantStats>({
-  participant: { type: ObjectId, ref: 'Participant', required: true },
+  participantId: { type: Number, required: true },
   level: { type: Number, required: true },
   jungleMinionsKilled: { type: Number, required: true },
   minionsKilled: { type: Number, required: true },

@@ -26,13 +26,7 @@ export const insertMatch = async(userId: string, data: InsertMatch) => {
     const participants = await Participant.insertMany(data.participants, { session });
 
     for (let frame of data.frames) {
-      // create participant stats
-      for (let stats of frame.participantStats) {
-        stats.participant = participants.find(p => p.participantId === stats.participantId) as IParticipant;        
-      }
       frame.participantStats = await ParticipantStats.insertMany(frame.participantStats, { session });
-
-      // create events
       frame.events = await Event.insertMany(frame.events, { session });
     }
 
@@ -79,40 +73,23 @@ export const getUserMatches = async(userId: string, offset: number = 0, count: n
     };
 
     return {
-      $addFields: {
-        participants: {
-          $map: {
-            input: "$participants",
-            as: "participant",
-            in: {
-              $mergeObjects: [
-                "$$participant",
-                {
-                  [`${stat}`]: {
-                    $size: {
-                      $filter: {
-                        input: {
-                          $reduce: {
-                            input: "$frames.events",
-                            initialValue: [],
-                            in: {
-                              $concatArrays: ["$$value", "$$this"]
-                            }
-                          }
-                        },
-                        as: 'event',
-                        cond: {
-                          [`${stat === 'assists' ? '$in': '$eq'}`]: [
-                            '$$participant.participantId',
-                            `$$event.${eventField()}`
-                          ]
-                        }
-                      }
-                    }
-                  }
-                }
-              ]
+      $size: {
+        $filter: {
+          input: {
+            $reduce: {
+              input: "$frames.events",
+              initialValue: [],
+              in: {
+                $concatArrays: ["$$value", "$$this"]
+              }
             }
+          },
+          as: 'event',
+          cond: {
+            [`${stat === 'assists' ? '$in': '$eq'}`]: [
+              '$$participant.participantId',
+              `$$event.${eventField()}`
+            ]
           }
         }
       }
@@ -155,12 +132,71 @@ export const getUserMatches = async(userId: string, offset: number = 0, count: n
                     as: 'events'
                   }
                 },
+                {
+                  $lookup: {
+                    from: 'participantstats',
+                    localField: 'participantStats',
+                    foreignField: '_id',
+                    as: 'participantStats'
+                  }
+                },
               ]
             }
           },
-          addStatsFieldToParticipant('kills'),
-          addStatsFieldToParticipant('deaths'),
-          addStatsFieldToParticipant('assists'),
+          {
+            $addFields: {
+              participants: {
+                $map: {
+                  input: "$participants",
+                  as: "participant",
+                  in: {
+                    $let: {
+                      vars: {
+                        lastFrame: { $arrayElemAt: ['$frames', -1] },
+                      },
+                      in: {
+                        $let: {
+                          vars: {
+                            stats: {
+                              $arrayElemAt: [
+                                {
+                                  $filter: {
+                                    input: '$$lastFrame.participantStats',
+                                    as: 'stats',
+                                    cond: {
+                                      $eq: [
+                                        '$$participant.participantId',
+                                        '$$stats.participantId'
+                                      ]
+                                    }
+                                  }
+                                },
+                                0
+                              ]
+                            }
+                          },
+                          in: {
+                            $mergeObjects: [
+                              '$$participant',
+                              {
+                                cs: {
+                                  $add: ['$$stats.jungleMinionsKilled', '$$stats.minionsKilled']
+                                },
+                                level: '$$stats.level',
+                                kills: addStatsFieldToParticipant('kills'),
+                                assists: addStatsFieldToParticipant('assists'),
+                                deaths: addStatsFieldToParticipant('deaths')
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           {
             $sort: {
               finish: 1
