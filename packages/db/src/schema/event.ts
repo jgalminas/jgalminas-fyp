@@ -2,6 +2,13 @@ import mongoose from "mongoose";
 import { Schema } from "../db";
 import { BUILDING, Building, EVENT_TYPE, LANE, Lane, MONSTER, Monster, SPECIAL_KILL_TYPE, SpecialKillType } from "./enums";
 
+export type CreateEvent =
+  | ({ type: 'CHAMPION_KILL' } & Omit<IKillEvent, '_id'>)
+  | ({ type: 'ELITE_MONSTER_KILL' } & Omit<IEliteKillEvent, '_id'>)
+  | ({ type: 'BUILDING_KILL' } & Omit<IBuildingKillEvent, '_id'>)
+  | ({ type: 'TURRET_PLATE_DESTROYED' } & Omit<IPlateDestroyedEvent, '_id'>)
+  | ({ type: 'CHAMPION_SPECIAL_KILL' } & Omit<ISpecialKillEvent, '_id'>);
+
 export type IEvent = {
   type: 'CHAMPION_KILL'
 } & IKillEvent | {
@@ -15,8 +22,9 @@ export type IEvent = {
 } & ISpecialKillEvent
 
 export type IBaseEvent = {
+  _id: mongoose.ObjectId,
   timestamp: number,
-} & Document
+}
 
 export type IKillEvent = {
   killerId: number,

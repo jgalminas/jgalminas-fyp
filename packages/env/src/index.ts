@@ -12,6 +12,7 @@ export const apiEnvSchema = z.object({
 
   WEB_URL: z.string(),
   API_URL: z.string(),
+  RIOT_KEY: z.string(),
 
   MODE: z.string(),
 

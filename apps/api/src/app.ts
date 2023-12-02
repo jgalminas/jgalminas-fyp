@@ -10,8 +10,11 @@ import passport from 'passport';
 import { passportConfig } from './auth/passport';
 import session from 'express-session';
 import env from './env';
+import { LolApi } from 'twisted';
+import MongoStore from 'connect-mongo';
 
 export const app = express();
+export const twisted = new LolApi(env.RIOT_KEY);
 
 app.use(morgan('dev'));
 app.use(helmet());
@@ -25,11 +28,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(session({
   secret: env.SECRET,
   resave: false,
-  saveUninitialized: true,
-  rolling: false,
+  saveUninitialized: false,
+  rolling: true,
   cookie: {
-    maxAge: 604_800 // 1 week
-  }
+    expires: new Date(Date.now() + 604_800) // 1 week
+  },
+  store: MongoStore.create({
+    mongoUrl: env.MONGODB_CONNECTION_STRING
+  })
 }));
 
 

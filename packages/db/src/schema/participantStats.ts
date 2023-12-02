@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Schema } from "../db";
 
 export type IParticipantStats = {
+  _id: mongoose.ObjectId,
   participantId: number,
   level: number,
   jungleMinionsKilled: number,
@@ -16,7 +17,7 @@ export type IParticipantStats = {
   trueDamageDone: number,
   trueDamageToChampions: number,
   trueDamageTaken: number
-} & Document
+}
 
 const ParticipantStatsSchema = new Schema<IParticipantStats>({
   participantId: { type: Number, required: true },

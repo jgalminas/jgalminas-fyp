@@ -11,9 +11,9 @@ export type SpecialKillType = typeof SPECIAL_KILL_TYPE[number];
 export type Monster = typeof MONSTER[number];
 export type QueueType = typeof QUEUE[number];
 
-export const POSITION = ['TOP', 'JUNGLE', 'MID', 'BOTTOM', 'SUPPORT'] as const;
-export const GAME_TYPE = ['CLASSIC'] as const;
-export const GAME_MODE = ['MATCHED_GAME'] as const;
+export const POSITION = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'] as const;
+export const GAME_TYPE = ['MATCHED_GAME'] as const;
+export const GAME_MODE = ['CLASSIC'] as const;
 export const TEAM = ['RED', 'BLUE'] as const;
 export const SUMMONER_SPELL = [21, 1, 14, 3, 4, 6, 7, 13, 11, 12] as const;
 export const EVENT_TYPE = ['CHAMPION_KILL', 'ELITE_MONSTER_KILL', 'BUILDING_KILL', 'TURRET_PLATE_DESTROYED', 'CHAMPION_SPECIAL_KILL'] as const;

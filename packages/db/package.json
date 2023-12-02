@@ -11,7 +11,8 @@
   "dependencies": {
     "@fyp/env": "workspace:*",
     "bcrypt": "^5.1.1",
-    "mongoose": "^8.0.1"
+    "mongoose": "^8.0.1",
+    "passport-local-mongoose": "^8.0.0"
   },
   "keywords": [],
   "author": "",

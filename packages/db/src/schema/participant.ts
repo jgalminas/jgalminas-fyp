@@ -9,6 +9,7 @@ export type IParticipantItem = {
 }
 
 export type IParticipant = {
+  _id: mongoose.ObjectId,
   puuid: string,
   participantId: number,
   username: string,
@@ -21,8 +22,13 @@ export type IParticipant = {
   primaryRune: number,
   secondaryRune: number,
   items: IParticipantItem[],
-  bannedChampion: string
-} & Document
+  // bannedChampion: string
+  kills: number,
+  assists: number,
+  deaths: number,
+  cs: number,
+  level: number
+}
 
 const ParticipantSchema = new Schema<IParticipant>({
   puuid: { type: String, required: true },
@@ -45,7 +51,12 @@ const ParticipantSchema = new Schema<IParticipant>({
       required: true
     }
   ],
-  bannedChampion: { type: String, required: true }
+  kills: { type: Number, required: true },
+  assists: { type: Number, required: true },
+  deaths: { type: Number, required: true },
+  cs: { type: Number, required: true },
+  level: { type: Number, required: true },
+  // bannedChampion: { type: String, required: true }
 });
 
 export const Participant = mongoose.model<IParticipant>('Participant', ParticipantSchema);

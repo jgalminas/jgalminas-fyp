@@ -6,10 +6,11 @@ const router = Router();
 
 router.get('/all', requireAuth, async(req, res) => {
 
-  const user = await UserRepository.findUserById(req.user?._id as string);
+  // @ts-ignore
+  const user = await UserRepository.findUserById(req.user?._id);
 
   res.status(200).json({
-    id: user?.id,
+    id: user?._id,
     email: user?.email
   });
 

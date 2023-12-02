@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 import { ObjectId, Schema } from "../db";
-import { GameMode, GameType, IFrame, IHighlight, Team, IParticipant } from "./index";
+import { GameMode, GameType, IFrame, Team, IParticipant } from "./index";
 import { GAME_MODE, GAME_TYPE, QUEUE, QueueType, TEAM } from "./enums";
 
 export type IMatch = {
+  _id: mongoose.ObjectId,
   gameId: string,
   queueId: QueueType,
   start: number,
@@ -12,10 +13,9 @@ export type IMatch = {
   mode: GameMode,
   type: GameType,
   winningTeam: Team,
-  highlights: IHighlight[],
   participants: IParticipant[],
   frames: IFrame[]
-} & Document
+}
 
 const MatchSchema = new Schema<IMatch>({
   gameId: { type: String, required: true, index: true, unique: true },
@@ -26,7 +26,6 @@ const MatchSchema = new Schema<IMatch>({
   mode: { type: String, required: true, enum: GAME_MODE },
   type: { type: String, required: true, enum: GAME_TYPE },
   winningTeam: { type: String, required: true, enum: TEAM },
-  highlights: [{ type: ObjectId, ref: 'Highlight', required: true }],
   participants: [{ type: ObjectId, ref: 'Participant', required: true }],
   frames: [{ type: ObjectId, ref: 'Frame', required: true }]
 });

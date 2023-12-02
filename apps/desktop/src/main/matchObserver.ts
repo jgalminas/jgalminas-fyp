@@ -1,8 +1,5 @@
 import { createHttp1Request, createWebSocketConnection, authenticate } from "league-connect";
-import { clientManager, lolApi, mainWindow } from "./index";
-import { Regions } from "twisted/dist/constants";
-import env from "../env";
-import { api } from "./util/api";
+import { clientManager, mainWindow } from "./index";
 
 export enum GameEvent {
   START = "GameStart",
@@ -53,7 +50,7 @@ export class MatchObserver {
             }
           };
 
-          mainWindow?.webContents.send('match:start', this.gameData);
+          // mainWindow?.webContents.send('match:start', this.gameData);
 
         } catch (err) {
           console.log(err);
@@ -61,7 +58,10 @@ export class MatchObserver {
         
       } else if (data === GameEvent.FINISH) {
 
-        console.log(this.gameData);
+        mainWindow?.webContents.send('match:data', {
+          gameId: this.gameData?.gameId,
+          region: clientManager.getPlayer()?.region
+        });
 
         this.gameData = null;
         mainWindow?.webContents.send('match:finish');

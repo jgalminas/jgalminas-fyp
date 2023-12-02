@@ -1,14 +1,16 @@
-import mongoose, { Document } from "mongoose";
+import mongoose from "mongoose";
 import { Schema } from "../db";
 import bcrypt from 'bcrypt';
+import PassportLocalMongoose from 'passport-local-mongoose';
 
 export type IUser = {
+  _id: mongoose.ObjectId,
   email: string,
   username: string,
   password: string,
   createdAt: Date,
   puuid: string | undefined
-} & Document
+}
 
 const UserSchema = new Schema<IUser>({
   email: { type: String, required: true, index: true , unique: true },
@@ -18,6 +20,7 @@ const UserSchema = new Schema<IUser>({
   puuid: { type: String, required: false }
 });
 
+UserSchema.plugin(PassportLocalMongoose);
 
 // Middlewere for hashing the password whenever it is changed or a new user is created
 UserSchema.pre('save', async function(next) {

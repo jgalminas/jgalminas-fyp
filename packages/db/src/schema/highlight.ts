@@ -4,13 +4,14 @@ import { Position } from "./index";
 import { POSITION } from "./enums";
 
 export type IHighlight = {
+  _id: mongoose.ObjectId,
   start: number,
   finish: number,
   championId: number,
   position: Position,
   createdAt: Date,
   publicUrl: string | null
-} & Document
+}
 
 const HighlightSchema = new Schema<IHighlight>({
   start: { type: Number, required: true },

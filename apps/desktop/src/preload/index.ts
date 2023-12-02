@@ -3,6 +3,7 @@ import { electronAPI } from '@electron-toolkit/preload'
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
 import { MatchRecorder } from './matchRecorder';
+import env from '../env';
 // import { ClientManager } from '../main/clientManager';
 
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
@@ -44,3 +45,16 @@ const init = async() => {
 }
 
 init();
+
+ipcRenderer.on('match:data', (_, data) => {
+
+  fetch(env.RENDERER_VITE_API_URL + '/v1/match/post', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
+
+});

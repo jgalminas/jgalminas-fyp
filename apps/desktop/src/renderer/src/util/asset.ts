@@ -7,7 +7,7 @@ export const BASE_CDN = 'https://ddragon.leagueoflegends.com/cdn';
 
 export const Asset = {
   champion: (champion: string) => {
-    return `${BASE_CDN}/${PATCH}/img/champion/${champion[0].toUpperCase() + champion.substring(1, champion.length).toLowerCase()}.png`;
+    return `${BASE_CDN}/${PATCH}/img/champion/${champion}.png`;
   },
   summonerSpell: (spell: SummonerSpell) => {
     const url = `${BASE_CDN}/${PATCH}/img/spell/`;
