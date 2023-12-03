@@ -31,7 +31,7 @@ app.use(session({
   saveUninitialized: false,
   rolling: true,
   cookie: {
-    expires: new Date(Date.now() + 604_800) // 1 week
+    maxAge: 604_800_000 // 1 week
   },
   store: MongoStore.create({
     mongoUrl: env.MONGODB_CONNECTION_STRING
