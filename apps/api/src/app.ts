@@ -12,9 +12,24 @@ import session from 'express-session';
 import env from './env';
 import { LolApi } from 'twisted';
 import MongoStore from 'connect-mongo';
+import Agenda from 'agenda';
+import jobs from './jobs';
 
 export const app = express();
 export const twisted = new LolApi(env.RIOT_KEY);
+
+export const agenda = new Agenda({
+  db: {
+    address: env.MONGODB_CONNECTION_STRING,
+    collection: 'matchqueue'
+  },
+  maxConcurrency: 10,
+  processEvery: '1 second'
+})
+
+agenda.start();
+jobs(); // regsiter jobs
+
 
 app.use(morgan('dev'));
 app.use(helmet());

@@ -38,6 +38,7 @@ export class MatchObserver {
 
           const data: any = await req.json()['gameData'];
 
+
           this.gameData = {
             gameId: data.gameId,
             isCustomGame: data.isCustomGame,
@@ -50,7 +51,7 @@ export class MatchObserver {
             }
           };
 
-          // mainWindow?.webContents.send('match:start', this.gameData);
+          mainWindow?.webContents.send('match:start', this.gameData);
 
         } catch (err) {
           console.log(err);

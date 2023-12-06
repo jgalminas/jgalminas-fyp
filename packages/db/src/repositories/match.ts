@@ -37,7 +37,6 @@ export const insertMatch = async(data: InsertMatch) => {
     await session.commitTransaction();
     session.endSession();
   } catch (err) {
-    console.log(err);
     await session.abortTransaction();
     session.endSession();
   }
