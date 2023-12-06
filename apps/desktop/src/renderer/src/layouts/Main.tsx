@@ -7,7 +7,7 @@ const Main = () => {
   return (
     <div className="flex h-screen w-full bg-woodsmoke-900">
       <Sidebar/>
-      <div className="flex flex-col flex-grow">
+      <div id="page" className="flex flex-col flex-grow relative">
         <Header/>
         <div className="flex flex-col overflow-y-auto w-full">
           <div className="w-full max-w-[60rem] self-center">

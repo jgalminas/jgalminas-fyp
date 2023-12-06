@@ -1,5 +1,5 @@
 import { cn } from "@fyp/class-name-helper";
-import { Match } from "@fyp/types";
+import { IMatch } from "@fyp/types";
 import Card from "@renderer/core/Card";
 import RoundImage from "@renderer/core/RoundImage";
 import Stat from "@renderer/core/match/Stat";
@@ -15,17 +15,17 @@ import { useAuth } from "@renderer/auth/AuthContext";
 
 
 export type MatchCardProps = {
-  match: Match
+  match: IMatch
 }
 
 const MatchCard = ({ match }: MatchCardProps) => {
 
   const { session } = useAuth();
 
-  const player = match.participants.find(p => p.puuid === session?.puuid) as Match['participants'][number];
+  const player = match.participants.find(p => p.puuid === session?.puuid) as IMatch['participants'][number];
   player.items.sort((a, b) => a.slot > b.slot ? 1 : -1);
 
-  const Position = RoleIcons[player.position];
+  const PositionIcon = RoleIcons[player.position];
 
   return (
     <Card className="grid grid-cols-[auto,auto,0.7fr,2.2fr,1.2fr,0.9fr] items-center grid-rows-[auto,auto] text-white p-0 gap-y-2.5 gap-x-5">
@@ -35,7 +35,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
       )}/>
       
       <div className="pt-2.5">
-        <Position/>
+        <PositionIcon/>
       </div>
 
       <div className="col-start-3 row-start-1 flex flex-col text-sm text-star-dust-300 pt-5">
@@ -82,7 +82,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
 
       <div className="grid grid-cols-2 row-span-2 py-5">
         <div className="flex flex-col gap-1">
-          { match.participants.filter(p => p.team === player.team).map((p) => {
+          { match.participants.filter(p => p.team === player.team).sort((a, b) => a.participantId > b.participantId ? 1 : -1).map((p) => {
             return (
               <div className="flex items-center gap-2" key={p.username}>
                 <SquareImage src={Asset.champion(p.champion)}/>
@@ -92,7 +92,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
           }) }
         </div>
         <div className="col-start-2 flex items-end flex-col gap-1">
-          { match.participants.filter(p => p.team !== player.team).map((p) => {
+          { match.participants.filter(p => p.team !== player.team).sort((a, b) => a.participantId > b.participantId ? 1 : -1).map((p) => {
             return (
               <div className="flex items-center gap-2" key={p.username}>
                 <p className="text-star-dust-300 text-xs max-w-[3rem] truncate"> { p.username } </p>
@@ -104,7 +104,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
       </div>
 
       <div className="row-span-2 col-start-6 font-medium text-sm text-star-dust-200 align-middle justify-self-center">
-        <Link to='/matches'> View Details </Link>
+        <Link to={`/matches/${match._id}`}> View Details </Link>
       </div>
 
     </Card>

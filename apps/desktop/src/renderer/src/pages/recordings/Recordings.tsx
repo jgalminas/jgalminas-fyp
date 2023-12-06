@@ -4,6 +4,7 @@ import RecordingCard from "./RecordingCard";
 import PageTitle from "@renderer/core/page/PageTitle";
 import PageHeader from "@renderer/core/page/PageHeader";
 import Divider from "@renderer/core/page/Divider";
+import { Outlet } from "react-router";
 
 export type VideoData = {
   name: string,
@@ -28,7 +29,7 @@ const Recordings = () => {
   }, [])
 
   return ( 
-    <Page>
+    <Page className="relative">
       <PageHeader>
         <PageTitle> Game Recordings </PageTitle>
         <Divider/>
@@ -38,6 +39,7 @@ const Recordings = () => {
           <RecordingCard video={v} key={key}/>
         )) }
       </div>
+      <Outlet/>
     </Page>
   )
 }

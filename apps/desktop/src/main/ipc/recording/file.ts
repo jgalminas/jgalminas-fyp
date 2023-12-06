@@ -6,6 +6,7 @@ import { readdir, stat } from 'fs/promises';
 import { THUMBNAIL_FORMAT, VIDEO_FORMAT } from '../../../constants';
 import { fileExists } from '../../util/file';
 import { captureThumbnail } from '../../../shared/util/recording';
+import { exec, execFile, spawn } from 'child_process';
 
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
@@ -34,27 +35,42 @@ export default () => {
     const fileNames = await readdir(videosDir);
     const files: VideoData[] = [];
   
-    for (const fn of fileNames) {
-  
+    const results = await Promise.all(fileNames.map(async(fn) => {
+      
       const filePath = path.join(videosDir, fn);
+      // const [stats, data] = await Promise.all([stat(filePath), getMetadata(filePath)]);
+      const stats = await stat(filePath);
+
+      return {
+        fileName: fn,
+        filePath,
+        stats,
+        // data
+      }
+
+    }))
+
+    for (const result of results) {
+  
+      // const filePath = path.join(videosDir, fn);
   
       // if video
-      if (fn.split('.')[1] === VIDEO_FORMAT) {
-        const stats = await stat(filePath);
-        const data = await getMetadata(filePath);
+      if (result.fileName.split('.')[1] === VIDEO_FORMAT) {
+        // const stats = await stat(filePath);
+        // const data = await getMetadata(filePath);
 
-        const thumbnailPath = filePath.replace(VIDEO_FORMAT, THUMBNAIL_FORMAT);
+        const thumbnailPath = result.filePath.replace(VIDEO_FORMAT, THUMBNAIL_FORMAT);
 
-        if (!fileExists(thumbnailPath)) {
-          await captureThumbnail(filePath);
-        }
+        // if (!fileExists(thumbnailPath)) {
+        //   await captureThumbnail(result.filePath);
+        // }
   
         files.push({
-          name: fn,
-          path: 'local:\\' + filePath.replace(VIDEO_FORMAT, THUMBNAIL_FORMAT),
-          size: stats.size,
-          created: stats.birthtime,
-          length: data.format.duration
+          name: result.fileName,
+          path: 'local:\\' + thumbnailPath,
+          size: result.stats.size,
+          created: result.stats.birthtime,
+          length: 0 //result.data.format.duration
         });
       }
   

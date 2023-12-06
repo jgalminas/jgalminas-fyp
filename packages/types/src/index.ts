@@ -1,2 +1,2 @@
 
-export type { SummonerSpell, QueueType, Match } from '@fyp/db';
+export type { SummonerSpell, QueueType, IMatch } from '@fyp/db';
