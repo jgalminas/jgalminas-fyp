@@ -69,12 +69,11 @@ const MatchCard = ({ match }: MatchCardProps) => {
           <SquareImage src={Asset.summonerSpell(player.summonerTwo)}/>
         </div>
         <div className="col-start-2 flex gap-1.5">
-          { Array.from({ length: 6 }).map((_, i) => {
-            const item = player.items[i];
+          { player.items.map((i) => {
             return (
-              item
-              ? <SquareImage key={i} src={Asset.item(item._id)}/>
-              : <div key={i} className="w-5 h-5 rounded bg-woodsmoke-200"/>
+              i._id !== 0
+              ? <SquareImage key={i.slot} src={Asset.item(i._id)}/>
+              : <div key={i.slot} className="w-5 h-5 rounded bg-woodsmoke-200"/>
             )
           }) }
         </div>

@@ -8,8 +8,8 @@ import Fill from '@assets/icons/Fill.svg?react';
 export const RoleIcons = {
   TOP: Top,
   JUNGLE: Jungle,
-  MID: Mid,
+  MIDDLE: Mid,
   BOTTOM: Bottom,
-  SUPPORT: Support,
+  UTILITY: Support,
   FILL: Fill
 };
