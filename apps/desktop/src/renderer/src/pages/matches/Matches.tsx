@@ -6,6 +6,8 @@ import { IMatch } from '@fyp/types';
 import PageHeader from "@renderer/core/page/PageHeader";
 import PageTitle from "@renderer/core/page/PageTitle";
 import Divider from "@renderer/core/page/Divider";
+import Select from "@renderer/core/Select";
+import SearchSelect from "@renderer/core/SearchSelect";
 
 const Matches = () => {
 
@@ -28,6 +30,9 @@ const Matches = () => {
       <PageHeader>
         <PageTitle> Game Recordings </PageTitle>
         <Divider/>
+        <Select placeholder="All game modes" options={[{ id: '2', value: 'Ranked', onClick: () => {} }]}/>
+        {/* <SearchSelect placeholder="Search by champion" options={[{ id: '2', value: 'Ranked', onClick: () => { } }]}/> */}
+
       </PageHeader>
       { matches?.map((m, key) => {
         return (
