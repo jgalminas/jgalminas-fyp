@@ -15,11 +15,11 @@ const RoleSelector = ({ className, onChange, role }: RoleSelectorProps) => {
   return (
     <div className={cn("flex items-center text-star-dust-400 divide-x border border-woodsmoke-50 divide-woodsmoke-50 w-fit rounded-lg overflow-hidden",
     className)}>
-      { ROLE.map((r, key) => {
+      { ROLE.map((r) => {
         const Icon = RoleIcons[r];
         return (
-          <button onClick={() => onChange(r)} className={cn("p-1.5 bg-woodsmoke-400", role === r && "bg-woodsmoke-50")}>
-            <Icon key={key}/>
+          <button key={r} onClick={() => onChange(r)} className={cn("p-1.5 bg-woodsmoke-400", role === r && "bg-woodsmoke-50")}>
+            <Icon/>
           </button>
         )
       }) }

@@ -35,10 +35,9 @@ const Matches = () => {
         <Divider/>
         <div className="flex items-center gap-3">
         <Select placeholder="All game modes" options={[{ id: '2', value: 'Ranked', onClick: () => {} }]}/>
-        {/* <SearchSelect placeholder="Search by champion" options={[{ id: '2', value: 'Ranked', onClick: () => { } }]}/> */}
+        <SearchSelect placeholder="Search by champion" options={[{ id: '2', value: 'Ranked', onClick: () => { } }]}/>
         <RoleSelector onChange={(r) => setRole(r)} role={role}/>
         </div>
-
 
       </PageHeader>
       { matches?.map((m, key) => {
