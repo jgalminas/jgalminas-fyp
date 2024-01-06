@@ -8,6 +8,7 @@ import PageTitle from "@renderer/core/page/PageTitle";
 import Divider from "@renderer/core/page/Divider";
 import Select from "@renderer/core/Select";
 import SearchSelect from "@renderer/core/SearchSelect";
+import RoleSelector, { Role } from "@renderer/core/RoleSelector";
 
 const Matches = () => {
 
@@ -25,13 +26,19 @@ const Matches = () => {
     
   }, [])
 
+  const [role, setRole] = useState<Role>('FILL');
+
   return ( 
     <Page>
       <PageHeader>
         <PageTitle> Game Recordings </PageTitle>
         <Divider/>
+        <div className="flex items-center gap-3">
         <Select placeholder="All game modes" options={[{ id: '2', value: 'Ranked', onClick: () => {} }]}/>
         {/* <SearchSelect placeholder="Search by champion" options={[{ id: '2', value: 'Ranked', onClick: () => { } }]}/> */}
+        <RoleSelector onChange={(r) => setRole(r)} role={role}/>
+        </div>
+
 
       </PageHeader>
       { matches?.map((m, key) => {
