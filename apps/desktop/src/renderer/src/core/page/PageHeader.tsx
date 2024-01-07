@@ -9,7 +9,7 @@ export type PageHeaderProps = {
 const PageHeader = ({ children, className }: PageHeaderProps) => {
 
   return (
-    <div className={cn("flex flex-col gap-5", className)}>
+    <div className={cn("flex flex-col gap-5 pt-5", className)}>
       { children }
     </div>
   )

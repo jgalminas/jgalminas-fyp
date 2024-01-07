@@ -26,4 +26,16 @@ router.get('/list', requireAuth, async(req, res) => {
   res.send(match)
 })
 
+router.get('/:id', requireAuth, async(req, res) => {
+
+  const match = await MatchRepository.getMatchById(req.params.id);
+
+  if (match) {
+    res.send(match);
+  } else {
+    res.status(404).send();
+  }
+
+})
+
 export default router;

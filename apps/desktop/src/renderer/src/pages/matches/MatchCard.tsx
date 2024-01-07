@@ -1,5 +1,5 @@
 import { cn } from "@fyp/class-name-helper";
-import { IMatch } from "@fyp/types";
+import { Match } from "@fyp/types";
 import Card from "@renderer/core/Card";
 import RoundImage from "@renderer/core/RoundImage";
 import Stat from "@renderer/core/match/Stat";
@@ -15,14 +15,14 @@ import { useAuth } from "@renderer/auth/AuthContext";
 
 
 export type MatchCardProps = {
-  match: IMatch
+  match: Match
 }
 
 const MatchCard = ({ match }: MatchCardProps) => {
 
   const { session } = useAuth();
 
-  const player = match.participants.find(p => p.puuid === session?.puuid) as IMatch['participants'][number];
+  const player = match.participants.find(p => p.puuid === session?.puuid) as Match['participants'][number];
   player.items.sort((a, b) => a.slot > b.slot ? 1 : -1);
 
   const PositionIcon = RoleIcons[player.position];

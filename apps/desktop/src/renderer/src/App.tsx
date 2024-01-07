@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import AuthProvider from './auth/AuthContext';
 import SecureRoute from './auth/SecureRoute';
@@ -29,7 +29,11 @@ const App = () => {
             <Route path='/' element={<SecureRoute element={<Main/>}/>}>
               <Route index element={<SecureRoute element={<Home/>}/>}/>
               <Route path='matches' element={<SecureRoute element={<Matches/>}/>}/>
-              <Route path='matches/:matchId' element={<SecureRoute element={<Match/>}/>}/>
+              <Route path='matches/:matchId' element={<SecureRoute element={<Match/>}/>}>
+                <Route index element={<div> Scoreboard </div>}/>
+                <Route path='timeline' element={<div> Timeline </div>}/>
+                <Route path='highlights' element={<div> highlights </div>}/>
+              </Route>
               <Route path='highlights' element={<SecureRoute element={<Highlights/>}/>}/>
               <Route path='recordings' element={<SecureRoute element={<Recordings/>}/>}>
                 <Route path=':path' element={<SecureRoute element={<VideoModal/>}/>}/>

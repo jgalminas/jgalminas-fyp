@@ -6,7 +6,7 @@ export type PageTitleProps = {
 const PageTitle = ({ children }: PageTitleProps) => {
 
   return (
-    <h1 className="text-star-dust-200 text-2xl font-medium">
+    <h1 className="text-star-dust-200 text-3xl font-medium">
       { children }
     </h1>
   )

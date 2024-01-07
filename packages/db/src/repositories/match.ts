@@ -1,4 +1,5 @@
-import { IEvent, IFrame, IMatch, IParticipant, IParticipantStats } from "@fyp/types";
+import { IEvent, IFrame, IMatch, IParticipant, IParticipantStats, Match as RMatch } from "@fyp/types";
+import { Types } from 'mongoose';
 import { db } from "../db";
 import { Event } from "../schema/event";
 import { Frame } from "../schema/frame";
@@ -44,11 +45,39 @@ export const insertMatch = async(data: InsertMatch) => {
   return match?._id;
 }
 
-export const getMatchById = async(id: string) => await Match.findById(id);
+export const getMatchById = async(id: string) => {
+
+  const result = await Match.aggregate<RMatch>([
+    {
+      $lookup: {
+        from: 'participants',
+        localField: 'participants',
+        foreignField: '_id',
+        as: 'participants'
+      }
+    },
+    {
+      $match: {
+        '_id': new Types.ObjectId(id)
+      }
+    },
+    {
+      $project: {
+        frames: 0
+      }
+    }
+  ])
+
+  if (result.length > 0) {
+    return result[0];
+  } else {
+    return null;
+  }
+};
 
 export const getUserMatches = async(puuid: string, offset: number = 0, count: number = 10) => {
 
-  return await Match.aggregate([
+  return await Match.aggregate<RMatch>([
     {
       $lookup: {
         from: 'participants',
