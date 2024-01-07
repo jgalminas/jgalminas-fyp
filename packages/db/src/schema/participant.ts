@@ -1,34 +1,6 @@
 import mongoose from "mongoose";
 import { Schema } from "../db";
-import { Position, SummonerSpell, Team } from "./index";
-import { POSITION, SUMMONER_SPELL, TEAM } from "./enums";
-
-export type IParticipantItem = {
-  _id: number,
-  slot: number
-}
-
-export type IParticipant = {
-  _id: mongoose.ObjectId,
-  puuid: string,
-  participantId: number,
-  username: string,
-  tag: string,
-  team: Team,
-  champion: string,
-  position: Position,
-  summonerOne: SummonerSpell,
-  summonerTwo: SummonerSpell,
-  primaryRune: number,
-  secondaryRune: number,
-  items: IParticipantItem[],
-  // bannedChampion: string
-  kills: number,
-  assists: number,
-  deaths: number,
-  cs: number,
-  level: number
-}
+import { IParticipant, POSITION, SUMMONER_SPELL, TEAM } from "@fyp/types";
 
 const ParticipantSchema = new Schema<IParticipant>({
   puuid: { type: String, required: true },

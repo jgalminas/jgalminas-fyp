@@ -1,7 +1,8 @@
 import { cn } from "@fyp/class-name-helper";
+import { POSITION } from "@fyp/types";
 import { RoleIcons } from "@renderer/util/role";
 
-export const ROLE = ['FILL', 'TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'] as const; // TODO: get this from shared types package
+export const ROLE = ['FILL', ...POSITION] as const;
 export type Role = typeof ROLE[number];
 
 export type RoleSelectorProps = {

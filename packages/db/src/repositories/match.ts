@@ -1,10 +1,10 @@
+import { IEvent, IFrame, IMatch, IParticipant, IParticipantStats } from "@fyp/types";
 import { db } from "../db";
-import { IEvent, IMatch } from "../schema";
 import { Event } from "../schema/event";
-import { Frame, IFrame } from "../schema/frame";
+import { Frame } from "../schema/frame";
 import { Match } from "../schema/match";
-import { IParticipant, Participant } from "../schema/participant";
-import { IParticipantStats, ParticipantStats } from "../schema/participantStats";
+import { Participant } from "../schema/participant";
+import { ParticipantStats } from "../schema/participantStats";
 
 export type InsertMatch = {
   participants: Omit<IParticipant, '_id'>[],

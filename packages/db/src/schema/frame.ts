@@ -1,13 +1,6 @@
 import mongoose from "mongoose";
 import { ObjectId, Schema } from "../db";
-import { IEvent, IParticipantStats } from "./index";
-
-export type IFrame = {
-  _id: mongoose.ObjectId,
-  timestamp: number,
-  events: IEvent[],
-  participantStats: IParticipantStats[]
-}
+import { IFrame } from "@fyp/types";
 
 const FrameSchema = new Schema<IFrame>({
   timestamp: { type: Number, required: true },

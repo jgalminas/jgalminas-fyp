@@ -1,4 +1,4 @@
-import { IUser } from '@fyp/db';
+import { IUser } from '@fyp/types';
 
 declare global {
   namespace Express {

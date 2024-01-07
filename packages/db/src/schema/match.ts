@@ -1,21 +1,6 @@
 import mongoose from "mongoose";
 import { ObjectId, Schema } from "../db";
-import { GameMode, GameType, IFrame, Team, IParticipant } from "./index";
-import { GAME_MODE, GAME_TYPE, QUEUE, QueueType, TEAM } from "./enums";
-
-export type IMatch = {
-  _id: mongoose.ObjectId,
-  gameId: string,
-  queueId: QueueType,
-  start: number,
-  finish: number,
-  patch: string
-  mode: GameMode,
-  type: GameType,
-  winningTeam: Team,
-  participants: IParticipant[],
-  frames: IFrame[]
-}
+import { GAME_MODE, GAME_TYPE, IMatch, QUEUE, TEAM } from "@fyp/types";
 
 const MatchSchema = new Schema<IMatch>({
   gameId: { type: String, required: true, index: true, unique: true },

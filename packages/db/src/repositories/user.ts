@@ -1,4 +1,5 @@
-import { IUser, User } from "../schema/user";
+import { IUser } from "@fyp/types";
+import { User } from "../schema/user";
 
 export type RegisterCredentials = {
   username: string,

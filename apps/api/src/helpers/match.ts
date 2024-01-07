@@ -1,4 +1,5 @@
-import { GameMode, GameType, QueueType, InsertMatch, Position, SummonerSpell, CreateEvent, Monster, Lane, Building, SpecialKillType } from "@fyp/db";
+import { GameMode, GameType, QueueType, Position, SummonerSpell, CreateEvent, Monster, Lane, Building, SpecialKillType } from "@fyp/types";
+import { InsertMatch } from '@fyp/db';
 import { MatchV5DTOs, MatchV5TimelineDTOs } from "twisted/dist/models-dto";
 
 export const extractMatchData = (match: MatchV5DTOs.MatchDto, timeline: MatchV5TimelineDTOs.MatchTimelineDto): InsertMatch => {

@@ -2,15 +2,7 @@ import mongoose from "mongoose";
 import { Schema } from "../db";
 import bcrypt from 'bcrypt';
 import PassportLocalMongoose from 'passport-local-mongoose';
-
-export type IUser = {
-  _id: mongoose.ObjectId,
-  email: string,
-  username: string,
-  password: string,
-  createdAt: Date,
-  puuid: string | undefined
-}
+import { IUser } from "@fyp/types";
 
 const UserSchema = new Schema<IUser>({
   email: { type: String, required: true, index: true , unique: true },

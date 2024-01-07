@@ -1,23 +1,6 @@
 import mongoose from "mongoose";
 import { Schema } from "../db";
-
-export type IParticipantStats = {
-  _id: mongoose.ObjectId,
-  participantId: number,
-  level: number,
-  jungleMinionsKilled: number,
-  minionsKilled: number,
-  totalGold: number,
-  magicDamageDone: number,
-  magicDamageToChampions: number,
-  magicDamageTaken: number,
-  physicalDamageDone: number,
-  physicalDamageToChampions: number,
-  physicalDamageTaken: number,
-  trueDamageDone: number,
-  trueDamageToChampions: number,
-  trueDamageTaken: number
-}
+import { IParticipantStats } from "@fyp/types";
 
 const ParticipantStatsSchema = new Schema<IParticipantStats>({
   participantId: { type: Number, required: true },

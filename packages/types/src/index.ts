@@ -1,2 +1,1 @@
-
-export type { SummonerSpell, QueueType, IMatch } from '@fyp/db';
+export * from './schema';

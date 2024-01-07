@@ -1,17 +1,6 @@
 import mongoose from "mongoose";
 import { Schema } from "../db";
-import { Position } from "./index";
-import { POSITION } from "./enums";
-
-export type IHighlight = {
-  _id: mongoose.ObjectId,
-  start: number,
-  finish: number,
-  championId: number,
-  position: Position,
-  createdAt: Date,
-  publicUrl: string | null
-}
+import { IHighlight, POSITION } from "@fyp/types";
 
 const HighlightSchema = new Schema<IHighlight>({
   start: { type: Number, required: true },

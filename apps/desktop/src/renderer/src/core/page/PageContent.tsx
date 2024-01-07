@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 
 export type PageContentProps = {
   className?: string,
-  children: ReactNode
+  children?: ReactNode
 }
 
 const PageContent = ({ className, children }: PageContentProps) => {
