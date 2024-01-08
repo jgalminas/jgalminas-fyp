@@ -38,7 +38,7 @@ const Match = () => {
         <Divider/>
       </PageHeader>
       <PageContent>
-        <Outlet/>
+        <Outlet context={{ match: data }}/>
       </PageContent>
     </Page>
   )

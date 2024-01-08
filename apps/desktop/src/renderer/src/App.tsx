@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import AuthProvider from './auth/AuthContext';
 import SecureRoute from './auth/SecureRoute';
@@ -13,6 +13,9 @@ import Settings from './pages/Settings';
 import Match from './pages/match/Match';
 import VideoModal from './core/video/VideoModal';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import ScoreBoard from './pages/match/tabs/Scoreboard';
+import Timeline from './pages/match/tabs/Timeline';
+import HighlightsTab from './pages/match/tabs/Highlights';
 
 const client = new QueryClient();
 
@@ -30,9 +33,9 @@ const App = () => {
               <Route index element={<SecureRoute element={<Home/>}/>}/>
               <Route path='matches' element={<SecureRoute element={<Matches/>}/>}/>
               <Route path='matches/:matchId' element={<SecureRoute element={<Match/>}/>}>
-                <Route index element={<div> Scoreboard </div>}/>
-                <Route path='timeline' element={<div> Timeline </div>}/>
-                <Route path='highlights' element={<div> highlights </div>}/>
+                <Route index element={<SecureRoute element={<ScoreBoard/>}/>}/>
+                <Route path='timeline' element={<SecureRoute element={<Timeline/>}/>}/>
+                <Route path='highlights' element={<SecureRoute element={<HighlightsTab/>}/>}/>
               </Route>
               <Route path='highlights' element={<SecureRoute element={<Highlights/>}/>}/>
               <Route path='recordings' element={<SecureRoute element={<Recordings/>}/>}>

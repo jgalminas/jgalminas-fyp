@@ -47,7 +47,8 @@ module.exports = {
         },
         'accent': {
           'red': '#FF3B3A',
-          'blue': '#0068CA'
+          'blue': '#0068CA',
+          'green': '#01A86C'
         },
       }
     },

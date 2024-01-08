@@ -10,7 +10,7 @@ const Main = () => {
       <div id="page" className="flex flex-col flex-grow relative">
         <Header/>
         <div className="flex flex-col overflow-y-auto w-full">
-          <div className="w-full max-w-[60rem] self-center">
+          <div className="w-full max-w-[80rem] self-center">
             <Outlet/>
           </div>
         </div>
