@@ -25,14 +25,23 @@ const ScoreboardTable = ({ match }: ScoreboardTableProps) => {
 
   return (
     <div className="flex flex-col text-star-dust-300 text-sm">
-      <div className="bg-woodsmoke-400 rounded-t-lg px-5 py-4 flex justify-between">
+      <div className="bg-woodsmoke-400 rounded-t-lg px-5 py-1.5 grid grid-cols-[1fr,4fr,1fr] items-center">
         <p className="text-star-dust-200 font-medium"> BLUE TEAM
           <span className={cn("ml-2", match.winningTeam === 'BLUE' ? "text-accent-green": "text-accent-red")}> { winner('BLUE') } </span>
         </p>
-        <div>
-          <BannedChampion champion="Lux"/>
-        </div>
-        <p className="text-star-dust-200 font-medium"> 
+        <div className="flex gap-12 justify-center">
+          <div className="flex gap-1.5">
+            {
+              blueTeam.map((p) => (<BannedChampion champion={p.champion}/>))
+            }
+          </div>
+          <div className="flex gap-1.5">
+            {
+              redTeam.map((p) => (<BannedChampion champion={p.champion}/>))
+            } 
+          </div>
+       </div>
+        <p className="text-star-dust-200 font-medium justify-self-end"> 
           <span className={cn("mr-2", match.winningTeam === 'RED' ? "text-accent-green": "text-accent-red")}> { winner('RED') } </span>
           RED TEAM
         </p>
