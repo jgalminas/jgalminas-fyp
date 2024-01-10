@@ -29,7 +29,7 @@ const ScoreboardTable = ({ match }: ScoreboardTableProps) => {
         <p className="text-star-dust-200 font-medium"> BLUE TEAM
           <span className={cn("ml-2", match.winningTeam === 'BLUE' ? "text-accent-green": "text-accent-red")}> { winner('BLUE') } </span>
         </p>
-        <div className="flex gap-12 justify-center">
+        <div className="flex gap-16 justify-center">
           <div className="flex gap-1.5">
             {
               blueTeam.map((p) => (<BannedChampion champion={p.champion}/>))

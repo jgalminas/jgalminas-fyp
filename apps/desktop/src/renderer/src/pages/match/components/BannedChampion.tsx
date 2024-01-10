@@ -9,7 +9,7 @@ export type BannedChampionProps = {
 const BannedChampion = ({ champion }: BannedChampionProps) => {
   return (
     <div className="relative">
-        <RoundImage className="border-[3px] border-gray-900 w-11 h-11 saturate-0" src={Asset.champion(champion)}/>
+        <RoundImage className="border-[3px] border-gray-900 w-10 h-10 saturate-0" src={Asset.champion(champion)}/>
         <Ban className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full scale-95"/>
     </div>
   )
