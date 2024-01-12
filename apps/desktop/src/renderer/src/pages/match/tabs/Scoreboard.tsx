@@ -3,9 +3,7 @@ import ScoreboardTable from "../components/ScoreboardTable";
 import { Match } from "@fyp/types";
 import { player } from "@renderer/util/match";
 import { Session, useAuth } from "@renderer/auth/AuthContext";
-import { Bar, BarChart, XAxis, YAxis } from 'recharts';
-import { cn } from "@fyp/class-name-helper";
-import { Fragment } from "react";
+import Card from "@renderer/core/Card";
 
 const ScoreBoard = () => {
 
@@ -17,35 +15,64 @@ const ScoreBoard = () => {
 
   const Chart = () => {
 
-    const data = [{ value: 20 }, { value: 30 }, { value: 15 }]
+    const data = [{ value: 12000 }, { value: 1000 }, { value: 300 }, { value: 9000 }]
 
-    const height = 30; // find largest from the data
-    const scale = 5;
+    const findHighestValue = <T extends { value: number }>(array: T[]) => {
+      if (array.length === 0) {
+        return 0;
+      }
+    
+      const largestValue = array.reduce((max, current) => {
+        return current.value > max ? current.value : max;
+      }, array[0].value);
+    
+      return largestValue;
+    }
+
+    const height = 200;
+    const largest = findHighestValue(data);
+    const scale = height / largest;
+    const tickRate = (largest * scale) / 4;
 
     return (
-        <div className={cn("grid grid-rows-[1fr,auto] gap-x-2 relative place-items-center items-end w-fit")}
-        style={{ height: height * scale, gridTemplateColumns: 'repeat(3,minmax(0,1fr))' }}>
-          <div className="col-span-full grid gap-x-2 items-end h-full relative"
-          style={{ gridTemplateColumns: 'repeat(3,minmax(0,1fr))' }}>
-            { data.map((value) => {
-              return (
-                <Fragment>
-                  <div className="min-h-[1px] absolute w-full z-50 left-0 bottom-1/2 bg-green-500"/>
-                  <div className="bg-red-500 w-6 relative" style={{ height: `${((value.value * scale) / (height * scale)) * 100}%` }}>
-                    &nbsp;
-                  </div>
-                </Fragment>
-              )
-            }) }
-          </div>
-          { data.map((value) => {
+      <Card className="w-fit m-5 flex flex-col text-sm">
+        <div className="grid gap-x-2 relative place-items-center items-end pl-12 pr-4"
+        style={{ height: height, gridTemplateColumns: `repeat(${data.length},minmax(0,1fr))` }}>
+        { data.map((value) => {
             return (
-              <div className="row-start-2">
+              <div className="bg-red-500 w-6 z-10" style={{ height: `${((value.value * scale) / (largest * scale)) * 100}%` }}>
+                &nbsp;
+              </div>
+            )
+        }) }
+
+       {
+          Array.from({ length: (height / tickRate) + 1 }).map((_, i) => {
+            const tick = i * tickRate / scale;
+            return (
+              <div className="absolute w-full items-center text-star-dust-400 gap-2 bottom-0 left-0"
+              style={{ bottom: i * tickRate }}>
+                <p className="absolute -translate-y-1/2">
+                  { tick }
+                  { tick > 1000 ? 'K' : null }
+                </p>
+                <div className="ml-8 bottom-1/2 bg-woodsmoke-400 h-[1px] w-[100% - 2rem]"/>
+              </div>  
+            )
+          })
+        }
+        </div>
+
+        <div className="grid gap-x-2 pl-12 pr-6 place-items-center">
+        { data.map((value) => {
+            return (
+              <div className="row-start-2 ">
                 { value.value }
               </div>
             )
           }) }
         </div>
+      </Card>
     )
   }
 
