@@ -51,10 +51,10 @@ const ScoreboardTable = ({ match }: ScoreboardTableProps) => {
           Array.from({ length: 5 }).map((_, i) => {
             const Position = RoleIcons[blueTeam[i].position];
             return (
-              <Fragment>
-                <Player player={blueTeam[i]} start={match.start} finish={match.finish} teamKills={aggregateTeamKills(match.participants, 'BLUE')}/>
-                <Position className="mx-5"/>
-                <Player inverse player={redTeam[i]} start={match.start} finish={match.finish} teamKills={aggregateTeamKills(match.participants, 'RED')}/>
+              <Fragment key={i}>
+                <Player key={'blue' + i} player={blueTeam[i]} start={match.start} finish={match.finish} teamKills={aggregateTeamKills(match.participants, 'BLUE')}/>
+                <Position key={'pos' + i} className="mx-5"/>
+                <Player key={'red' + i} inverse player={redTeam[i]} start={match.start} finish={match.finish} teamKills={aggregateTeamKills(match.participants, 'RED')}/>
               </Fragment>
             )
           })

@@ -62,8 +62,30 @@ export const getMatchById = async(id: string) => {
       }
     },
     {
+      $addFields: {
+        lastFrame: { $arrayElemAt: ['$frames', -1] }
+      }
+    },
+    {
+      $lookup: {
+        from: 'frames',
+        localField: 'lastFrame',
+        foreignField: '_id',
+        as: 'lastFrame'
+      },
+    },
+    {
+      $lookup: {
+        from: 'participantstats',
+        localField: 'lastFrame.participantStats',
+        foreignField: '_id',
+        as: 'participantStats'
+      },
+    },
+    {
       $project: {
-        frames: 0
+        frames: 0,
+        lastFrame: 0
       }
     }
   ])
