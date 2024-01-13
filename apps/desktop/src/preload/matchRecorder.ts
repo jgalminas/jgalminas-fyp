@@ -5,6 +5,7 @@ import ffmpegStatic from 'ffmpeg-static';
 import { Readable } from "stream";
 import path from "path";
 import { captureThumbnail } from "../shared/util/recording";
+import env from "../env";
 
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
@@ -80,7 +81,22 @@ export class MatchRecorder {
     .videoCodec('libx264')
     .audioCodec('aac')
     .output(videoPath)
-    .on('end', async() => await captureThumbnail(videoPath))
+    .on('end', async() => {
+      await captureThumbnail(videoPath);
+
+      fetch(env.RENDERER_VITE_API_URL + '/v1/recording', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+
+        })
+      })
+      
+    })
+    
     .run();
     
   }

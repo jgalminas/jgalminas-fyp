@@ -157,6 +157,9 @@ importers:
       autoprefixer:
         specifier: ^10.4.15
         version: 10.4.16(postcss@8.4.33)
+      bson:
+        specifier: ^6.2.0
+        version: 6.2.0
       ffmpeg-static:
         specifier: ^5.2.0
         version: 5.2.0

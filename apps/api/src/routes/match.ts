@@ -7,16 +7,15 @@ import { MatchDataContract } from "../jobs";
 
 const router = Router();
 
-router.post('/post', requireAuth, async(req, res) => {
+router.post('/', requireAuth, async(req, res) => {
 
+  const gameId = req.body.gameId;
   const matchId = `${req.body.region}_${req.body.gameId}`;
   const region = regionToRegionGroup(req.body.region);
 
-  await agenda.now<MatchDataContract>('GET_MATCH_DATA', { matchId, region });
+  await agenda.now<MatchDataContract>('GET_MATCH_DATA', { gameId, matchId, region });
 
-  res.status(200).send({
-    id: 0
-  })
+  res.status(200).send();
 })
 
 router.get('/list', requireAuth, async(req, res) => {

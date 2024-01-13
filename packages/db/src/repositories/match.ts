@@ -15,7 +15,7 @@ export type InsertMatch = {
   } & Omit<IFrame, '_id' | 'events' | 'participantStats'>)[]
 } & Omit<IMatch, '_id' | 'participants' | 'frames'>
 
-export const insertMatch = async(data: InsertMatch) => {
+export const insertMatch = async(id: string, data: InsertMatch) => {
 
   const session = await (await db).startSession();
   session.startTransaction();
@@ -33,7 +33,7 @@ export const insertMatch = async(data: InsertMatch) => {
     data.participants = participants;
     data.frames = await Frame.insertMany(data.frames, { session });
 
-    match = (await Match.create([data], { session }))[0];
+    match = (await Match.create([{_id: id, ...data}], { session }))[0];
 
     await session.commitTransaction();
     session.endSession();

@@ -4,6 +4,7 @@ import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
 import { MatchRecorder } from './matchRecorder';
 import env from '../env';
+import { ObjectId} from 'bson';
 // import { ClientManager } from '../main/clientManager';
 
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
@@ -48,13 +49,18 @@ init();
 
 ipcRenderer.on('match:data', (_, data) => {
 
-  fetch(env.RENDERER_VITE_API_URL + '/v1/match/post', {
+  const matchId = new ObjectId();
+
+  fetch(env.RENDERER_VITE_API_URL + '/v1/match', {
     method: 'POST',
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify({
+      ...data,
+      matchId
+    })
   })
 
 });
