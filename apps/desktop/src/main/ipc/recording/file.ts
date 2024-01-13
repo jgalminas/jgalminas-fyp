@@ -18,7 +18,7 @@ export type VideoData = {
   length?: number
 }
 
-const getMetadata = (filePath: string): Promise<ffmpeg.FfprobeData> => {
+export const getMetadata = (filePath: string): Promise<ffmpeg.FfprobeData> => {
   return new Promise((resolve, reject) => {
     ffmpeg.ffprobe(filePath, (err, data) => {
       if (err) reject(err);

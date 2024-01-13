@@ -1,5 +1,10 @@
 import { createHttp1Request, createWebSocketConnection, authenticate } from "league-connect";
 import { clientManager, mainWindow } from "./index";
+import { ObjectId } from 'bson';
+import { getMetadata } from "./ipc/recording/file";
+import path from "path";
+import { app } from "electron";
+import { RecordingIPCManager } from "./recordingIpcManager";
 
 export enum GameEvent {
   START = "GameStart",
@@ -20,7 +25,13 @@ export type GameData = {
 
 export class MatchObserver {
   
+  private recordingIPCManager: RecordingIPCManager;
+
   private gameData: GameData | null = null;
+
+  constructor(recordingIPCManager: RecordingIPCManager) {
+    this.recordingIPCManager = recordingIPCManager;
+  }
 
   public observe = async() => {
     
@@ -59,9 +70,19 @@ export class MatchObserver {
         
       } else if (data === GameEvent.FINISH) {
 
+        const matchId = new ObjectId().toString();
+
         mainWindow?.webContents.send('match:data', {
+          matchId,
           gameId: this.gameData?.gameId,
           region: clientManager.getPlayer()?.region
+        });
+
+        const filePath = path.join(app.getPath('videos'), 'Fyp', this.gameData?.gameId.toString() as string);
+        const metadata = await getMetadata(filePath);
+
+        this.recordingIPCManager.post({
+          match: matchId.toString()
         });
 
         this.gameData = null;
