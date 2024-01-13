@@ -12,10 +12,11 @@ import { Fragment } from "react";
 import BannedChampion from "./BannedChampion";
 
 export type ScoreboardTableProps = {
+  className?: string,
   match: Match
 }
 
-const ScoreboardTable = ({ match }: ScoreboardTableProps) => {
+const ScoreboardTable = ({ className, match }: ScoreboardTableProps) => {
 
   const participants = match.participants.sort((a, b) => a.participantId > b.participantId ? 1 : -1);
 
@@ -24,7 +25,7 @@ const ScoreboardTable = ({ match }: ScoreboardTableProps) => {
   const winner = (team: 'BLUE' | 'RED') => match.winningTeam === team ? 'Won' : 'Lost';
 
   return (
-    <div className="flex flex-col text-star-dust-300 text-sm">
+    <div className={cn("flex flex-col text-star-dust-300 text-sm", className)}>
       <div className="bg-woodsmoke-400 rounded-t-lg px-5 py-1.5 grid grid-cols-[1fr,4fr,1fr] items-center">
         <p className="text-star-dust-200 font-medium"> BLUE TEAM
           <span className={cn("ml-2", match.winningTeam === 'BLUE' ? "text-accent-green": "text-accent-red")}> { winner('BLUE') } </span>
@@ -79,7 +80,9 @@ const Player = ({ player, inverse = false, teamKills, start, finish }: PlayerPro
   return (
     <div className={cn("grid grid-cols-[2.1fr,2.5fr,auto] gap-x-5", inverse && "grid-cols-[auto,2.5fr,2.1fr]")}>
       <div className={cn("grid grid-cols-[3rem,1fr] grid-rows-2 gap-x-3 items-center text-sm", inverse && "grid-cols-[1fr,3rem] order-3")}>
-        <RoundImage className={cn("row-span-2 w-full h-full", inverse && "col-start-2 row-start-1")} src={Asset.champion(player.champion)}/>
+        <RoundImage className={cn("row-span-2 w-full h-full", inverse && "col-start-2 row-start-1",
+        player.team === "BLUE" ? "border-accent-blue" : "border-accent-red")}
+        src={Asset.champion(player.champion)}/>
         <p className={cn("text-star-dust-200 max-w-24 truncate", inverse && "place-self-end")}> { player.username } </p>
         <p className={cn("text-start-dust-400", inverse && "place-self-end")}> { player.champion } </p>
       </div>
