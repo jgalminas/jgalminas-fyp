@@ -4,6 +4,7 @@ import { Match } from "@fyp/types";
 import { player } from "@renderer/util/match";
 import { Session, useAuth } from "@renderer/auth/AuthContext";
 import Card from "@renderer/core/Card";
+import BannedChampion from "../components/BannedChampion";
 
 const ScoreBoard = () => {
 
@@ -15,7 +16,7 @@ const ScoreBoard = () => {
 
   const Chart = () => {
 
-    const data = [{ value: 12000 }, { value: 1000 }, { value: 300 }, { value: 9000 }]
+    const data = [{ value: 14000, label: "14 000" }, { value: 1210, label: "x" }, { value: 3500, label: "x" }, { value: 10000, label: "x" }]
 
     const findHighestValue = <T extends { value: number }>(array: T[]) => {
       if (array.length === 0) {
@@ -29,14 +30,16 @@ const ScoreBoard = () => {
       return largestValue;
     }
 
+    const numOfTicks = 5;
+
     const height = 200;
-    const largest = findHighestValue(data);
+    const largest = (Math.ceil((findHighestValue(data) / 5) / 1000) * 1000) * numOfTicks //findHighestValue(data) * 1.1;
     const scale = height / largest;
-    const tickRate = (largest * scale) / 4;
+    const tickRate = (largest * scale) / numOfTicks;
 
     return (
       <Card className="w-fit m-5 flex flex-col text-sm">
-        <div className="grid gap-x-2 relative place-items-center items-end pl-12 pr-4"
+        <div className="grid gap-x-2 relative place-items-center items-end pl-12 pr-4 mt-2"
         style={{ height: height, gridTemplateColumns: `repeat(${data.length},minmax(0,1fr))` }}>
         { data.map((value) => {
             return (
@@ -53,8 +56,7 @@ const ScoreBoard = () => {
               <div className="absolute w-full items-center text-star-dust-400 gap-2 bottom-0 left-0"
               style={{ bottom: i * tickRate }}>
                 <p className="absolute -translate-y-1/2">
-                  { tick }
-                  { tick > 1000 ? 'K' : null }
+                  { tick > 1000 ? `${Math.round(tick / 1000)}K` : tick }
                 </p>
                 <div className="ml-8 bottom-1/2 bg-woodsmoke-400 h-[1px] w-[100% - 2rem]"/>
               </div>  
@@ -63,11 +65,12 @@ const ScoreBoard = () => {
         }
         </div>
 
-        <div className="grid gap-x-2 pl-12 pr-6 place-items-center">
+        <div className="grid gap-x-2 pl-12 pr-4 place-items-center w-full"
+        style={{ gridTemplateColumns: `repeat(${data.length},minmax(0,1fr))` }}>
         { data.map((value) => {
             return (
-              <div className="row-start-2 ">
-                { value.value }
+              <div className="row-start-2">
+                { value.label }
               </div>
             )
           }) }

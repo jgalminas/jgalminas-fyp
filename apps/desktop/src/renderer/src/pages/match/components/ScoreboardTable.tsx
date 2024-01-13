@@ -32,12 +32,12 @@ const ScoreboardTable = ({ match }: ScoreboardTableProps) => {
         <div className="flex gap-16 justify-center">
           <div className="flex gap-1.5">
             {
-              blueTeam.map((p) => (<BannedChampion champion={p.champion}/>))
+              blueTeam.map((p) => (<BannedChampion key={p.champion} champion={p.champion}/>))
             }
           </div>
           <div className="flex gap-1.5">
             {
-              redTeam.map((p) => (<BannedChampion champion={p.champion}/>))
+              redTeam.map((p) => (<BannedChampion key={p.champion} champion={p.champion}/>))
             } 
           </div>
        </div>
@@ -52,9 +52,9 @@ const ScoreboardTable = ({ match }: ScoreboardTableProps) => {
             const Position = RoleIcons[blueTeam[i].position];
             return (
               <Fragment key={i}>
-                <Player key={'blue' + i} player={blueTeam[i]} start={match.start} finish={match.finish} teamKills={aggregateTeamKills(match.participants, 'BLUE')}/>
-                <Position key={'pos' + i} className="mx-5"/>
-                <Player key={'red' + i} inverse player={redTeam[i]} start={match.start} finish={match.finish} teamKills={aggregateTeamKills(match.participants, 'RED')}/>
+                <Player player={blueTeam[i]} start={match.start} finish={match.finish} teamKills={aggregateTeamKills(match.participants, 'BLUE')}/>
+                <Position className="mx-5"/>
+                <Player inverse player={redTeam[i]} start={match.start} finish={match.finish} teamKills={aggregateTeamKills(match.participants, 'RED')}/>
               </Fragment>
             )
           })
