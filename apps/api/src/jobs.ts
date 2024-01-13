@@ -1,7 +1,7 @@
 import { RegionGroups } from "twisted/dist/constants";
 import { agenda, twisted } from "./app";
 import { Job, JobAttributesData } from "agenda";
-import { MatchRepository } from "@fyp/db";
+import { MatchRepository, RecordingRepository } from "@fyp/db";
 import { extractMatchData } from "./helpers/match";
 
 export type MatchDataContract = {

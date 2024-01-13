@@ -6,3 +6,4 @@ export * from './participantStats';
 export * from './participant';
 export * from './enums';
 export * from './user';
+export * from './recording';

@@ -27,19 +27,21 @@ const Match = () => {
   if (isError || isLoading || !data) return null;
 
   return (
-    <Page>
-      <PageHeader className="gap-0">
-        <PageTitle> Match Details </PageTitle>
-        <div className="flex items-center gap-5 mt-1">
-          <p className="text-star-dust-300 font-medium"> { queue(data.queueId) } </p>
-          <p className="text-star-dust-400"> { formatMatchLength(data.start, data.finish) } </p>
-        </div>
-        <Tabs className="mt-8" tabs={tabs}/>
-        <Divider/>
-      </PageHeader>
-      <PageContent>
-        <Outlet context={{ match: data }}/>
-      </PageContent>
+    <Page className="max-w-[80rem]">
+      <Page.Content>
+        <PageHeader className="gap-0">
+          <PageTitle> Match Details </PageTitle>
+          <div className="flex items-center gap-5 mt-1">
+            <p className="text-star-dust-300 font-medium"> { queue(data.queueId) } </p>
+            <p className="text-star-dust-400"> { formatMatchLength(data.start, data.finish) } </p>
+          </div>
+          <Tabs className="mt-8" tabs={tabs}/>
+          <Divider/>
+        </PageHeader>
+        <PageContent>
+          <Outlet context={{ match: data }}/>
+        </PageContent>
+      </Page.Content>
     </Page>
   )
 }

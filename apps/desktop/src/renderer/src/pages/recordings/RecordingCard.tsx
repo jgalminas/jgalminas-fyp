@@ -5,7 +5,6 @@ import LinkButton from "@renderer/core/LinkButton";
 import RoundImage from "@renderer/core/RoundImage";
 import PrettyDate from "@renderer/core/PrettyDate";
 import { RoleIcons } from "@renderer/util/role";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@renderer/core/Dropdown";
 
 export type RecordingCardProps = {
   video: VideoData
@@ -35,20 +34,6 @@ const RecordingCard = ({ video }: RecordingCardProps) => {
           <LinkButton to='/' type='text'> View Game </LinkButton>
         </div>
       </div>
-
-      {/* <DropdownMenu>
-        <DropdownMenuTrigger className="h-fit">
-          <RoleIcons.Jungle/>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem>
-            1
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            2
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu> */}
 
     </Card>
   )

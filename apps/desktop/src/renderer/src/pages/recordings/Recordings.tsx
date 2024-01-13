@@ -30,16 +30,18 @@ const Recordings = () => {
 
   return ( 
     <Page className="relative">
-      <PageHeader>
-        <PageTitle> Game Recordings </PageTitle>
-        <Divider/>
-      </PageHeader>
-      <div className="flex flex-col gap-6">
-        { videos.map((v, key) => (
-          <RecordingCard video={v} key={key}/>
-        )) }
-      </div>
-      <Outlet/>
+      <Page.Content>
+        <PageHeader>
+          <PageTitle> Game Recordings </PageTitle>
+          <Divider/>
+        </PageHeader>
+        <div className="flex flex-col gap-6">
+          { videos.map((v, key) => (
+            <RecordingCard video={v} key={key}/>
+          )) }
+        </div>
+        <Outlet/>
+      </Page.Content>
     </Page>
   )
 }
