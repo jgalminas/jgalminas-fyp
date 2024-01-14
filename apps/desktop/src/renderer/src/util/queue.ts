@@ -15,6 +15,8 @@ export const queue = (queue: QueueType) => {
     case 440:
       name = 'Ranked (Flex)'
       break;
+    default:
+      name = 'Practice Tool'
   }
   return name;
 }
