@@ -6,7 +6,8 @@ import { registerChannels } from './ipc/index';
 import { ClientManager } from './clientManager';
 import { LolApi } from 'twisted';
 import { MatchObserver } from './matchObserver';
-import { RecordingIPCManager } from './recordingIpcManager';
+import { NetworkIPC } from './networkIPC';
+import { MatchRecorderIPC } from './matchRecorderIPC';
 
 registerChannels();
 
@@ -14,7 +15,11 @@ export let mainWindow: BrowserWindow | undefined;
 
 export const lolApi = new LolApi(process.env.MAIN_VITE_RIOT_KEY as string);
 export const clientManager = new ClientManager();
-export const matchObserver = new MatchObserver(new RecordingIPCManager());
+export const matchObserver = new MatchObserver(
+  clientManager,
+  new NetworkIPC(),
+  new MatchRecorderIPC()
+);
 
 function createWindow(): void {
   // Create the browser window.

@@ -1,8 +1,9 @@
 import { app, ipcMain } from "electron";
+import { PathIPC } from "../../shared/ipc";
 
 export default () => {
 
-  ipcMain.on("path:get", (e, path: Parameters<typeof app.getPath>[0]) => {
+  ipcMain.on(PathIPC.Get, (e, path: Parameters<typeof app.getPath>[0]) => {
     e.returnValue = app.getPath(path);
   })
   

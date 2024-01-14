@@ -1,11 +1,11 @@
 import { ipcRenderer } from "electron";
-import { GAME_CLIENT_NAME, VIDEO_FORMAT } from "../constants";
+import { GAME_CLIENT_NAME, VIDEO_DIRECTORY, VIDEO_FORMAT } from "../constants";
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
 import { Readable } from "stream";
 import path from "path";
 import { captureThumbnail } from "../shared/util/recording";
-import env from "../env";
+import { PathIPC, RecorderIPC } from "../shared/ipc";
 
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
@@ -14,17 +14,17 @@ export class MatchRecorder {
   private readable: Readable | undefined;
   private recorder: MediaRecorder | undefined;
   private running: boolean = false;
-  private videosPath = path.join(ipcRenderer.sendSync("path:get", 'videos'), 'Fyp');
+  private videosPath = path.join(ipcRenderer.sendSync(PathIPC.Get, 'videos'), VIDEO_DIRECTORY);
   private gameId: string | undefined; 
 
   public init = async() => {
-    ipcRenderer.on('match:start', async(_, game) => {
+    ipcRenderer.on(RecorderIPC.Start, async(_, game) => {
       const client = await this.getGameClient(); 
       this.gameId = game.gameId.toString();
       await this.start(client, this.gameId as string);
     });
 
-    ipcRenderer.on('match:finish', () => {
+    ipcRenderer.on(RecorderIPC.Finish, () => {
       this.stop();
     })
   }
@@ -83,20 +83,8 @@ export class MatchRecorder {
     .output(videoPath)
     .on('end', async() => {
       await captureThumbnail(videoPath);
-
-      fetch(env.RENDERER_VITE_API_URL + '/v1/recording', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-
-        })
-      })
-      
+      ipcRenderer.send(RecorderIPC.Response);
     })
-    
     .run();
     
   }

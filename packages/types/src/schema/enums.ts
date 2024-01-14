@@ -25,5 +25,6 @@ export const  QUEUE = [
   400, // Normal Draft
   420, // Ranked Solo/Duo
   430, // Normal Blind
-  440 // Ranked Flex
+  440, // Ranked Flex
+  -1 // Playground for testing
 ] as const;

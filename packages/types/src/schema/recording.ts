@@ -1,4 +1,4 @@
-import { IMatch, Position } from "./index";
+import { IMatch, Position, QueueType } from "./index";
 
 export type IRecording = {
   match: IMatch,
@@ -6,6 +6,7 @@ export type IRecording = {
   length: number,
   createdAt: Date,
   champion: string,
-  position: Position,
+  position?: Position,
+  queueId: QueueType,
   size: number
 }

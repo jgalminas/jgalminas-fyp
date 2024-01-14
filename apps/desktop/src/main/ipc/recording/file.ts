@@ -3,10 +3,11 @@ import ffmpegStatic from 'ffmpeg-static';
 import { app, ipcMain } from 'electron';
 import path from 'path';
 import { readdir, stat } from 'fs/promises';
-import { THUMBNAIL_FORMAT, VIDEO_FORMAT } from '../../../constants';
+import { THUMBNAIL_FORMAT, VIDEO_DIRECTORY, VIDEO_FORMAT } from '../../../constants';
 import { fileExists } from '../../util/file';
 import { captureThumbnail } from '../../../shared/util/recording';
 import { exec, execFile, spawn } from 'child_process';
+import { FileIPC } from '../../../shared/ipc';
 
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
@@ -29,54 +30,59 @@ export const getMetadata = (filePath: string): Promise<ffmpeg.FfprobeData> => {
 
 export default () => {
 
-  ipcMain.handle("recording:videos", async() => {
+  // ipcMain.handle("recording:videos", async() => {
   
-    const videosDir = path.join(app.getPath('videos'), 'Fyp');
-    const fileNames = await readdir(videosDir);
-    const files: VideoData[] = [];
+  //   const videosDir = path.join(app.getPath('videos'), VIDEO_DIRECTORY);
+  //   const fileNames = await readdir(videosDir);
+  //   const files: VideoData[] = [];
   
-    const results = await Promise.all(fileNames.map(async(fn) => {
+  //   const results = await Promise.all(fileNames.map(async(fn) => {
       
-      const filePath = path.join(videosDir, fn);
-      // const [stats, data] = await Promise.all([stat(filePath), getMetadata(filePath)]);
-      const stats = await stat(filePath);
+  //     const filePath = path.join(videosDir, fn);
+  //     // const [stats, data] = await Promise.all([stat(filePath), getMetadata(filePath)]);
+  //     const stats = await stat(filePath);
 
-      return {
-        fileName: fn,
-        filePath,
-        stats,
-        // data
-      }
+  //     return {
+  //       fileName: fn,
+  //       filePath,
+  //       stats,
+  //       // data
+  //     }
 
-    }))
+  //   }))
 
-    for (const result of results) {
+  //   for (const result of results) {
   
-      // const filePath = path.join(videosDir, fn);
+  //     // const filePath = path.join(videosDir, fn);
   
-      // if video
-      if (result.fileName.split('.')[1] === VIDEO_FORMAT) {
-        // const stats = await stat(filePath);
-        // const data = await getMetadata(filePath);
+  //     // if video
+  //     if (result.fileName.split('.')[1] === VIDEO_FORMAT) {
+  //       // const stats = await stat(filePath);
+  //       // const data = await getMetadata(filePath);
 
-        const thumbnailPath = result.filePath.replace(VIDEO_FORMAT, THUMBNAIL_FORMAT);
+  //       const thumbnailPath = result.filePath.replace(VIDEO_FORMAT, THUMBNAIL_FORMAT);
 
-        // if (!fileExists(thumbnailPath)) {
-        //   await captureThumbnail(result.filePath);
-        // }
+  //       // if (!fileExists(thumbnailPath)) {
+  //       //   await captureThumbnail(result.filePath);
+  //       // }
   
-        files.push({
-          name: result.fileName,
-          path: 'local:\\' + thumbnailPath,
-          size: result.stats.size,
-          created: result.stats.birthtime,
-          length: 0 //result.data.format.duration
-        });
-      }
+  //       files.push({
+  //         name: result.fileName,
+  //         path: 'local:\\' + thumbnailPath,
+  //         size: result.stats.size,
+  //         created: result.stats.birthtime,
+  //         length: 0 //result.data.format.duration
+  //       });
+  //     }
   
-    }
+  //   }
   
-    return files;
+  //   return files;
+  // });
+
+  ipcMain.handle(FileIPC.GetThumbnail, async(_, id: string) => {
+    const filePath = path.join(app.getPath('videos'), VIDEO_DIRECTORY, `${id}.${THUMBNAIL_FORMAT}`);
+    return 'local:\\' + filePath;
   });
   
 }

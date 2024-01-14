@@ -4,6 +4,7 @@ import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
 import { MatchRecorder } from './matchRecorder';
 import env from '../env';
+import { ClientIPC, FileIPC } from '../shared/ipc';
 
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
@@ -13,12 +14,10 @@ export type PreloadAPI = typeof api;
 
 const api = {
   file: {
-    getVideos: async() => {      
-      return await ipcRenderer.invoke("recording:videos")
-    }
+    getThumbnail: async(id: string): Promise<string> => await ipcRenderer.invoke(FileIPC.GetThumbnail, id)
   },
   client: {
-    player: () => ipcRenderer.invoke('client:player')
+    player: () => ipcRenderer.invoke(ClientIPC.Player)
   }
 }
 
@@ -60,5 +59,12 @@ ipcRenderer.on('match:data', (_, data) => {
 
 ipcRenderer.on('recording:post', (_, data) => {
   console.log(data);
-  
+  fetch(env.RENDERER_VITE_API_URL + '/v1/recording', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
 })

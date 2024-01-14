@@ -5,6 +5,8 @@ import PageTitle from "@renderer/core/page/PageTitle";
 import PageHeader from "@renderer/core/page/PageHeader";
 import Divider from "@renderer/core/page/Divider";
 import { Outlet } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import { getRecordings } from "@renderer/api/recording";
 
 export type VideoData = {
   name: string,
@@ -16,17 +18,12 @@ export type VideoData = {
 
 const Recordings = () => {
 
-  const [videos, setVideos] = useState<VideoData[]>([]);
-
-  useEffect(() => {
-
-    const loadVideos = async() => {
-      setVideos(await window.api.file.getVideos());
-    }
-    
-    loadVideos();
-
-  }, [])
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ['recordings'],
+    queryFn: getRecordings
+  });
+  
+  if (isLoading) return null;
 
   return ( 
     <Page className="relative">
@@ -36,8 +33,8 @@ const Recordings = () => {
           <Divider/>
         </PageHeader>
         <div className="flex flex-col gap-6">
-          { videos.map((v, key) => (
-            <RecordingCard video={v} key={key}/>
+          { data?.map((rec, key) => (
+            <RecordingCard recording={rec} position={key + 1} key={key}/>
           )) }
         </div>
         <Outlet/>
