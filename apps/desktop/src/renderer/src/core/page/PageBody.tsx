@@ -1,12 +1,12 @@
 import { cn } from "@fyp/class-name-helper";
 import { ReactNode } from "react";
 
-export type PageContentProps = {
+export type PageBodyProps = {
   className?: string,
   children?: ReactNode
 }
 
-const PageContent = ({ className, children }: PageContentProps) => {
+const PageBody = ({ className, children }: PageBodyProps) => {
 
   return (
     <div className={cn("flex flex-col gap-5 h-full", className)}>
@@ -15,4 +15,4 @@ const PageContent = ({ className, children }: PageContentProps) => {
   )
 }
 
-export default PageContent;
+export default PageBody;

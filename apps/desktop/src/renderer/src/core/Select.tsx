@@ -27,7 +27,7 @@ const Select = ({ value, className, options }: SelectProps) => {
         <ChevronDown className={cn("text-star-dust-400 w-5 h-5 ml-auto transition-all", isOpen && "rotate-180")}/>
       </DropdownMenuTrigger>
       <DropdownMenuContent className={cn("bg-woodsmoke-400 border-woodsmoke-50 text-sm text-star-dust-300 w-full mt-1 min-w-[12rem] z-50 rounded-lg",
-      "py-1.5 border")}>
+      "py-1.5 border max-h-80 overflow-y-auto")}>
         { options.map((opt, key) => {
           return (
             <DropdownMenuItem key={opt.id} className="hover:bg-woodsmoke-500 px-3 py-2 cursor-pointer" onClick={() => opt.onClick(options[key])}>

@@ -6,10 +6,13 @@ import PageHeader from "@renderer/core/page/PageHeader";
 import { Outlet } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getRecordings } from "@renderer/api/recording";
-import Select, { SelectOption } from "@renderer/core/Select";
+import Select from "@renderer/core/Select";
 import RoleSelector, { Role } from "@renderer/core/RoleSelector";
-import { QUEUE } from "@fyp/types";
-import { queue } from "@renderer/util/queue";
+import SearchSelect from "@renderer/core/SearchSelect";
+import { useQueueFilter } from "@renderer/core/hooks/filter/useQueueFilter";
+import { useChampionFilter } from "@renderer/core/hooks/filter/useChampionFilter";
+import { useDateFilter } from "@renderer/core/hooks/filter/useDateFilter";
+import PageBody from "@renderer/core/page/PageBody";
 
 export type VideoData = {
   name: string,
@@ -21,35 +24,10 @@ export type VideoData = {
 
 const Recordings = () => {
 
-  const dateOptions: SelectOption[] = [
-    {
-      id: -1,
-      value: 'Latest',
-      onClick: (opt) => setDateFilter(opt)
-    },
-    {
-      id: 1,
-      value: 'Oldest',
-      onClick: (opt) => setDateFilter(opt)
-    }
-  ]
-
-  const queueOptions: SelectOption[] = [
-    {
-      id: 'all',
-      value: 'All game modes',
-      onClick: (opt) => setQueueFilter(opt)
-    },
-    ...QUEUE.map(q => ({
-      id: q,
-      value: queue(q),
-      onClick: (opt) => setQueueFilter(opt)
-    }))
-  ]
-
-  const [queueFilter, setQueueFilter] = useState<SelectOption>(queueOptions[0]);
+  const [queueFilter, queueOptions] = useQueueFilter();
+  const [dateFilter, dateOptions] = useDateFilter();
+  const [championFilter, championOptions] = useChampionFilter();
   const [roleFilter, setRoleFilter] = useState<Role>('FILL');
-  const [dateFilter, setDateFilter] = useState<SelectOption>(dateOptions[0]);
 
   const { isLoading, isError, data } = useQuery({
     queryKey: ['recordings'],
@@ -66,15 +44,15 @@ const Recordings = () => {
           <div className="flex items-center gap-3">
             <Select value={queueFilter} options={queueOptions}/>
             <Select value={dateFilter} options={dateOptions}/>
-            {/* <SearchSelect placeholder="Filter by champion" value={champ} options={opts}/> */}
+            <SearchSelect value={championFilter} options={championOptions}/>
             <RoleSelector onChange={(r) => setRoleFilter(r)} role={roleFilter}/>
           </div>
         </PageHeader>
-        <div className="flex flex-col gap-6">
+        <PageBody>
           { data?.map((rec, key) => (
             <RecordingCard recording={rec} position={key + 1} key={key}/>
           )) }
-        </div>
+        </PageBody>
         <Outlet/>
       </Page.Content>
     </Page>

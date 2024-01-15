@@ -8,7 +8,7 @@ import { NetworkIPC } from "./networkIPC";
 import { VIDEO_DIRECTORY, VIDEO_FORMAT } from "../constants";
 import { MatchRecorderIPC } from "./matchRecorderIPC";
 import { ClientManager } from "./clientManager";
-import { CHAMPIONS } from "../shared/champion";
+import { CHAMPIONS } from "../constants";
 
 export enum GameEvent {
   START = "GameStart",
