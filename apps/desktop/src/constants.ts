@@ -670,5 +670,5 @@ export const CHAMPIONS = {
   }
 } as const;
 
-export const getChampionIdByKey = (key: number) => CHAMPIONS[key].id;
-export const getChampionNameById = (id: string) => CHAMPIONS[id].name;
+export const getChampionIdByKey = (key: number) => CHAMPIONS[key]?.id;
+export const getChampionNameById = (id: string) => CHAMPIONS[id]?.name;

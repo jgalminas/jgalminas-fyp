@@ -102,7 +102,7 @@ export const extractMatchData = (match: MatchV5DTOs.MatchDto, timeline: MatchV5T
       team: teamColour(p.teamId),
       summonerOne: p.summoner1Id as SummonerSpell,
       summonerTwo: p.summoner2Id as SummonerSpell,
-      primaryRune: p.perks.styles[0].style,
+      primaryRune: p.perks.styles[0].selections[0].perk,
       secondaryRune: p.perks.styles[1].style,
       items: [
         { _id: p.item0, slot: 0 },

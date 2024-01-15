@@ -10,6 +10,7 @@ import { aggregateTeamKills, calcCSPM, calcKDA, calcKP } from "@renderer/util/st
 import { timestampToMinutes } from "@renderer/util/time";
 import { Fragment } from "react";
 import BannedChampion from "./BannedChampion";
+import { getChampionIdByKey } from "@root/constants";
 
 export type ScoreboardTableProps = {
   className?: string,
@@ -27,22 +28,26 @@ const ScoreboardTable = ({ className, match }: ScoreboardTableProps) => {
   return (
     <div className={cn("flex flex-col text-star-dust-300 text-sm", className)}>
       <div className="bg-woodsmoke-400 rounded-t-lg px-5 py-1.5 grid grid-cols-[1fr,4fr,1fr] items-center">
-        <p className="text-star-dust-200 font-medium"> BLUE TEAM
+        <p className="text-star-dust-200 font-medium py-2.5"> BLUE TEAM
           <span className={cn("ml-2", match.winningTeam === 'BLUE' ? "text-accent-green": "text-accent-red")}> { winner('BLUE') } </span>
         </p>
         <div className="flex gap-16 justify-center">
           <div className="flex gap-1.5">
-            {
-              blueTeam.map((p) => (<BannedChampion key={p.champion} champion={p.champion}/>))
-            }
+            { match.bans && match.bans.BLUE.sort((a, b) => a.pickTurn > b.pickTurn ? -1 : 1).map((b) => {
+              return (
+                <BannedChampion key={b.championId} champion={getChampionIdByKey(b.championId)}/>
+              )
+            }) }
           </div>
           <div className="flex gap-1.5">
-            {
-              redTeam.map((p) => (<BannedChampion key={p.champion} champion={p.champion}/>))
-            } 
+            { match.bans && match.bans.RED.sort((a, b) => a.pickTurn > b.pickTurn ? -1 : 1).map((b) => {
+              return (
+                <BannedChampion key={b.championId} champion={getChampionIdByKey(b.championId)}/>
+              )
+            }) }
           </div>
        </div>
-        <p className="text-star-dust-200 font-medium justify-self-end"> 
+        <p className="text-star-dust-200 font-medium justify-self-end py-2.5"> 
           <span className={cn("mr-2", match.winningTeam === 'RED' ? "text-accent-green": "text-accent-red")}> { winner('RED') } </span>
           RED TEAM
         </p>
@@ -50,11 +55,14 @@ const ScoreboardTable = ({ className, match }: ScoreboardTableProps) => {
       <div className="grid grid-cols-[3fr,auto,3fr] items-center gap-5 bg-woodsmoke-700 rounded-b-lg p-5">
         {
           Array.from({ length: 5 }).map((_, i) => {
-            const Position = RoleIcons[blueTeam[i].position];
+            const pos = blueTeam[i].position;
+            const Position = pos ? RoleIcons[pos] : null;
             return (
               <Fragment key={i}>
                 <Player player={blueTeam[i]} start={match.start} finish={match.finish} teamKills={aggregateTeamKills(match.participants, 'BLUE')}/>
-                <Position className="mx-5"/>
+                { //@ts-expect-error 
+                  pos && <Position className="mx-5"/>
+                }
                 <Player inverse player={redTeam[i]} start={match.start} finish={match.finish} teamKills={aggregateTeamKills(match.participants, 'RED')}/>
               </Fragment>
             )
@@ -96,8 +104,8 @@ const Player = ({ player, inverse = false, teamKills, start, finish }: PlayerPro
 
       <div className={cn("flex gap-3 items-center", inverse && "flex-row-reverse")}>
         <div className="grid grid-cols-2 grid-rows-2 gap-1.5">
-          <SquareImage src={Asset.summonerSpell(player.summonerOne)}/>
-          <SquareImage src={Asset.summonerSpell(player.summonerTwo)}/>
+          <SquareImage src={Asset.primaryRune(player.primaryRune)}/>
+          <SquareImage className="p-0.5" src={Asset.secondaryRune(player.secondaryRune)}/>
           <SquareImage src={Asset.summonerSpell(player.summonerOne)}/>
           <SquareImage src={Asset.summonerSpell(player.summonerTwo)}/>
         </div>
