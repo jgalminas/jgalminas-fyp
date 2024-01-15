@@ -32,6 +32,7 @@ const SearchSelect = ({ value, className, options }: SearchSelectProps) => {
   const onClick = (opt: SearchSelectOption) => {
     opt.onClick(opt);
     setOpen(false);
+    setSearch("");
   }
 
   return (

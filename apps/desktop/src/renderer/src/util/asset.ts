@@ -1,6 +1,6 @@
 import { SummonerSpell } from "@fyp/types";
 
-export const PATCH = '13.23.1';
+export const PATCH = '14.1.1';
 export const BASE_CDN = 'https://ddragon.leagueoflegends.com/cdn';
 export const BASE_RUNE_CDN = 'https://ddragon.canisback.com/img/perk-images/Styles/';
 
@@ -9,7 +9,11 @@ export const BASE_RUNE_CDN = 'https://ddragon.canisback.com/img/perk-images/Styl
 export const Asset = {
   champion: (champion: string) => {
     if (champion) {
-      return `${BASE_CDN}/${PATCH}/img/champion/${champion}.png`;
+      if (champion === 'FiddleSticks') {
+        return `${BASE_CDN}/${PATCH}/img/champion/Fiddlesticks.png`;
+      } else {
+        return `${BASE_CDN}/${PATCH}/img/champion/${champion}.png`;
+      }
     } else {
       return '/images/no_champion.png';
     }
