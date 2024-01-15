@@ -2,6 +2,8 @@ import { Types } from "mongoose";
 import { GameMode, GameType, IFrame, Team, IParticipant } from "./index";
 import { QueueType } from "./enums";
 
+type Ban = { championId: number, pickTurn: number }
+
 export type IMatch = {
   _id: Types.ObjectId,
   gameId: string,
@@ -13,5 +15,9 @@ export type IMatch = {
   type: GameType,
   winningTeam: Team,
   participants: IParticipant[],
-  frames: IFrame[]
+  frames: IFrame[],
+  bans?: {
+    BLUE: Ban[],
+    RED: Ban[]
+  }
 }

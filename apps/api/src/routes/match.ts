@@ -9,8 +9,8 @@ const router = Router();
 
 router.post('/', requireAuth, async(req, res) => {
 
-  const gameId = req.body.gameId;
-  const matchId = `${req.body.region}_${req.body.gameId}`;
+  const gameId = `${req.body.region}_${req.body.gameId}`;
+  const matchId = req.body.matchId;
   const region = regionToRegionGroup(req.body.region);
 
   await agenda.now<MatchDataContract>('GET_MATCH_DATA', { gameId, matchId, region });

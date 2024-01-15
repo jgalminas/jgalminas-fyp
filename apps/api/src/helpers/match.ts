@@ -6,6 +6,22 @@ export const extractMatchData = (match: MatchV5DTOs.MatchDto, timeline: MatchV5T
 
   const teamColour = (id: number) => id === 100 ? 'BLUE' : 'RED';
 
+  const bans = () => {
+    const bans: {
+      'BLUE': { pickTurn: number, championId: number }[],
+      'RED': { pickTurn: number, championId: number }[]
+    } = {
+      'BLUE': [],
+      'RED': []
+    };
+    match.info.teams.forEach((t) => {
+      if (t.bans) {
+        bans[teamColour(t.teamId)] = t.bans;
+      }  
+    })
+    return Object.keys(bans).length > 0 ? bans : undefined;
+  }
+
   const filterEvents = (events: MatchV5TimelineDTOs.Frame['events']): CreateEvent[] => {
 
     const filtered: CreateEvent[] = [];
@@ -103,6 +119,7 @@ export const extractMatchData = (match: MatchV5DTOs.MatchDto, timeline: MatchV5T
       cs: p.totalMinionsKilled + p.neutralMinionsKilled,
       level: p.champLevel
     })),
+    bans: bans(),
     frames: timeline.info.frames.map((f) => ({
       timestamp: f.timestamp,
       participantStats: Object.values(f.participantFrames).map((pf) => ({
