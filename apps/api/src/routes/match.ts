@@ -18,7 +18,7 @@ router.post('/', requireAuth, async(req, res) => {
   res.status(200).send();
 })
 
-router.get('/list', requireAuth, async(req, res) => {
+router.get('/all', requireAuth, async(req, res) => {
 
   const match = await MatchRepository.getUserMatches(req.user?.puuid as string);
 

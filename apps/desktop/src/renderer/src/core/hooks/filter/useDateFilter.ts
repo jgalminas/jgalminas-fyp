@@ -16,12 +16,12 @@ export const useDateFilter = (props?: useDateFilterProps) => {
 
   const options: SelectOption[] = [
     {
-      id: -1,
+      id: 'latest',
       value: 'Latest',
       onClick: handleClick
     },
     {
-      id: 1,
+      id: 'oldest',
       value: 'Oldest',
       onClick: handleClick
     }

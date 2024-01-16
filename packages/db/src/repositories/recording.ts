@@ -51,8 +51,30 @@ export const insertRecording = async(userId: string, data: InsertRecording) => {
 
 }
 
-export const getRecordings = async(userId: string) => {
+export const getRecordings = async(
+  userId: string,
+  filters?: {
+    role: string,
+    queue?: number,
+    date: -1 | 1,
+    champion?: string,
+    start: number,
+    offset: number
+  }
+  ) => {
   
+  const pagination = () => {
+    if (!filters) return [];
+    return [
+      {
+        $skip: filters.start
+      },
+      {
+        $limit: filters.offset
+      }
+    ]
+  }
+
   const result = await User.aggregate<IUser>([
     {
       $match: {
@@ -64,7 +86,34 @@ export const getRecordings = async(userId: string) => {
         from: 'recordings',
         localField: 'recordings',
         foreignField: '_id',
-        as: 'recordings'
+        as: 'recordings',
+        pipeline: [
+          {
+            $match: {
+              $and: [
+                (filters?.champion && filters.champion !== 'all' ? {
+                  champion: {
+                    $regex: new RegExp(filters.champion, 'i')
+                  }
+                } : {}),
+                (filters?.role && filters.role !== 'FILL' ? {
+                  position: {
+                    $regex: new RegExp(filters.role, 'i')
+                  }
+                } : {}),
+                (filters?.queue && filters.queue !== 0 ? {
+                  queueId: filters.queue
+                } : {})
+              ]
+            }
+          },
+          {
+            $sort: {
+              createdAt: filters?.date ?? -1
+            }
+          },
+          ...pagination()
+        ]
       }
     }
   ]);

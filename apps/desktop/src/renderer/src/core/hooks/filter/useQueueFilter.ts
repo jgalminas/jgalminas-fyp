@@ -18,7 +18,7 @@ export const useQueueFilter = (props?: useQueueFilterProps) => {
 
   const options: SelectOption[] = [
     {
-      id: 'all',
+      id: 0,
       value: 'All game modes',
       onClick: handleClick
     },
