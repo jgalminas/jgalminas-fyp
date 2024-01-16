@@ -163,6 +163,9 @@ importers:
       bson:
         specifier: ^6.2.0
         version: 6.2.0
+      express:
+        specifier: ^4.18.2
+        version: 4.18.2
       ffmpeg-static:
         specifier: ^5.2.0
         version: 5.2.0
@@ -175,6 +178,9 @@ importers:
       postcss:
         specifier: ^8.4.28
         version: 8.4.33
+      range-parser:
+        specifier: ^1.2.1
+        version: 1.2.1
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -227,12 +233,18 @@ importers:
       '@testing-library/react':
         specifier: ^14.0.0
         version: 14.1.2(react-dom@18.2.0)(react@18.2.0)
+      '@types/express':
+        specifier: ^4.17.17
+        version: 4.17.21
       '@types/fluent-ffmpeg':
         specifier: ^2.1.23
         version: 2.1.24
       '@types/node':
         specifier: ^18.17.5
         version: 18.19.4
+      '@types/range-parser':
+        specifier: ^1.2.7
+        version: 1.2.7
       '@types/react':
         specifier: ^18.2.20
         version: 18.2.47
@@ -3701,7 +3713,7 @@ packages:
     resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
     requiresBuild: true
     dependencies:
-      '@types/node': 18.19.4
+      '@types/node': 20.10.6
     optional: true
 
   /@typescript-eslint/eslint-plugin@6.18.0(@typescript-eslint/parser@6.18.0)(eslint@8.56.0)(typescript@5.3.3):

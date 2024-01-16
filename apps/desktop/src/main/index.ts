@@ -8,6 +8,8 @@ import { LolApi } from 'twisted';
 import { MatchObserver } from './matchObserver';
 import { NetworkIPC } from './networkIPC';
 import { MatchRecorderIPC } from './matchRecorderIPC';
+import env from '../env';
+import { videoServer } from './videoServer';
 
 registerChannels();
 
@@ -93,4 +95,8 @@ app.on('window-all-closed', () => {
 
 app.whenReady().then(async() => {
   protocol.handle('local', (req) => net.fetch(req.url.replace('local:\\', 'file:\\')));
+});
+
+videoServer.listen(env.RENDERER_VITE_VIDEO_SERVER_PORT, () => {
+  console.log("Video server running on: " + env.RENDERER_VITE_VIDEO_SERVER_PORT);
 });
