@@ -29,12 +29,10 @@ const Recordings = () => {
   const [championFilter, championOptions] = useChampionFilter();
   const [roleFilter, setRoleFilter] = useState<Role>('FILL');
 
-  const { isLoading, data } = useQuery({
+  const { data } = useQuery({
     queryKey: ['recordings', queueFilter, dateFilter, championFilter, roleFilter],
     queryFn: () => getRecordings({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id }),
   });
-
-  if (isLoading) return null;
 
   return ( 
     <Page>

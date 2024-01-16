@@ -20,12 +20,10 @@ const Matches = () => {
   const [championFilter, championOptions] = useChampionFilter();
   const [roleFilter, setRoleFilter] = useState<Role>('FILL');
 
-  const { isLoading, isError, data } = useQuery({
+  const { data } = useQuery({
     queryKey: ['matches'],
     queryFn: getMatches
   })
-
-  if (isError) return null;
 
   return ( 
     <Page>

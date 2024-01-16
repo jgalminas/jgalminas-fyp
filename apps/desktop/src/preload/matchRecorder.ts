@@ -59,7 +59,12 @@ export class MatchRecorder {
     });    
 
     this.recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=h264' });
-    this.readable = new Readable({ read() {} });
+    this.readable = new Readable({
+      read() {},
+      async destroy() {
+        stream.getTracks().forEach((t) =>  t.stop())
+      }
+    });
 
     this.recorder.ondataavailable = async(e) => {
 
@@ -84,6 +89,7 @@ export class MatchRecorder {
     .on('end', async() => {
       await captureThumbnail(videoPath);
       ipcRenderer.send(RecorderIPC.Response);
+      this.readable?.destroy();
     })
     .run();
     
