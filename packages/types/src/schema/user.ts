@@ -8,5 +8,5 @@ export type IUser = {
   password: string,
   createdAt: Date,
   puuid: string | undefined,
-  recordings: IRecording
+  recordings: IRecording[]
 }

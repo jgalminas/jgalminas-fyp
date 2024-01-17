@@ -31,7 +31,6 @@ const Highlights = () => {
         </PageHeader>
         
         <PageBody>
-          <video src="http://localhost:1888/video/6768869264" controls/>
         </PageBody>
       </Page.Content>
     </Page>

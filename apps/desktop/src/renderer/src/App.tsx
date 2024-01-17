@@ -11,11 +11,11 @@ import Highlights from './pages/Highlights';
 import Recordings from './pages/recordings/Recordings';
 import Settings from './pages/Settings';
 import Match from './pages/match/Match';
-import VideoModal from './core/video/VideoModal';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ScoreBoard from './pages/match/tabs/Scoreboard';
 import Timeline from './pages/match/tabs/Timeline';
 import HighlightsTab from './pages/match/tabs/Highlights';
+import RecordingVideoModal from './pages/recordings/RecordingVideoModal';
 
 const client = new QueryClient();
 
@@ -39,7 +39,7 @@ const App = () => {
               </Route>
               <Route path='highlights' element={<SecureRoute element={<Highlights/>}/>}/>
               <Route path='recordings' element={<SecureRoute element={<Recordings/>}/>}>
-                <Route path=':path' element={<SecureRoute element={<VideoModal/>}/>}/>
+                <Route path=':id' element={<SecureRoute element={<RecordingVideoModal/>}/>}/>
               </Route>
               <Route path='settings' element={<SecureRoute element={<Settings/>}/>}/>
             </Route>

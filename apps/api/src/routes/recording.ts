@@ -40,4 +40,15 @@ router.get('/all', requireAuth, async(req, res) => {
 
 })
 
+router.get('/:id', async(req, res) => {
+  
+  const recording = await RecordingRepository.getRecordingById(req.user?._id.toString() as string, req.params.id);
+  
+  if (!recording) {
+    res.status(404);
+  }
+  
+  res.status(200).json(recording);
+})
+
 export default router;

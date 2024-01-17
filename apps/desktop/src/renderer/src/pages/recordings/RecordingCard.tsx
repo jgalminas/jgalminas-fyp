@@ -44,7 +44,7 @@ const RecordingCard = ({ recording, position }: RecordingCardProps) => {
 
   return (
     <Card className="flex p-0">  
-      <ThumbnailPlay imgSrc={path} to='/recordings/some-id'/>
+      <ThumbnailPlay imgSrc={path} to={`/recordings/${recording._id}`}/>
 
       <div className="flex flex-col py-5 justify-between">
         <div className="flex items-center gap-4">

@@ -13,8 +13,10 @@ export class RequestBuilder {
     method: 'GET'
   }
 
-  public route(value: string) {
-    this.request.url += value;
+  public route(...value: string[]) {
+    for (const val of value) {
+      this.request.url += val;
+    }
     return this;
   }
 

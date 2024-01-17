@@ -17,3 +17,11 @@ export const getRecordings = async (
 
   return res.json();
 }
+
+export const getRecording = async (id: string): Promise<IRecording & { match: string }> => {
+  const res = await new RequestBuilder()
+  .route('/v1/recording/', id)
+  .fetch();
+
+  return res.json();
+} 

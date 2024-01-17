@@ -124,4 +124,49 @@ export const getRecordings = async(
     return [];
   }
 
-} 
+}
+
+export const getRecordingById = async(userId: string, id: string) => {
+
+  try {
+    const result = await User.aggregate<IRecording>([
+      {
+        $match: {
+          _id: new Types.ObjectId(userId)
+        }
+      },
+      {
+        $lookup: {
+          from: 'recordings',
+          localField: 'recordings',
+          foreignField: '_id',
+          as: 'recordings',
+          pipeline: [
+            {
+              $match: {
+                _id: new Types.ObjectId(id)
+              }
+            }
+          ]
+        }
+      },
+      {
+        $unwind: '$recordings'
+      },
+      {
+        $replaceRoot: {
+          newRoot: '$recordings'
+        }
+      }
+    ]);
+  
+    if (result.length > 0) {
+      return result[0];
+    } else {
+      return null;
+    }
+  } catch (err) {
+    return null;
+  }
+
+};
