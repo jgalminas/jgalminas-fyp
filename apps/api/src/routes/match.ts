@@ -37,4 +37,16 @@ router.get('/:id', requireAuth, async(req, res) => {
 
 })
 
+router.get('/:id/timeline', requireAuth, async(req, res) => {
+
+  const timeline = await MatchRepository.getMatchTimeline(req.params.id);
+
+  if (timeline) {
+    res.send(timeline);
+  } else {
+    res.status(404).send();
+  }
+
+})
+
 export default router;

@@ -95,7 +95,7 @@ export const getMatchById = async(id: string) => {
   } else {
     return null;
   }
-};
+}
 
 export const getUserMatches = async(puuid: string, offset: number = 0, count: number = 10) => {
 
@@ -130,4 +130,72 @@ export const getUserMatches = async(puuid: string, offset: number = 0, count: nu
       }
     }
   ])
+}
+
+export const getMatchTimeline = async(id: string) => {
+
+  const result = await Match.aggregate<IMatch>([
+    {
+      $match: {
+        _id: new Types.ObjectId(id)
+      }
+    },
+    {
+      $lookup: {
+        from: 'participants',
+        foreignField: '_id',
+        localField: 'participants',
+        as: 'participants'
+      }
+    },
+    {
+      $lookup: {
+        from: 'frames',
+        foreignField: '_id',
+        localField: 'frames',
+        as: 'frames',
+        pipeline: [
+          {
+            $sort: {
+              timestamp: 1
+            }
+          },
+          {
+            $lookup: {
+              from: 'events',
+              foreignField: '_id',
+              localField: 'events',
+              as: 'events',
+              pipeline: [
+                {
+                  $sort: {
+                    timestamp: 1
+                  }
+                }
+              ]
+            }
+          },
+          {
+            $lookup: {
+              from: 'participantstats',
+              foreignField: '_id',
+              localField: 'participantStats',
+              as: 'participantStats'
+            }
+          }
+        ]
+      }
+    },
+    {
+      $project: {
+        bans: 0
+      }
+    }
+  ]);
+
+  if (result.length > 0) {
+    return result[0];
+  } else {
+    return null;
+  }
 }
