@@ -15,7 +15,7 @@ export type PreloadAPI = typeof api;
 const api = {
   file: {
     getThumbnail: async(id: string): Promise<string> => await ipcRenderer.invoke(FileIPC.GetThumbnail, id),
-    createHighlight: async(id: string) => await ipcRenderer.invoke(FileIPC.CreateHighlight, id)
+    createHighlights: async(id: string) => await ipcRenderer.invoke(FileIPC.CreateHighlight, id)
   },
   client: {
     player: () => ipcRenderer.invoke(ClientIPC.Player)

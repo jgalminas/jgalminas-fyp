@@ -6,7 +6,7 @@
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self' {{ RENDERER_VITE_API_URL }}; script-src 'self';
+      content="default-src 'self' {{ RENDERER_VITE_API_URL }} {{ RENDERER_VITE_SOCKET_URL }}; script-src 'self';
       style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
       font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;
       img-src 'self' local: raw.communitydragon.org ddragon.leagueoflegends.com ddragon.canisback.com;

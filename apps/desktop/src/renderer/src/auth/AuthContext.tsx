@@ -124,6 +124,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
       const res = await new RequestBuilder()
       .route('/v1/auth/login')
+      .method('POST')
       .body(credentials)
       .fetch();
 

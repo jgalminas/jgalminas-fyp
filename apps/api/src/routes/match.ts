@@ -13,7 +13,7 @@ router.post('/', requireAuth, async(req, res) => {
   const matchId = req.body.matchId;
   const region = regionToRegionGroup(req.body.region);
 
-  await agenda.now<MatchDataContract>('GET_MATCH_DATA', { gameId, matchId, region });
+  await agenda.now<MatchDataContract>('GET_MATCH_DATA', { gameId, matchId, region, userId: req.user?._id.toString() });
 
   res.status(200).send();
 })

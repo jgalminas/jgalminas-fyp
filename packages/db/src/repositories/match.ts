@@ -38,11 +38,13 @@ export const insertMatch = async(id: string, data: InsertMatch) => {
     await session.commitTransaction();
     session.endSession();
   } catch (err) {
+    console.log(err);
+    
     await session.abortTransaction();
     session.endSession();
   }
 
-  return match?._id;
+  return match;
 }
 
 export const getMatchById = async(id: string) => {

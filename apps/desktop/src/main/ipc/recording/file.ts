@@ -8,10 +8,12 @@ import { fileExists } from '../../util/file';
 import { captureThumbnail } from '../../../shared/util/recording';
 import { exec, execFile, spawn, spawnSync } from 'child_process';
 import { FileIPC } from '../../../shared/ipc';
-import Ffmpeg from 'fluent-ffmpeg';
 import { readFileSync } from 'fs';
 
-ffmpeg.setFfmpegPath(ffmpegStatic as string);
+import { ffmpegPath, ffprobePath } from 'ffmpeg-ffprobe-static';
+
+ffmpeg.setFfmpegPath(ffmpegPath as string);
+ffmpeg.setFfprobePath(ffprobePath as string)
 
 export type VideoData = {
   name: string,
@@ -110,7 +112,7 @@ export default () => {
 
     const create = async(start: number, name: string) => {
       return new Promise((resolve, reject) => {
-        Ffmpeg(filePath)
+        ffmpeg(filePath)
           .setStartTime(start)
           .setDuration(60)
           .output(outputFp + `/${name}.mp4`)
