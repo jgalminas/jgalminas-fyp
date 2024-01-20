@@ -26,9 +26,6 @@ export default () => {
       const sessions = (await SessionRepository.findSessionsByUserId(userId)).map((s => s._id.toString()));
       const recording = await RecordingRepository.findRecordingByMatchId(userId, matchId);
 
-      console.log(sessions);
-      
-
       if (result) {
         WSService.send(sessions, {
           type: 'MATCH_UPLOADED',

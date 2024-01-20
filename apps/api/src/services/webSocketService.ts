@@ -10,10 +10,6 @@ export class WebSocketService {
     constructor(wss: Server) {
         this.wss = wss;
 
-        setInterval(() => {
-            this.clients
-        }, 2000)
-
         // handle connections
         this.wss.on('connection', (ws, req) => {
             if (req.session) {
@@ -27,8 +23,6 @@ export class WebSocketService {
     }
 
     public send(sessions: string[], event: WebSocketEvent) {
-        console.log(this.clients);
-        
         sessions.forEach((session) => {
             const socket = this.clients.get(session);
             if (socket && socket.readyState === WebSocket.OPEN) {

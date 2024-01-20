@@ -1,12 +1,9 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import ffmpeg from 'fluent-ffmpeg';
-import ffmpegStatic from 'ffmpeg-static';
 import { MatchRecorder } from './matchRecorder';
 import env from '../env';
 import { ClientIPC, FileIPC } from '../shared/ipc';
-
-ffmpeg.setFfmpegPath(ffmpegStatic as string);
+import { IMatch, IRecording } from '@fyp/types';
 
 export type PreloadAPI = typeof api;
 
@@ -15,7 +12,7 @@ export type PreloadAPI = typeof api;
 const api = {
   file: {
     getThumbnail: async(id: string): Promise<string> => await ipcRenderer.invoke(FileIPC.GetThumbnail, id),
-    createHighlights: async(id: string) => await ipcRenderer.invoke(FileIPC.CreateHighlight, id)
+    createHighlights: async(data: { match: IMatch, recording: IRecording, puuid: string }) => await ipcRenderer.invoke(FileIPC.CreateHighlights, data)
   },
   client: {
     player: () => ipcRenderer.invoke(ClientIPC.Player)

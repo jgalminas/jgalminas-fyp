@@ -7,7 +7,7 @@ export enum RecorderIPC {
 
 export enum FileIPC {
   GetThumbnail = "file:thumbnail:get",
-  CreateHighlight = "file:highlight:create"
+  CreateHighlights = "file:highlight:create:many"
 }
 
 export enum PathIPC {
