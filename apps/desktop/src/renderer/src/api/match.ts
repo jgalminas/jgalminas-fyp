@@ -9,9 +9,17 @@ export const getMatchById = async (id: string): Promise<Match> => {
   return await res.json();
 }
 
-export const getMatches = async (): Promise<Match[]> => {
+export const getMatches = async (
+  filters: {
+    date: string | number,
+    champion: string,
+    role: string,
+    queue: string | number
+  }
+): Promise<Match[]> => {
   const res = await new RequestBuilder()
   .route('/v1/match/all')
+  .query(filters)
   .fetch();
 
   return res.json();

@@ -21,8 +21,8 @@ const Matches = () => {
   const [roleFilter, setRoleFilter] = useState<Role>('FILL');
 
   const { data } = useQuery({
-    queryKey: ['matches'],
-    queryFn: getMatches
+    queryKey: ['matches', queueFilter, dateFilter, championFilter, roleFilter],
+    queryFn: () => getMatches({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id })
   })
 
   return ( 
