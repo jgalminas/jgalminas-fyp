@@ -13,6 +13,7 @@ import { useQueueFilter } from "@renderer/core/hooks/filter/useQueueFilter";
 import { useChampionFilter } from "@renderer/core/hooks/filter/useChampionFilter";
 import { useDateFilter } from "@renderer/core/hooks/filter/useDateFilter";
 import PageBody from "@renderer/core/page/PageBody";
+import InfoMessage from "@renderer/core/message/InfoMessage";
 
 export type VideoData = {
   name: string,
@@ -50,6 +51,10 @@ const Recordings = () => {
           { data?.map((rec, key) => (
             <RecordingCard recording={rec} position={key + 1} key={key}/>
           )) }
+          { data && data.length === 0
+            ? <InfoMessage className="bg-woodsmoke-800 rounded-lg px-5 py-10"> No results found </InfoMessage>
+            : null
+          }
         </PageBody>
         <Outlet/>
       </Page.Content>

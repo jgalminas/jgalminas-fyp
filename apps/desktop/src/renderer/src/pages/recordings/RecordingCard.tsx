@@ -52,7 +52,7 @@ const RecordingCard = ({ recording, position }: RecordingCardProps) => {
         ? (
           <div className="aspect-video w-[19.56rem] text-star-dust-300 flex flex-col items-center justify-center gap-3">
             <Info className="w-8 h-8"/>
-            <p className="max-w-[8rem] text-center text-sm text-star"> Couldn't locate the recording </p>
+            <p className="max-w-[8rem] text-center text-sm text-star-dust-400"> Couldn't locate the recording </p>
           </div>
         )
         : <ThumbnailPlay imgSrc={path} to={`/recordings/${recording._id}`}/>
