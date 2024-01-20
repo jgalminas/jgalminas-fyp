@@ -12,6 +12,7 @@ import { queue } from "@renderer/util/queue";
 import { fileSize } from "@renderer/util/file";
 import IconSelect, { DropdownOption } from "@renderer/core/Dropdown";
 import Ellipsis from '@assets/icons/Ellipsis.svg?react';
+import Info from '@assets/icons/Info.svg?react';
 
 export type RecordingCardProps = {
   recording: IRecording & { match: string },
@@ -21,15 +22,18 @@ export type RecordingCardProps = {
 const RecordingCard = ({ recording, position }: RecordingCardProps) => {
 
   const [path, setPath] = useState<string | null>(null);
+  const [error, setError] = useState<boolean>(false);
 
   useEffect(() => {
     (async() => {
-      const fp = await window.api.file.getThumbnail(recording.gameId);
-      setPath(fp);
+      const result = await window.api.file.getThumbnail(recording.gameId);
+      if (result.message === 'OK') {
+        setPath(result.path);
+      } else {
+        setError(true);
+      }
     })();
   }, [])
-
-  if (!path) return null;
 
   const Role = recording.position && RoleIcons[recording.position];
   const size = fileSize(recording.size);
@@ -43,8 +47,16 @@ const RecordingCard = ({ recording, position }: RecordingCardProps) => {
   ]
 
   return (
-    <Card className="flex p-0">  
-      <ThumbnailPlay imgSrc={path} to={`/recordings/${recording._id}`}/>
+    <Card className="flex p-0">
+      { !path || error
+        ? (
+          <div className="aspect-video w-[19.56rem] text-star-dust-300 flex flex-col items-center justify-center gap-3">
+            <Info className="w-8 h-8"/>
+            <p className="max-w-[8rem] text-center text-sm text-star"> Couldn't locate the recording </p>
+          </div>
+        )
+        : <ThumbnailPlay imgSrc={path} to={`/recordings/${recording._id}`}/>
+      }
 
       <div className="flex flex-col py-5 justify-between">
         <div className="flex items-center gap-4">
