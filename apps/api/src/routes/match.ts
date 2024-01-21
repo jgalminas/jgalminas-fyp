@@ -14,7 +14,7 @@ router.post('/', requireAuth, async(req, res) => {
   const matchId = req.body.matchId;
   const region = regionToRegionGroup(req.body.region);
 
-  await agenda.now<MatchDataContract>('GET_MATCH_DATA', { gameId, matchId, region, userId: req.user?._id.toString() });
+  await agenda.now<MatchDataContract>('GET_MATCH_DATA', { gameId, matchId, region, userId: req.user?._id.toString(), puuid: req.user?.puuid });
 
   res.status(200).send();
 })

@@ -1,15 +1,14 @@
 import ffmpeg from 'fluent-ffmpeg';
 import { app, ipcMain } from 'electron';
 import path from 'path';
-import { THUMBNAIL_FORMAT, VIDEO_DIRECTORY, VIDEO_FORMAT } from '../../../constants';
+import { HIGHLIGHTS_SUBDIRECTORY, THUMBNAIL_FORMAT, VIDEO_DIRECTORY, VIDEO_FORMAT } from '../../../constants';
 import { fileExists } from '../../util/file';
 import { captureThumbnail } from '../../../shared/util/recording';
-import { spawnSync } from 'child_process';
 import { FileIPC } from '../../../shared/ipc';
-import * as fs from 'fs';
-
+import { mkdir } from 'fs/promises';
+import { ObjectId } from 'bson';
 import { ffmpegPath, ffprobePath } from 'ffmpeg-ffprobe-static';
-import { IMatch, IRecording } from '@fyp/types';
+import { IRecording } from '@fyp/types';
 
 ffmpeg.setFfmpegPath(ffmpegPath as string);
 ffmpeg.setFfprobePath(ffprobePath as string);
@@ -39,8 +38,8 @@ export default () => {
     const thumbnailPath = path.join(videoDir, `${id}.${THUMBNAIL_FORMAT}`);
     const videoPath = path.join(videoDir, `${id}.${VIDEO_FORMAT}`);
 
-    if (!fileExists(thumbnailPath)) {
-      if (!fileExists(videoPath)) {
+    if (!await fileExists(thumbnailPath)) {
+      if (!await fileExists(videoPath)) {
         return {
           message: 'VIDEO_NOT_FOUND'
         }
@@ -56,57 +55,32 @@ export default () => {
     
   });
 
-  ipcMain.handle(FileIPC.CreateHighlights, async(_, { match, puuid, recording }: { match: IMatch, recording: IRecording, puuid: string }) => {
+  ipcMain.handle(FileIPC.CreateHighlights, async(_, { timeframes, recording, matchDuration }: {
+    timeframes: {
+      frame: number,
+      timestamp: number
+    }[],
+    matchDuration: number,
+    recording: IRecording }
+    ) => {
 
     const recordingPath = path.join(app.getPath('videos'), VIDEO_DIRECTORY, `${recording.gameId.toString()}.${VIDEO_FORMAT}`);
-    
-    const py = "C:\\Users\\datgu\\Desktop\\fyp-ai\\dist\\main.exe";
+    const outputPath = path.join(app.getPath('videos'), VIDEO_DIRECTORY, HIGHLIGHTS_SUBDIRECTORY);
+    const offset = recording.length - (matchDuration / 1000);
 
-    const outputPath = path.join(app.getPath('videos'), VIDEO_DIRECTORY);
+    if (!await fileExists(outputPath)) {
+      await mkdir(outputPath);
+    }
 
-    const tempFilePath = './temp.json';
-
-    const input = JSON.stringify({
-      puuid: puuid,
-      data: JSON.stringify(match)
-    })
-
-    // Write JSON data to a temporary file
-    fs.writeFileSync(tempFilePath, input, {
-      encoding: 'utf-8'
-    });
-
-    // Execute the command with the file path as an argument
-    const result = spawnSync(py, {
-      input: tempFilePath,
-      encoding: 'utf-8'
-    });
-
-    // Remove the temporary file after execution
-    fs.unlinkSync(tempFilePath);
-
-    // const result = spawnSync('py', [py], {
-    //   input: JSON.stringify({
-    //     puuid: puuid,
-    //     data: JSON.stringify(match)
-    //   }),
-    //   encoding: 'utf-8'
-    // })
-
-    const frames: { frame: number, timestamp: number }[] = JSON.parse(result.stdout);
-
-    const duration = (match.finish - match.start) / 1000;
-    const offset = recording.length - duration;
-
-    const create = async(start: number, name: string) => {
+    const create = async(start: number, name: string, duration: number): Promise<boolean> => {
       return new Promise((resolve, reject) => {
         ffmpeg(recordingPath)
           .setStartTime(start)
-          .setDuration(60)
-          .output(outputPath + `/${name}.mp4`)
+          .setDuration(duration)
+          .outputOptions('-c', 'copy')
+          .output(path.join(outputPath, `${name}.${VIDEO_FORMAT}`))
           .on('end', () => {
-            console.log("done");
-            resolve(true)
+            resolve(true);
           })
           .on('error', (err) => {
             console.log(err);
@@ -116,12 +90,12 @@ export default () => {
       })
     }
 
-    for (const fr of frames) {
-      const start = Math.floor((fr.timestamp + offset) / 1000);
-      await create(start, "highlight_" + fr.frame)
-    }
-   
-    return frames;
+    const promises = timeframes.map((tf) => {
+      const start = Math.floor((tf.timestamp + offset) / 1000);
+      return create(start, new ObjectId().toString(), 60);
+    })
+
+    Promise.all(promises);
 
   })
   

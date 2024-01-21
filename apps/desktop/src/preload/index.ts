@@ -2,7 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { MatchRecorder } from './matchRecorder';
 import { ClientIPC, FileIPC } from '../shared/ipc';
-import { IMatch, IRecording } from '@fyp/types';
+import { IRecording } from '@fyp/types';
 
 export type PreloadAPI = typeof api;
 
@@ -13,7 +13,17 @@ const api = {
     getThumbnail: async(id: string): Promise<{ message: 'OK', path: string } | { message: 'VIDEO_NOT_FOUND' }> => {
       return await ipcRenderer.invoke(FileIPC.GetThumbnail, id);
     },
-    createHighlights: async(data: { match: IMatch, recording: IRecording, puuid: string }) => await ipcRenderer.invoke(FileIPC.CreateHighlights, data)
+    createHighlights: async(
+      data: {
+        timeframes: {
+          frame: number,
+          timestamp: number
+        }[],
+        matchDuration: number,
+        recording: IRecording
+      }) => {
+      return await ipcRenderer.invoke(FileIPC.CreateHighlights, data);
+    }
   },
   client: {
     player: () => ipcRenderer.invoke(ClientIPC.Player)

@@ -40,7 +40,7 @@ router.get('/all', requireAuth, async(req, res) => {
 
 })
 
-router.get('/:id', async(req, res) => {
+router.get('/:id', requireAuth, async(req, res) => {
   
   const recording = await RecordingRepository.getRecordingById(req.user?._id.toString() as string, req.params.id);
   
