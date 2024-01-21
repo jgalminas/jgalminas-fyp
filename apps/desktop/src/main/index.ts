@@ -6,7 +6,6 @@ import { registerChannels } from './ipc/index';
 import { ClientManager } from './clientManager';
 import { LolApi } from 'twisted';
 import { MatchObserver } from './matchObserver';
-import { NetworkIPC } from './networkIPC';
 import { MatchRecorderIPC } from './matchRecorderIPC';
 import env from '../env';
 import { videoServer } from './videoServer';
@@ -19,7 +18,6 @@ export const lolApi = new LolApi(process.env.MAIN_VITE_RIOT_KEY as string);
 export const clientManager = new ClientManager();
 export const matchObserver = new MatchObserver(
   clientManager,
-  new NetworkIPC(),
   new MatchRecorderIPC()
 );
 

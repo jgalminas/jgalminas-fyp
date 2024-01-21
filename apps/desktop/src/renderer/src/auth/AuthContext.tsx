@@ -1,5 +1,5 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
-import { RequestBuilder } from "@renderer/util/request";
+import { ClientRequestBuilder } from "@renderer/util/request";
 
 export type Session = {
   sessionId: string
@@ -50,7 +50,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       
       try {        
 
-        const res = await new RequestBuilder()
+        const res = await new ClientRequestBuilder()
           .route('/v1/auth/session')
           .fetch();
 
@@ -83,7 +83,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
     try {
 
-      const res = await new RequestBuilder()
+      const res = await new ClientRequestBuilder()
       .route('/v1/auth/signup')
       .method('POST')
       .body(userData)
@@ -122,7 +122,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
     try {
 
-      const res = await new RequestBuilder()
+      const res = await new ClientRequestBuilder()
       .route('/v1/auth/login')
       .method('POST')
       .body(credentials)
@@ -161,7 +161,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
     try {
 
-      await new RequestBuilder()
+      await new ClientRequestBuilder()
         .route('/v1/auth/logout')
         .fetch();
 

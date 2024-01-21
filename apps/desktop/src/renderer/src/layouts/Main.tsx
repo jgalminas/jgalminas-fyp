@@ -9,7 +9,7 @@ const Main = () => {
   const { session } = useAuth();
 
   useSubscription((event) => {
-    if (event.payload.recording && session?.puuid) {
+    if (event.type === 'MATCH_UPLOADED' && event.payload.recording && session?.puuid) {
       window.api.file.createHighlights({
         match: event.payload.match,
         recording: event.payload.recording,

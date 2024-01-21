@@ -1,7 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { MatchRecorder } from './matchRecorder';
-import env from '../env';
 import { ClientIPC, FileIPC } from '../shared/ipc';
 import { IMatch, IRecording } from '@fyp/types';
 
@@ -43,28 +42,3 @@ const init = async() => {
 }
 
 init();
-
-ipcRenderer.on('match:data', (_, data) => {
-
-  fetch(env.RENDERER_VITE_API_URL + '/v1/match', {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data)
-  })
-
-});
-
-ipcRenderer.on('recording:post', (_, data) => {
-  console.log(data);
-  fetch(env.RENDERER_VITE_API_URL + '/v1/recording', {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data)
-  })
-})

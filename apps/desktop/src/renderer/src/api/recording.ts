@@ -1,5 +1,5 @@
 import { IRecording } from "@fyp/types";
-import { RequestBuilder } from "@renderer/util/request";
+import { ClientRequestBuilder } from "@renderer/util/request";
 
 export const getRecordings = async (
   filters: {
@@ -10,7 +10,7 @@ export const getRecordings = async (
   }
 ): Promise<(IRecording & { match: string })[]> => {
 
-  const res = await new RequestBuilder()
+  const res = await new ClientRequestBuilder()
     .route('/v1/recording/all')
     .query(filters)
     .fetch()
@@ -19,7 +19,7 @@ export const getRecordings = async (
 }
 
 export const getRecording = async (id: string): Promise<IRecording & { match: string }> => {
-  const res = await new RequestBuilder()
+  const res = await new ClientRequestBuilder()
   .route('/v1/recording/', id)
   .fetch();
 

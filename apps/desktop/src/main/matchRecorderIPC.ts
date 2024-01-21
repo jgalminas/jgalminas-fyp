@@ -14,7 +14,6 @@ export class MatchRecorderIPC {
 
     return new Promise((resolve) => {
       ipcMain.on(RecorderIPC.Response, () => {
-        console.log("stopped recording");
         resolve();
       })
     })

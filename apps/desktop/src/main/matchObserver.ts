@@ -1,14 +1,14 @@
 import { createHttp1Request, createWebSocketConnection, authenticate } from "league-connect";
-import { mainWindow } from "./index";
 import { ObjectId } from 'bson';
 import { getMetadata } from "./ipc/recording/file";
 import path from "path";
 import { app } from "electron";
-import { NetworkIPC } from "./networkIPC";
 import { VIDEO_DIRECTORY, VIDEO_FORMAT } from "../constants";
 import { MatchRecorderIPC } from "./matchRecorderIPC";
 import { ClientManager } from "./clientManager";
 import { CHAMPIONS } from "../constants";
+import { MainRequestBuilder } from "./util/request";
+import { getApiCookieString } from "./util/cookie";
 
 export enum GameEvent {
   START = "GameStart",
@@ -36,19 +36,16 @@ export type GameData = {
 }
 
 export class MatchObserver {
-  
-  private networkIPC: NetworkIPC;
+
   private clientManager: ClientManager;
   private matchRecorderIPC: MatchRecorderIPC;
   private gameData: GameData | null = null;
 
   constructor(
     clientManager: ClientManager,
-    networkIPC: NetworkIPC,
     matchRecorderIPC: MatchRecorderIPC
   ) {
     this.clientManager = clientManager;
-    this.networkIPC = networkIPC;
     this.matchRecorderIPC = matchRecorderIPC;
   }
 
@@ -92,11 +89,20 @@ export class MatchObserver {
 
         const matchId = new ObjectId().toString();
 
-        mainWindow?.webContents.send('match:data', {
-          matchId,
-          gameId: this.gameData?.gameId,
-          region: this.clientManager.getPlayer()?.region
-        });
+        new MainRequestBuilder()
+        .route('/v1/match')
+        .method('POST')
+        .headers({
+          Cookie: await getApiCookieString()
+        })
+        .body(
+          {
+            matchId,
+            gameId: this.gameData?.gameId,
+            region: this.clientManager.getPlayer()?.region
+          }
+        )
+        .fetch();
 
         await this.matchRecorderIPC.stopRecording();
 
@@ -116,16 +122,24 @@ export class MatchObserver {
           }
 
           if (player) {
-            this.networkIPC.recording.post({
-              match: matchId,
-              champion: CHAMPIONS[player.championId].id,
-              createdAt: new Date(),
-              gameId: gameId,
-              length: metadata.format.duration as number,
-              size: metadata.format.size as number,
-              position: player.selectedPosition,
-              queueId: this.gameData?.queue.id as number
-            });
+
+            new MainRequestBuilder()
+              .route('/v1/recording')
+              .method('POST')
+              .headers({
+                Cookie: await getApiCookieString()
+              })
+              .body({
+                match: matchId,
+                champion: CHAMPIONS[player.championId].id,
+                createdAt: new Date(),
+                gameId: gameId,
+                length: metadata.format.duration as number,
+                size: metadata.format.size as number,
+                position: player.selectedPosition,
+                queueId: this.gameData?.queue.id as number
+              })
+              .fetch();
           }
           
         } catch (err) {

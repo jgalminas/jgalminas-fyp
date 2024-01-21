@@ -1,8 +1,8 @@
 import { Match } from "@fyp/types";
-import { RequestBuilder } from "@renderer/util/request"
+import { ClientRequestBuilder } from "@renderer/util/request";
 
 export const getMatchById = async (id: string): Promise<Match> => {
-  const res = await new RequestBuilder()
+  const res = await new ClientRequestBuilder()
     .route(`/v1/match/${id}`)
     .fetch();
 
@@ -17,7 +17,7 @@ export const getMatches = async (
     queue: string | number
   }
 ): Promise<Match[]> => {
-  const res = await new RequestBuilder()
+  const res = await new ClientRequestBuilder()
   .route('/v1/match/all')
   .query(filters)
   .fetch();
