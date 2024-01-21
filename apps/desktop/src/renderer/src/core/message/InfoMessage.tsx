@@ -10,7 +10,9 @@ const InfoMessage = ({ children, className }: InfoMessageProps) => {
 
   return (
     <div className={cn("text-star-dust-300 flex flex-col items-center justify-center gap-3", className)}>
-      <Info className="w-8 h-8"/>
+      <div className="p-3.5 bg-woodsmoke-600 rounded-lg">
+        <Info className="w-8 h-8"/>
+      </div>
       <p className="text-center text-sm stroke-star-dust-400">
         { children }
       </p>

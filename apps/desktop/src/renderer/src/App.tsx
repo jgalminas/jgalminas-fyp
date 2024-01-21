@@ -17,12 +17,12 @@ import Timeline from './pages/match/tabs/Timeline';
 import HighlightsTab from './pages/match/tabs/Highlights';
 import RecordingVideoModal from './pages/recordings/RecordingVideoModal';
 
-const client = new QueryClient();
+export const queryClient = new QueryClient();
 
 const App = () => {
 
   return (
-    <QueryClientProvider client={client}>
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
           <Routes>

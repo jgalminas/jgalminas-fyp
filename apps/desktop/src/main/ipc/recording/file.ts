@@ -39,20 +39,20 @@ export default () => {
     const thumbnailPath = path.join(videoDir, `${id}.${THUMBNAIL_FORMAT}`);
     const videoPath = path.join(videoDir, `${id}.${VIDEO_FORMAT}`);
 
-      if (!fileExists(thumbnailPath)) {
-        if (!fileExists(videoPath)) {
-          return {
-            message: 'VIDEO_NOT_FOUND'
-          }
-        } else {
-          await captureThumbnail(videoPath);
+    if (!fileExists(thumbnailPath)) {
+      if (!fileExists(videoPath)) {
+        return {
+          message: 'VIDEO_NOT_FOUND'
         }
+      } else {
+        await captureThumbnail(videoPath);
       }
+    }
 
-      return {
-        message: 'OK',
-        path: 'local:\\' + thumbnailPath
-      }
+    return {
+      message: 'OK',
+      path: 'local:\\' + thumbnailPath
+    }
     
   });
 

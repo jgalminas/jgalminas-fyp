@@ -5,7 +5,7 @@ import RoundImage from "@renderer/core/RoundImage";
 import PrettyDate from "@renderer/core/PrettyDate";
 import { RoleIcons } from "@renderer/util/role";
 import { IRecording } from "@fyp/types";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Asset } from "@renderer/util/asset";
 import { length } from '@renderer/util/time';
 import { queue } from "@renderer/util/queue";
@@ -27,6 +27,7 @@ const RecordingCard = ({ recording, position }: RecordingCardProps) => {
   useEffect(() => {
     (async() => {
       const result = await window.api.file.getThumbnail(recording.gameId);
+      
       if (result.message === 'OK') {
         setPath(result.path);
       } else {
@@ -46,6 +47,7 @@ const RecordingCard = ({ recording, position }: RecordingCardProps) => {
     }
   ]
 
+  
   return (
     <Card className="flex p-0">
       { !path || error
@@ -65,32 +67,31 @@ const RecordingCard = ({ recording, position }: RecordingCardProps) => {
           <div className="flex items-center gap-6 ml-2 text-star-dust-300 text-sm">
             <p> { length(recording.length) } </p>
             <div className="flex gap-3 items-center">
-              { //@ts-expect-error
-                recording.position && <Role className="text-star-dust-400"/>
-              }
-              <p> { queue(recording.queueId) } </p>
-            </div>
+            { //@ts-expect-error
+              recording.position && <Role className="text-star-dust-400"/>
+            }
+            <p> { queue(recording.queueId) } </p>
           </div>
         </div>
-
-        <PrettyDate date={new Date(recording.createdAt)}/>
-
-        <div className="flex gap-3">
-          <LinkButton to='/'> Create Highlight </LinkButton>
-          <LinkButton to={`/matches/${recording.match}`} type='text'> View Game </LinkButton>
-        </div>
       </div>
 
-      <div className="ml-auto pt-3 pr-3 flex items-center mb-auto gap-2">
-        <p className="flex items-baseline gap-0.5 text-sm text-star-dust-300 font-medium">
-          { size[0] }
-          <span className="text-xs font-normal text-star-dust-400"> { size[1] } </span>
-        </p>
-        <IconSelect trigger={<Ellipsis className="h-6 w-6"/>} options={options} align="end"
-        className="p-1 rounded-md h-fit w-fit"/>
-      </div>
+      <PrettyDate date={new Date(recording.createdAt)}/>
 
-    </Card>
+      <div className="flex gap-3">
+        <LinkButton to='/'> Create Highlight </LinkButton>
+        <LinkButton to={`/matches/${recording.match}`} type='text'> View Game </LinkButton>
+      </div>
+    </div>
+
+    <div className="ml-auto pt-3 pr-3 flex items-center mb-auto gap-2">
+      <p className="flex items-baseline gap-0.5 text-sm text-star-dust-300 font-medium">
+        { size[0] }
+        <span className="text-xs font-normal text-star-dust-400"> { size[1] } </span>
+      </p>
+      <IconSelect trigger={<Ellipsis className="h-6 w-6"/>} options={options} align="end"
+      className="p-1 rounded-md h-fit w-fit"/>
+    </div>
+  </Card>
   )
 }
 

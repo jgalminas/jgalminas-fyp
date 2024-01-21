@@ -12,6 +12,9 @@ import { getMatches } from "@renderer/api/match";
 import { useQueueFilter } from "@renderer/core/hooks/filter/useQueueFilter";
 import { useDateFilter } from "@renderer/core/hooks/filter/useDateFilter";
 import { useChampionFilter } from "@renderer/core/hooks/filter/useChampionFilter";
+import { queryClient } from "@renderer/App";
+import { Match } from "@fyp/types";
+import { useSubscription } from "@renderer/core/hooks/useSubscription";
 
 const Matches = () => {
 
@@ -21,9 +24,20 @@ const Matches = () => {
   const [roleFilter, setRoleFilter] = useState<Role>('FILL');
 
   const { data } = useQuery({
-    queryKey: ['matches', queueFilter, dateFilter, championFilter, roleFilter],
+    queryKey: ['matches', queueFilter.id, dateFilter.id, championFilter.id, roleFilter],
     queryFn: () => getMatches({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id })
   })
+
+  useSubscription((event) => {
+    if (event.type === 'MATCH_UPLOADED') {
+      queryClient.setQueryData(['matches', 0, 'latest', 'all', 'FILL'], (prev: Match[]) => {
+        return [
+          event.payload.match,
+          ...prev
+        ]
+      })
+    }
+  }, [])
 
   return ( 
     <Page>
