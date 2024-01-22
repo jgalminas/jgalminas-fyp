@@ -10,7 +10,8 @@ const UserSchema = new Schema<IUser>({
   password: { type: String, required: true },
   createdAt: { type: Date, required: true, default: Date.now() },
   puuid: { type: String, required: false },
-  recordings: [{ type: ObjectId, required: true }]
+  recordings: [{ type: ObjectId, required: true, ref: 'Recording' }],
+  highlights: [{ type: ObjectId, required: true, ref: 'Highlight' }]
 });
 
 UserSchema.plugin(PassportLocalMongoose);

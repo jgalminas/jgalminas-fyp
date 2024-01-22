@@ -7,7 +7,7 @@
     "src/preload/*.d.ts",
     "src/constants.ts",
     "src/env.ts",
-    "src/shared/util/request.ts"
+    "src/shared/*",
 ],
   "compilerOptions": {
     "types": [

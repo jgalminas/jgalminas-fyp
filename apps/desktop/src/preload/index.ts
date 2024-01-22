@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { IpcRendererEvent, contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { MatchRecorder } from './matchRecorder';
 import { ClientIPC, FileIPC } from '../shared/ipc';
@@ -27,6 +27,11 @@ const api = {
   },
   client: {
     player: () => ipcRenderer.invoke(ClientIPC.Player)
+  },
+  events: {
+    on: <T>(channel: string, callback: (event: IpcRendererEvent, data: T) => void) => {
+      ipcRenderer.on(channel, callback);
+    }
   }
 }
 

@@ -4,11 +4,14 @@ import path from 'path';
 import { HIGHLIGHTS_SUBDIRECTORY, THUMBNAIL_FORMAT, VIDEO_DIRECTORY, VIDEO_FORMAT } from '../../../constants';
 import { fileExists } from '../../util/file';
 import { captureThumbnail } from '../../../shared/util/recording';
-import { FileIPC } from '../../../shared/ipc';
+import { FileIPC, HighlightIPC } from '../../../shared/ipc';
 import { mkdir } from 'fs/promises';
 import { ObjectId } from 'bson';
 import { ffmpegPath, ffprobePath } from 'ffmpeg-ffprobe-static';
 import { IRecording } from '@fyp/types';
+import { MainRequestBuilder } from '../../util/request';
+import { getApiCookieString } from '../../util/cookie';
+import { mainWindow } from '../..';
 
 ffmpeg.setFfmpegPath(ffmpegPath as string);
 ffmpeg.setFfprobePath(ffprobePath as string);
@@ -73,7 +76,7 @@ export default () => {
     }
 
     const create = async(start: number, name: string, duration: number): Promise<boolean> => {
-      return new Promise((resolve, reject) => {
+      return new Promise(async(resolve, reject) => {
         ffmpeg(recordingPath)
           .setStartTime(start)
           .setDuration(duration)
@@ -90,12 +93,52 @@ export default () => {
       })
     }
 
-    const promises = timeframes.map((tf) => {
+    const files: string[] = [];
+
+    const highlightPromises = timeframes.map((tf) => {
       const start = Math.floor((tf.timestamp + offset) / 1000);
-      return create(start, new ObjectId().toString(), 60);
+      const name = new ObjectId().toString();
+      files.push(name);
+      return create(start, name, 60);
     })
 
-    Promise.all(promises);
+    await Promise.all(highlightPromises);
+
+    const apiPromises = files.map((name): Promise<void> => {
+      return new Promise(async(resolve, reject) => {
+
+        const metadata = await getMetadata(path.join(outputPath, `${name}.${VIDEO_FORMAT}`));
+
+        const res = await new MainRequestBuilder()
+        .route('/v1/highlight')
+        .method('POST')
+        .headers({
+          Cookie: await getApiCookieString()
+        })
+        .body({
+          match: recording.match,
+          fileId: name,
+          length: metadata.format.duration,
+          champion: recording.champion,
+          position: recording.position,
+          size: metadata.format.size,
+          queueId: recording.queueId,
+          tags: []
+        })
+        .fetch()
+    
+        if (res.ok) {
+          const highlight = await res.json();
+          mainWindow?.webContents.send(HighlightIPC.Created, highlight);
+          resolve();
+        } else {
+          reject();
+        }
+
+      })
+    })
+
+    Promise.all(apiPromises);
 
   })
   

@@ -9,6 +9,8 @@ import { useQueueFilter } from "@renderer/core/hooks/filter/useQueueFilter";
 import { useDateFilter } from "@renderer/core/hooks/filter/useDateFilter";
 import { useChampionFilter } from "@renderer/core/hooks/filter/useChampionFilter";
 import { useState } from "react";
+import { useIPCSubscription } from "@renderer/core/hooks/useIPCSubsription";
+import { HighlightIPC } from "@root/shared/ipc";
 
 const Highlights = () => {
 
@@ -16,6 +18,11 @@ const Highlights = () => {
   const [dateFilter, dateOptions] = useDateFilter();
   const [championFilter, championOptions] = useChampionFilter();
   const [roleFilter, setRoleFilter] = useState<Role>('FILL');
+
+  useIPCSubscription(HighlightIPC.Created, (e, data) => {
+    console.log(data);
+    
+  })
 
   return ( 
     <Page>

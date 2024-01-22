@@ -18,3 +18,7 @@ export enum ClientIPC {
   Player = "client:player",
   Status = "client:status"
 }
+
+export enum HighlightIPC {
+  Created = "highlight:created"
+}

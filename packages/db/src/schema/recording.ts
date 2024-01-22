@@ -3,7 +3,7 @@ import { ObjectId, Schema } from "../db";
 import { IRecording, POSITION, QUEUE } from "@fyp/types";
 
 const RecordingSchema = new Schema<IRecording>({
-  match: { type: ObjectId, required: true },
+  match: { type: ObjectId, required: true, ref: 'Match' },
   gameId: { type: String, required: true },
   length: { type: Number, required: true },
   createdAt: { type: Date, required: true },
