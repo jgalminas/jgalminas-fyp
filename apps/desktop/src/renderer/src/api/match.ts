@@ -1,17 +1,26 @@
 import { Match } from "@fyp/types";
-import { api } from "@renderer/util/api"
+import { ClientRequestBuilder } from "@renderer/util/request";
 
 export const getMatchById = async (id: string): Promise<Match> => {
-  const res = await fetch(api(`/v1/match/${id}`), {
-    credentials: 'include'
-  })
+  const res = await new ClientRequestBuilder()
+    .route(`/v1/match/${id}`)
+    .fetch();
+
   return await res.json();
 }
 
-export const getMatches = async (): Promise<Match[]> => {
-  const res = await fetch(api('/v1/match/list'), {
-    credentials: 'include'
-  })
+export const getMatches = async (
+  filters: {
+    date: string | number,
+    champion: string,
+    role: string,
+    queue: string | number
+  }
+): Promise<Match[]> => {
+  const res = await new ClientRequestBuilder()
+  .route('/v1/match/all')
+  .query(filters)
+  .fetch();
 
   return res.json();
 }

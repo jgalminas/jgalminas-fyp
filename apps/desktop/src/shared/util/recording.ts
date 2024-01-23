@@ -13,7 +13,7 @@ export const captureThumbnail = async(filePath: string): Promise<void> => {
       .frames(1)
       .output(filePath.replace(VIDEO_FORMAT, THUMBNAIL_FORMAT))
       .on('end', () => resolve())
-      .on('error', () => resolve())
+      .on('error', () => reject())
       .run()
     } catch (err) {
       reject(err);

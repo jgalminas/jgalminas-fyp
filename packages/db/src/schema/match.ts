@@ -12,7 +12,26 @@ const MatchSchema = new Schema<IMatch>({
   type: { type: String, required: true, enum: GAME_TYPE },
   winningTeam: { type: String, required: true, enum: TEAM },
   participants: [{ type: ObjectId, ref: 'Participant', required: true }],
-  frames: [{ type: ObjectId, ref: 'Frame', required: true }]
+  frames: [{ type: ObjectId, ref: 'Frame', required: true }],
+  bans: {
+    type: {
+      BLUE: {
+        type: [{
+          championId: Number,
+          pickTurn: Number
+        }],
+        required: true
+      },
+      RED: {
+        type: [{
+          championId: Number,
+          pickTurn: Number
+        }],
+        required: true
+      }
+    },
+    required: false
+  }
 });
 
 export const Match = mongoose.model<IMatch>('Match', MatchSchema);

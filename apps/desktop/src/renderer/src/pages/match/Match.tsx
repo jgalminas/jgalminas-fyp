@@ -1,6 +1,6 @@
 import { getMatchById } from "@renderer/api/match";
 import Divider from "@renderer/core/page/Divider";
-import PageContent from "@renderer/core/page/PageContent";
+import PageBody from "@renderer/core/page/PageBody";
 import PageHeader from "@renderer/core/page/PageHeader";
 import PageTitle from "@renderer/core/page/PageTitle";
 import Page from "@renderer/layouts/Page";
@@ -38,9 +38,9 @@ const Match = () => {
           <Tabs className="mt-8" tabs={tabs}/>
           <Divider/>
         </PageHeader>
-        <PageContent>
+        <PageBody>
           <Outlet context={{ match: data }}/>
-        </PageContent>
+        </PageBody>
       </Page.Content>
     </Page>
   )

@@ -42,3 +42,13 @@ export const formatMatchLength = (start: number, finish: number) => {
 }
 
 export const timestampToMinutes = (timestamp: number) => timestamp / (1000 * 60);
+
+export const length = (num: number) => {
+    const minutes = Math.floor(num / 60);
+    const seconds = Math.round(num % 60);
+
+    const minutesString = minutes < 10 ? `0${minutes}` : `${minutes}`;
+    const secondsString = seconds < 10 ? `0${seconds}` : `${seconds}`;
+
+    return `${minutesString}:${secondsString}`;
+  }

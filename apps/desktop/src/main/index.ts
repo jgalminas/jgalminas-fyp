@@ -6,6 +6,9 @@ import { registerChannels } from './ipc/index';
 import { ClientManager } from './clientManager';
 import { LolApi } from 'twisted';
 import { MatchObserver } from './matchObserver';
+import { MatchRecorderIPC } from './matchRecorderIPC';
+import env from '../env';
+import { videoServer } from './videoServer';
 
 registerChannels();
 
@@ -13,7 +16,10 @@ export let mainWindow: BrowserWindow | undefined;
 
 export const lolApi = new LolApi(process.env.MAIN_VITE_RIOT_KEY as string);
 export const clientManager = new ClientManager();
-export const matchObserver = new MatchObserver();
+export const matchObserver = new MatchObserver(
+  clientManager,
+  new MatchRecorderIPC()
+);
 
 function createWindow(): void {
   // Create the browser window.
@@ -87,4 +93,8 @@ app.on('window-all-closed', () => {
 
 app.whenReady().then(async() => {
   protocol.handle('local', (req) => net.fetch(req.url.replace('local:\\', 'file:\\')));
+});
+
+videoServer.listen(env.RENDERER_VITE_VIDEO_SERVER_PORT, () => {
+  console.log("Video server running on: " + env.RENDERER_VITE_VIDEO_SERVER_PORT);
 });

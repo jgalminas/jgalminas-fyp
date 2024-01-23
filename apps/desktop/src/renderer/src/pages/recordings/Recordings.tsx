@@ -1,10 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Page from "../../layouts/Page";
 import RecordingCard from "./RecordingCard";
 import PageTitle from "@renderer/core/page/PageTitle";
 import PageHeader from "@renderer/core/page/PageHeader";
-import Divider from "@renderer/core/page/Divider";
 import { Outlet } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import { getRecordings } from "@renderer/api/recording";
+import Select from "@renderer/core/Select";
+import RoleSelector, { Role } from "@renderer/core/RoleSelector";
+import SearchSelect from "@renderer/core/SearchSelect";
+import { useQueueFilter } from "@renderer/core/hooks/filter/useQueueFilter";
+import { useChampionFilter } from "@renderer/core/hooks/filter/useChampionFilter";
+import { useDateFilter } from "@renderer/core/hooks/filter/useDateFilter";
+import PageBody from "@renderer/core/page/PageBody";
+import InfoMessage from "@renderer/core/message/InfoMessage";
 
 export type VideoData = {
   name: string,
@@ -16,30 +25,37 @@ export type VideoData = {
 
 const Recordings = () => {
 
-  const [videos, setVideos] = useState<VideoData[]>([]);
+  const [queueFilter, queueOptions] = useQueueFilter();
+  const [dateFilter, dateOptions] = useDateFilter();
+  const [championFilter, championOptions] = useChampionFilter();
+  const [roleFilter, setRoleFilter] = useState<Role>('FILL');
 
-  useEffect(() => {
-
-    const loadVideos = async() => {
-      setVideos(await window.api.file.getVideos());
-    }
-    
-    loadVideos();
-
-  }, [])
+  const { data } = useQuery({
+    queryKey: ['recordings', queueFilter, dateFilter, championFilter, roleFilter],
+    queryFn: () => getRecordings({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id }),
+  });
 
   return ( 
-    <Page className="relative">
-      <Page.Content>
-        <PageHeader>
+    <Page>
+      <Page.Content className="gap-0">
+        <PageHeader className="sticky top-0 bg-woodsmoke-900 z-10 pb-8">
           <PageTitle> Game Recordings </PageTitle>
-          <Divider/>
+          <div className="flex items-center gap-3">
+            <Select value={queueFilter} options={queueOptions}/>
+            <Select value={dateFilter} options={dateOptions}/>
+            <SearchSelect value={championFilter} options={championOptions}/>
+            <RoleSelector onChange={(r) => setRoleFilter(r)} role={roleFilter}/>
+          </div>
         </PageHeader>
-        <div className="flex flex-col gap-6">
-          { videos.map((v, key) => (
-            <RecordingCard video={v} key={key}/>
+        <PageBody>
+          { data?.map((rec, key) => (
+            <RecordingCard recording={rec} position={key + 1} key={key}/>
           )) }
-        </div>
+          { data && data.length === 0
+            ? <InfoMessage className="bg-woodsmoke-800 rounded-lg px-5 py-10"> No results found </InfoMessage>
+            : null
+          }
+        </PageBody>
         <Outlet/>
       </Page.Content>
     </Page>

@@ -9,7 +9,7 @@ const ParticipantSchema = new Schema<IParticipant>({
   tag: { type: String, required: true },
   team: { type: String, enum: TEAM, required: true },
   champion: { type: String, required: true },
-  position: { type: String, enum: POSITION, required: true },
+  position: { type: String, enum: POSITION, required: false },
   summonerOne: { type: Number, enum: SUMMONER_SPELL, required: true },
   summonerTwo: { type: Number, enum: SUMMONER_SPELL, required: true },
   primaryRune: { type: Number, required: true },

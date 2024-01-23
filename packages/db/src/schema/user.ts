@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Schema } from "../db";
+import { ObjectId, Schema } from "../db";
 import bcrypt from 'bcrypt';
 import PassportLocalMongoose from 'passport-local-mongoose';
 import { IUser } from "@fyp/types";
@@ -9,7 +9,9 @@ const UserSchema = new Schema<IUser>({
   username: { type: String, required: true },
   password: { type: String, required: true },
   createdAt: { type: Date, required: true, default: Date.now() },
-  puuid: { type: String, required: false }
+  puuid: { type: String, required: false },
+  recordings: [{ type: ObjectId, required: true, ref: 'Recording' }],
+  highlights: [{ type: ObjectId, required: true, ref: 'Highlight' }]
 });
 
 UserSchema.plugin(PassportLocalMongoose);

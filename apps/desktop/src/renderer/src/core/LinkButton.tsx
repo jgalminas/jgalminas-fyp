@@ -15,7 +15,7 @@ const LinkButton = ({ to, className, children, type = 'primary' }: LinkButtonPro
 
   return (
     <Link to={to} className={cn("h-fit w-fit px-3.5 py-1.5 text-star-dust-200 rounded-sm2 text-sm font-medium transition-colors",
-    isPrimary && "bg-woodsmoke-200  hover:bg-woodsmoke-50", !isPrimary && "hover:bg-woodsmoke-500", className)}>
+    isPrimary ? "bg-science-blue-600 hover:bg-science-blue-700" : "hover:bg-woodsmoke-500", className)}>
       { children }
     </Link>
   )

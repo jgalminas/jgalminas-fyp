@@ -11,7 +11,7 @@ const PrettyDate = ({ date }: PrettyDateProps) => {
     <p className="flex h-fit w-fit gap-1.5 text-star-dust-300 items-center font-medium text-sm">
       { `${date.getDate() < 10 ? '0' : ''}${date.getDate()}` }
       { divider }
-      {`${date.getMonth() < 10 ? '0' : ''}${date.getMonth()}`}
+      {`${date.getMonth() < 10 ? '0' : ''}${date.getMonth() + 1}`}
       { divider }
       { date.getFullYear() }
     </p>

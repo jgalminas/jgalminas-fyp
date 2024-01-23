@@ -14,6 +14,9 @@ import { LolApi } from 'twisted';
 import MongoStore from 'connect-mongo';
 import Agenda from 'agenda';
 import jobs from './jobs';
+import { WebSocketServer } from 'ws';
+import { createServer } from 'http';
+import { WebSocketService } from './services/webSocketService';
 
 export const app = express();
 export const twisted = new LolApi(env.RIOT_KEY);
@@ -30,6 +33,22 @@ export const agenda = new Agenda({
 agenda.start();
 jobs(); // regsiter jobs
 
+export const httpServer = createServer(app);
+export const wss = new WebSocketServer({ noServer: true });
+
+const sessionParser = session({
+  secret: env.SECRET,
+  resave: false,
+  saveUninitialized: false,
+  rolling: true,
+  cookie: {
+    maxAge: 604_800_000 // 1 week
+  },
+  store: MongoStore.create({
+    mongoUrl: env.MONGODB_CONNECTION_STRING,
+    stringify: false
+  })
+})
 
 app.use(morgan('dev'));
 app.use(helmet());
@@ -40,18 +59,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }));
-app.use(session({
-  secret: env.SECRET,
-  resave: false,
-  saveUninitialized: false,
-  rolling: true,
-  cookie: {
-    maxAge: 604_800_000 // 1 week
-  },
-  store: MongoStore.create({
-    mongoUrl: env.MONGODB_CONNECTION_STRING
-  })
-}));
+app.use(sessionParser);
 
 
 // auth
@@ -59,9 +67,33 @@ app.use(passport.initialize());
 app.use(passport.session());
 passportConfig(passport);
 
+
+httpServer.on('upgrade', (req, socket, head) => {
+
+  console.log("upgrade before parse: ", req.headers.cookie);
+
+  // @ts-expect-error
+  sessionParser(req, {}, () => {
+    
+    if (!req.session.passport) {
+      socket.write('HTTP/1.1 401 Unauthorized');
+      socket.destroy();
+      return;
+    }
+
+    wss.handleUpgrade(req, socket, head, (ws) => {
+      wss.emit('connection', ws, req);
+    });
+  })
+
+})
+
 // routes
 app.use('/v1', v1);
 
 // middleware
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);
+
+// Services
+export const WSService = new WebSocketService(wss);

@@ -15,7 +15,7 @@ export type InsertMatch = {
   } & Omit<IFrame, '_id' | 'events' | 'participantStats'>)[]
 } & Omit<IMatch, '_id' | 'participants' | 'frames'>
 
-export const insertMatch = async(data: InsertMatch) => {
+export const insertMatch = async(id: string, data: InsertMatch) => {
 
   const session = await (await db).startSession();
   session.startTransaction();
@@ -33,16 +33,18 @@ export const insertMatch = async(data: InsertMatch) => {
     data.participants = participants;
     data.frames = await Frame.insertMany(data.frames, { session });
 
-    match = (await Match.create([data], { session }))[0];
+    match = (await Match.create([{_id: id, ...data}], { session }))[0];
 
     await session.commitTransaction();
     session.endSession();
   } catch (err) {
+    console.log(err);
+    
     await session.abortTransaction();
     session.endSession();
   }
 
-  return match?._id;
+  return match;
 }
 
 export const getMatchById = async(id: string) => {
@@ -95,10 +97,33 @@ export const getMatchById = async(id: string) => {
   } else {
     return null;
   }
-};
+}
 
-export const getUserMatches = async(puuid: string, offset: number = 0, count: number = 10) => {
 
+
+export const getUserMatches = async(
+  puuid: string,
+  filters?: {
+    role: string,
+    queue?: number,
+    date: -1 | 1,
+    champion?: string,
+    start: number,
+    offset: number
+  }) => {
+
+  const pagination = () => {
+    if (!filters) return [];
+    return [
+      {
+        $skip: filters.start
+      },
+      {
+        $limit: filters.offset
+      }
+    ]
+  }
+  
   return await Match.aggregate<RMatch>([
     {
       $lookup: {
@@ -110,24 +135,112 @@ export const getUserMatches = async(puuid: string, offset: number = 0, count: nu
     },
     {
       $match: {
-        'participants.puuid': puuid
+        $and: [
+          { 'participants.puuid': puuid },
+          (filters?.champion && filters.champion !== 'all' ? {
+            'participants': {
+              $elemMatch: {
+                'puuid': puuid,
+                'champion': {
+                  $regex: new RegExp(filters.champion, 'i')
+                }
+              }
+            }
+          } : {}),
+          (filters?.role && filters.role !== 'FILL' ? {
+            'participants': {
+              $elemMatch: {
+                'puuid': puuid,
+                'position': {
+                  $regex: new RegExp(filters.role, 'i')
+                }
+              }
+            }
+          } : {}),
+          (filters?.queue && filters.queue !== 0 ? {
+            queueId: filters.queue
+          } : {})
+        ]
       }
     },
     {
       $sort: {
-        finish: 1
+        finish: filters?.date ?? -1
       }
     },
-    {
-      $skip: offset
-    },
-    {
-      $limit: count
-    },
+    ...pagination(),
     {
       $project: {
         frames: 0
       }
     }
   ])
+}
+
+export const getMatchTimeline = async(id: string) => {
+
+  const result = await Match.aggregate<IMatch>([
+    {
+      $match: {
+        _id: new Types.ObjectId(id)
+      }
+    },
+    {
+      $lookup: {
+        from: 'participants',
+        foreignField: '_id',
+        localField: 'participants',
+        as: 'participants'
+      }
+    },
+    {
+      $lookup: {
+        from: 'frames',
+        foreignField: '_id',
+        localField: 'frames',
+        as: 'frames',
+        pipeline: [
+          {
+            $sort: {
+              timestamp: 1
+            }
+          },
+          {
+            $lookup: {
+              from: 'events',
+              foreignField: '_id',
+              localField: 'events',
+              as: 'events',
+              pipeline: [
+                {
+                  $sort: {
+                    timestamp: 1
+                  }
+                }
+              ]
+            }
+          },
+          {
+            $lookup: {
+              from: 'participantstats',
+              foreignField: '_id',
+              localField: 'participantStats',
+              as: 'participantStats'
+            }
+          }
+        ]
+      }
+    },
+    {
+      $project: {
+        bans: 0
+      }
+    }
+  ]);
+
+  if (result.length > 0) {
+    return result[0];
+  } else {
+    return null;
+  }
 }

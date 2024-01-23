@@ -1,10 +1,11 @@
 import { ipcRenderer } from "electron";
-import { GAME_CLIENT_NAME, VIDEO_FORMAT } from "../constants";
+import { GAME_CLIENT_NAME, VIDEO_DIRECTORY, VIDEO_FORMAT } from "../constants";
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegStatic from 'ffmpeg-static';
 import { Readable } from "stream";
 import path from "path";
 import { captureThumbnail } from "../shared/util/recording";
+import { PathIPC, RecorderIPC } from "../shared/ipc";
 
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
@@ -13,17 +14,17 @@ export class MatchRecorder {
   private readable: Readable | undefined;
   private recorder: MediaRecorder | undefined;
   private running: boolean = false;
-  private videosPath = path.join(ipcRenderer.sendSync("path:get", 'videos'), 'Fyp');
+  private videosPath = path.join(ipcRenderer.sendSync(PathIPC.Get, 'videos'), VIDEO_DIRECTORY);
   private gameId: string | undefined; 
 
   public init = async() => {
-    ipcRenderer.on('match:start', async(_, game) => {
+    ipcRenderer.on(RecorderIPC.Start, async(_, game) => {
       const client = await this.getGameClient(); 
       this.gameId = game.gameId.toString();
       await this.start(client, this.gameId as string);
     });
 
-    ipcRenderer.on('match:finish', () => {
+    ipcRenderer.on(RecorderIPC.Finish, () => {
       this.stop();
     })
   }
@@ -58,7 +59,12 @@ export class MatchRecorder {
     });    
 
     this.recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=h264' });
-    this.readable = new Readable({ read() {} });
+    this.readable = new Readable({
+      read() {},
+      async destroy() {
+        stream.getTracks().forEach((t) =>  t.stop())
+      }
+    });
 
     this.recorder.ondataavailable = async(e) => {
 
@@ -80,7 +86,11 @@ export class MatchRecorder {
     .videoCodec('libx264')
     .audioCodec('aac')
     .output(videoPath)
-    .on('end', async() => await captureThumbnail(videoPath))
+    .on('end', async() => {
+      await captureThumbnail(videoPath);
+      ipcRenderer.send(RecorderIPC.Response);
+      this.readable?.destroy();
+    })
     .run();
     
   }

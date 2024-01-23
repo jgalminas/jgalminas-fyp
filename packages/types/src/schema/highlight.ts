@@ -1,12 +1,17 @@
 import { Types } from "mongoose";
-import { Position } from "./index";
+import { IMatch, Position, QueueType } from "./index";
 
 export type IHighlight = {
   _id: Types.ObjectId,
-  start: number,
-  finish: number,
-  championId: number,
-  position: Position,
+  match: IMatch,
+  fileId: string,
+  length: number,
   createdAt: Date,
-  publicUrl: string | null
+  champion: string,
+  position: Position,
+  size: { type: Number, required: true },
+  queueId: QueueType,
+  publicUrl?: string,
+  tags: string[]
 }
+

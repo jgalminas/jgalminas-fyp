@@ -1,12 +1,8 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { IpcRendererEvent, contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import ffmpeg from 'fluent-ffmpeg';
-import ffmpegStatic from 'ffmpeg-static';
 import { MatchRecorder } from './matchRecorder';
-import env from '../env';
-// import { ClientManager } from '../main/clientManager';
-
-ffmpeg.setFfmpegPath(ffmpegStatic as string);
+import { ClientIPC, FileIPC } from '../shared/ipc';
+import { IRecording } from '@fyp/types';
 
 export type PreloadAPI = typeof api;
 
@@ -14,12 +10,28 @@ export type PreloadAPI = typeof api;
 
 const api = {
   file: {
-    getVideos: async() => {      
-      return await ipcRenderer.invoke("recording:videos")
+    getThumbnail: async(id: string): Promise<{ message: 'OK', path: string } | { message: 'VIDEO_NOT_FOUND' }> => {
+      return await ipcRenderer.invoke(FileIPC.GetThumbnail, id);
+    },
+    createHighlights: async(
+      data: {
+        timeframes: {
+          frame: number,
+          timestamp: number
+        }[],
+        matchDuration: number,
+        recording: IRecording
+      }) => {
+      return await ipcRenderer.invoke(FileIPC.CreateHighlights, data);
     }
   },
   client: {
-    player: () => ipcRenderer.invoke('client:player')
+    player: () => ipcRenderer.invoke(ClientIPC.Player)
+  },
+  events: {
+    on: <T>(channel: string, callback: (event: IpcRendererEvent, data: T) => void) => {
+      ipcRenderer.on(channel, callback);
+    }
   }
 }
 
@@ -45,16 +57,3 @@ const init = async() => {
 }
 
 init();
-
-ipcRenderer.on('match:data', (_, data) => {
-
-  fetch(env.RENDERER_VITE_API_URL + '/v1/match/post', {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data)
-  })
-
-});

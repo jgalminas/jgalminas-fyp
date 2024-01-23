@@ -14,7 +14,7 @@ export type IParticipant = {
   tag: string,
   team: Team,
   champion: string,
-  position: Position,
+  position?: Position,
   summonerOne: SummonerSpell,
   summonerTwo: SummonerSpell,
   primaryRune: number,

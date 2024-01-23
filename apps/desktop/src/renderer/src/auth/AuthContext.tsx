@@ -1,5 +1,5 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
-import { api } from "@renderer/util/api";
+import { ClientRequestBuilder } from "@renderer/util/request";
 
 export type Session = {
   sessionId: string
@@ -50,13 +50,10 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       
       try {        
 
-        const res = await fetch(api('/v1/auth/session'), {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        const res = await new ClientRequestBuilder()
+          .route('/v1/auth/session')
+          .fetch();
+
         const data = await res.json();
   
         if (res.ok) {
@@ -85,13 +82,12 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const signUp = async(userData: SignUpData) => {
 
     try {
-      const res = await fetch(api('/v1/auth/signup'), {
-        method: 'POST',
-        headers: {
-          "content-type": "application/json"
-        },
-        body: JSON.stringify(userData)
-      })
+
+      const res = await new ClientRequestBuilder()
+      .route('/v1/auth/signup')
+      .method('POST')
+      .body(userData)
+      .fetch();
 
       const data = await res.json();
 
@@ -125,14 +121,12 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const signIn = async(credentials: Credentials) => {
 
     try {
-      const res = await fetch(api('/v1/auth/login'), {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(credentials)
-      })
+
+      const res = await new ClientRequestBuilder()
+      .route('/v1/auth/login')
+      .method('POST')
+      .body(credentials)
+      .fetch();
 
       const data = await res.json();
 
@@ -166,13 +160,10 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const signOut = async() => {
 
     try {
-      await fetch(api('/v1/auth/logout'), {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+
+      await new ClientRequestBuilder()
+        .route('/v1/auth/logout')
+        .fetch();
 
       setSession({ ...session, session: null });
 
