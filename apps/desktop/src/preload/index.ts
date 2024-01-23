@@ -30,10 +30,13 @@ const api = {
   },
   events: {
     on: <T>(channel: string, callback: (event: IpcRendererEvent, data: T) => void) => {
-      ipcRenderer.on(channel, callback);
-    },
-    removeAllListeners: (channel: string) => {
-      ipcRenderer.removeAllListeners(channel);
+      
+      const subscription = (event: IpcRendererEvent, data: T) => callback(event, data);
+      ipcRenderer.on(channel, subscription);
+
+      return () => {
+        ipcRenderer.removeListener(channel, subscription);
+      }
     }
   }
 }

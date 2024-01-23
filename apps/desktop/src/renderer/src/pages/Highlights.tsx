@@ -30,8 +30,6 @@ const Highlights = () => {
   })
 
   useIPCSubscription<IHighlight>(HighlightIPC.Created, (_, highlight) => {
-    console.log(highlight);
-    
     queryClient.setQueryData(['highlights', 0, 'latest', 'all', 'FILL'], (prev: IHighlight[]) => {
       const items = prev ?? [];
       return [
