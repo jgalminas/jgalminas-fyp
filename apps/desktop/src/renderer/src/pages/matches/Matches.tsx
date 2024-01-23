@@ -31,9 +31,10 @@ const Matches = () => {
   useSubscription((event) => {
     if (event.type === 'MATCH_UPLOADED') {
       queryClient.setQueryData(['matches', 0, 'latest', 'all', 'FILL'], (prev: Match[]) => {
+        const items = prev ?? [];
         return [
           event.payload.match,
-          ...prev
+          ...items
         ]
       })
     }

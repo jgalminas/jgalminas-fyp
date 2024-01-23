@@ -35,9 +35,9 @@ export const getMetadata = (filePath: string): Promise<ffmpeg.FfprobeData> => {
 
 export default () => {
 
-  ipcMain.handle(FileIPC.GetThumbnail, async(_, id: string) => {
+  ipcMain.handle(FileIPC.GetThumbnail, async(_, id: string, type: 'recordings' | 'highlights') => {
 
-    const videoDir = path.join(app.getPath('videos'), VIDEO_DIRECTORY);
+    const videoDir = path.join(app.getPath('videos'), VIDEO_DIRECTORY, type === 'highlights' ? type : '');
     const thumbnailPath = path.join(videoDir, `${id}.${THUMBNAIL_FORMAT}`);
     const videoPath = path.join(videoDir, `${id}.${VIDEO_FORMAT}`);
 

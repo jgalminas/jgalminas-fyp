@@ -10,8 +10,8 @@ export type PreloadAPI = typeof api;
 
 const api = {
   file: {
-    getThumbnail: async(id: string): Promise<{ message: 'OK', path: string } | { message: 'VIDEO_NOT_FOUND' }> => {
-      return await ipcRenderer.invoke(FileIPC.GetThumbnail, id);
+    getThumbnail: async(id: string, type: 'recordings' | 'highlights'): Promise<{ message: 'OK', path: string } | { message: 'VIDEO_NOT_FOUND' }> => {
+      return await ipcRenderer.invoke(FileIPC.GetThumbnail, id, type);
     },
     createHighlights: async(
       data: {
@@ -31,6 +31,9 @@ const api = {
   events: {
     on: <T>(channel: string, callback: (event: IpcRendererEvent, data: T) => void) => {
       ipcRenderer.on(channel, callback);
+    },
+    removeAllListeners: (channel: string) => {
+      ipcRenderer.removeAllListeners(channel);
     }
   }
 }

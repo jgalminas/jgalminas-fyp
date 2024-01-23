@@ -9,6 +9,7 @@ import { MatchObserver } from './matchObserver';
 import { MatchRecorderIPC } from './matchRecorderIPC';
 import env from '../env';
 import { videoServer } from './videoServer';
+import { HighlightIPC } from '../shared/ipc';
 
 registerChannels();
 

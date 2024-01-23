@@ -118,7 +118,7 @@ export const getHighlights = async(
   ]);
 
   if (result.length > 0) {
-    return result[0].recordings;
+    return result[0].highlights;
   } else {
     return [];
   }
