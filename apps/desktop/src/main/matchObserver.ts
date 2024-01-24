@@ -9,6 +9,8 @@ import { ClientManager } from "./clientManager";
 import { CHAMPIONS } from "../constants";
 import { MainRequestBuilder } from "./util/request";
 import { getApiCookieString } from "./util/cookie";
+import { mainWindow } from ".";
+import { RecordingIPC } from "../shared/ipc";
 
 export enum GameEvent {
   START = "GameStart",
@@ -123,7 +125,7 @@ export class MatchObserver {
 
           if (player) {
 
-            new MainRequestBuilder()
+            const res = await new MainRequestBuilder()
               .route('/v1/recording')
               .method('POST')
               .headers({
@@ -140,6 +142,11 @@ export class MatchObserver {
                 queueId: this.gameData?.queue.id as number
               })
               .fetch();
+
+            if (res.ok) {
+              mainWindow?.webContents.send(RecordingIPC.Created, await res.json());
+            }
+
           }
           
         } catch (err) {

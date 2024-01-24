@@ -14,6 +14,10 @@ import { useChampionFilter } from "@renderer/core/hooks/filter/useChampionFilter
 import { useDateFilter } from "@renderer/core/hooks/filter/useDateFilter";
 import PageBody from "@renderer/core/page/PageBody";
 import InfoMessage from "@renderer/core/message/InfoMessage";
+import { IRecording } from "@fyp/types";
+import { RecordingIPC } from "@root/shared/ipc";
+import { useIPCSubscription } from "@renderer/core/hooks/useIPCSubsription";
+import { queryClient } from "@renderer/App";
 
 export type VideoData = {
   name: string,
@@ -34,6 +38,16 @@ const Recordings = () => {
     queryKey: ['recordings', queueFilter, dateFilter, championFilter, roleFilter],
     queryFn: () => getRecordings({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id }),
   });
+
+  useIPCSubscription<IRecording>(RecordingIPC.Created, (_, recording) => {
+    queryClient.setQueryData(['recordings', 0, 'latest', 'all', 'FILL'], (prev: IRecording[]) => {
+      const items = prev ?? [];
+      return [
+        recording,
+        ...items
+      ]
+    })
+  }, [])
 
   return ( 
     <Page>
