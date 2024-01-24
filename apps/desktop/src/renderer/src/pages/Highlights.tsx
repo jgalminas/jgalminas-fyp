@@ -1,5 +1,5 @@
-import PageHeader from "@renderer/core/page/PageHeader";
-import Page from "../layouts/Page";
+import PageInnerHeader from "@renderer/core/page/PageInnerHeader";
+import Page from "../core/page/Page";
 import PageTitle from "@renderer/core/page/PageTitle";
 import Select from "@renderer/core/Select";
 import SearchSelect from "@renderer/core/SearchSelect";
@@ -40,26 +40,24 @@ const Highlights = () => {
   }, [])
 
   return ( 
-    <Page>
-      <Page.Content className="gap-0">
-        <PageHeader className="sticky top-0 bg-woodsmoke-900 z-50 pb-8">
-          <PageTitle> All Highlights </PageTitle>
-          <div className="flex items-center gap-3">
-            <Select value={queueFilter} options={queueOptions}/>
-            <Select value={dateFilter} options={dateOptions}/>
-            <SearchSelect value={championFilter} options={championOptions}/>
-            <RoleSelector onChange={(r) => setRoleFilter(r)} role={roleFilter}/>
-          </div>
-        </PageHeader>
-        
-        <PageBody>
-          { data?.map((hl, i) => {
-            return (
-              <HighlightCard key={i} highlight={hl} position={i + 1} linkToGame/>
-            )
-          }) }
-        </PageBody>
-      </Page.Content>
+    <Page contentClass="gap-0">
+      <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-50 pb-8">
+        <PageTitle> All Highlights </PageTitle>
+        <div className="flex items-center gap-3">
+          <Select value={queueFilter} options={queueOptions}/>
+          <Select value={dateFilter} options={dateOptions}/>
+          <SearchSelect value={championFilter} options={championOptions}/>
+          <RoleSelector onChange={(r) => setRoleFilter(r)} role={roleFilter}/>
+        </div>
+      </PageInnerHeader>
+      
+      <PageBody>
+        { data?.map((hl, i) => {
+          return (
+            <HighlightCard key={i} highlight={hl} position={i + 1} linkToGame/>
+          )
+        }) }
+      </PageBody>
     </Page>
   )
 }

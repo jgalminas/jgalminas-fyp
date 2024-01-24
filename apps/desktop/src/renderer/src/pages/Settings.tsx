@@ -1,4 +1,4 @@
-import Page from "../layouts/Page";
+import Page from "../core/page/Page";
 
 const Settings = () => {
 

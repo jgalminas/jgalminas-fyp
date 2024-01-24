@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Page from "../../layouts/Page";
+import Page from "../../core/page/Page";
 import RecordingCard from "./RecordingCard";
 import PageTitle from "@renderer/core/page/PageTitle";
-import PageHeader from "@renderer/core/page/PageHeader";
+import PageInnerHeader from "@renderer/core/page/PageInnerHeader";
 import { Outlet } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getRecordings } from "@renderer/api/recording";
@@ -50,28 +50,26 @@ const Recordings = () => {
   }, [])
 
   return ( 
-    <Page>
-      <Page.Content className="gap-0">
-        <PageHeader className="sticky top-0 bg-woodsmoke-900 z-10 pb-8">
-          <PageTitle> Game Recordings </PageTitle>
-          <div className="flex items-center gap-3">
-            <Select value={queueFilter} options={queueOptions}/>
-            <Select value={dateFilter} options={dateOptions}/>
-            <SearchSelect value={championFilter} options={championOptions}/>
-            <RoleSelector onChange={(r) => setRoleFilter(r)} role={roleFilter}/>
-          </div>
-        </PageHeader>
-        <PageBody>
-          { data?.map((rec, key) => (
-            <RecordingCard recording={rec} position={key + 1} key={key}/>
-          )) }
-          { data && data.length === 0
-            ? <InfoMessage className="bg-woodsmoke-800 rounded-lg px-5 py-10"> No results found </InfoMessage>
-            : null
-          }
-        </PageBody>
-        <Outlet/>
-      </Page.Content>
+    <Page  contentClass="gap-0">
+      <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-10 pb-8">
+        <PageTitle> Game Recordings </PageTitle>
+        <div className="flex items-center gap-3">
+          <Select value={queueFilter} options={queueOptions}/>
+          <Select value={dateFilter} options={dateOptions}/>
+          <SearchSelect value={championFilter} options={championOptions}/>
+          <RoleSelector onChange={(r) => setRoleFilter(r)} role={roleFilter}/>
+        </div>
+      </PageInnerHeader>
+      <PageBody>
+        { data?.map((rec, key) => (
+          <RecordingCard recording={rec} position={key + 1} key={key}/>
+        )) }
+        { data && data.length === 0
+          ? <InfoMessage className="bg-woodsmoke-800 rounded-lg px-5 py-10"> No results found </InfoMessage>
+          : null
+        }
+      </PageBody>
+      <Outlet/>
     </Page>
   )
 }
