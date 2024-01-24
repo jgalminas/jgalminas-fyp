@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Page from "../../core/page/Page";
 import MatchCard from "./MatchCard";
 import PageInnerHeader from "@renderer/core/page/PageInnerHeader";
@@ -7,7 +7,7 @@ import Select from "@renderer/core/Select";
 import SearchSelect from "@renderer/core/SearchSelect";
 import RoleSelector, { Role } from "@renderer/core/RoleSelector";
 import PageBody from "@renderer/core/page/PageBody";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { getMatches } from "@renderer/api/match";
 import { useQueueFilter } from "@renderer/core/hooks/filter/useQueueFilter";
 import { useDateFilter } from "@renderer/core/hooks/filter/useDateFilter";
@@ -16,6 +16,10 @@ import { queryClient } from "@renderer/App";
 import { Match } from "@fyp/types";
 import { useSubscription } from "@renderer/core/hooks/useSubscription";
 import { DefaultHeader } from "@renderer/navigation/DefaultHeader";
+import { useInView } from 'react-intersection-observer';
+import { ViewportList } from 'react-viewport-list';
+
+const ITEMS_PER_PAGE = 10;
 
 const Matches = () => {
 
@@ -24,9 +28,13 @@ const Matches = () => {
   const [championFilter, championOptions] = useChampionFilter();
   const [roleFilter, setRoleFilter] = useState<Role>('FILL');
 
-  const { data } = useQuery({
+  const { ref, inView } = useInView();
+
+  const { isLoading, data, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ['matches', queueFilter.id, dateFilter.id, championFilter.id, roleFilter],
-    queryFn: () => getMatches({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id })
+    initialPageParam: 0,
+    queryFn: ({ pageParam }) => getMatches({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id, start: pageParam }),
+    getNextPageParam: (prevPage) => prevPage.length === ITEMS_PER_PAGE ? prevPage.length : undefined
   })
 
   useSubscription((event) => {
@@ -41,9 +49,15 @@ const Matches = () => {
     }
   }, [])
 
+  useEffect(() => {
+    if (inView && !isLoading && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView])
+
   return ( 
     <Page header={<DefaultHeader/>} contentClass="gap-0">
-      <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-50 pb-8">
+      <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-50 pb-3">
         <PageTitle> Played Matches </PageTitle>
         <div className="flex items-center gap-3">
           <Select value={queueFilter} options={queueOptions}/>
@@ -53,11 +67,16 @@ const Matches = () => {
         </div>
       </PageInnerHeader>
       <PageBody>
-        { data?.map((m, key) => {
-          return (
-            <MatchCard match={m} key={key}/>
-          )
-        }) }
+        <ViewportList items={data?.pages.flat()} overscan={1}>
+          { (match, key) => {
+            return (
+              <MatchCard match={match} key={key}/>
+            )
+          }}
+        </ViewportList>
+        { hasNextPage &&
+          <div ref={ref}/>
+        }
       </PageBody>
     </Page>
   )

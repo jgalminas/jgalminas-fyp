@@ -14,7 +14,8 @@ export const getMatches = async (
     date: string | number,
     champion: string,
     role: string,
-    queue: string | number
+    queue: string | number,
+    start?: number
   }
 ): Promise<Match[]> => {
   const res = await new ClientRequestBuilder()
