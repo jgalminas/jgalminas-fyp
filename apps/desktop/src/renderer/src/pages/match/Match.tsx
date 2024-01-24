@@ -39,7 +39,7 @@ const Match = () => {
         <Tabs className="mt-8" tabs={tabs}/>
         <Divider/>
       </PageInnerHeader>
-      <PageBody className="pt-8">
+      <PageBody className="pb-5 pt-8">
         <Outlet context={{ match: data }}/>
       </PageBody>
     </Page>

@@ -57,7 +57,7 @@ const Highlights = () => {
 
   return ( 
     <Page contentClass="gap-0">
-      <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-50 pb-8">
+      <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-50 pb-3">
         <PageTitle> All Highlights </PageTitle>
         <div className="flex items-center gap-3">
           <Select value={queueFilter} options={queueOptions}/>
