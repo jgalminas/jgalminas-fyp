@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Page from "../../core/page/Page";
 import RecordingCard from "./RecordingCard";
 import PageTitle from "@renderer/core/page/PageTitle";
 import PageInnerHeader from "@renderer/core/page/PageInnerHeader";
 import { Outlet } from "react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { getRecordings } from "@renderer/api/recording";
 import Select from "@renderer/core/Select";
 import RoleSelector, { Role } from "@renderer/core/RoleSelector";
@@ -18,6 +18,8 @@ import { IRecording } from "@fyp/types";
 import { RecordingIPC } from "@root/shared/ipc";
 import { useIPCSubscription } from "@renderer/core/hooks/useIPCSubsription";
 import { queryClient } from "@renderer/App";
+import { ViewportList } from "react-viewport-list";
+import { useInView } from "react-intersection-observer";
 
 export type VideoData = {
   name: string,
@@ -27,6 +29,8 @@ export type VideoData = {
   length?: number
 }
 
+const ITEMS_PER_PAGE = 10;
+
 const Recordings = () => {
 
   const [queueFilter, queueOptions] = useQueueFilter();
@@ -34,10 +38,14 @@ const Recordings = () => {
   const [championFilter, championOptions] = useChampionFilter();
   const [roleFilter, setRoleFilter] = useState<Role>('FILL');
 
-  const { data } = useQuery({
-    queryKey: ['recordings', queueFilter, dateFilter, championFilter, roleFilter],
-    queryFn: () => getRecordings({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id }),
-  });
+  const { ref, inView } = useInView();
+
+  const { isLoading, data, fetchNextPage, hasNextPage } = useInfiniteQuery({
+    queryKey: ['recordings', queueFilter.id, dateFilter.id, championFilter.id, roleFilter],
+    initialPageParam: 0,
+    queryFn: ({ pageParam }) => getRecordings({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id, start: pageParam }),
+    getNextPageParam: (prevPage) => prevPage.length === ITEMS_PER_PAGE ? prevPage.length : undefined
+  })
 
   useIPCSubscription<IRecording>(RecordingIPC.Created, (_, recording) => {
     queryClient.setQueryData(['recordings', 0, 'latest', 'all', 'FILL'], (prev: IRecording[]) => {
@@ -49,9 +57,17 @@ const Recordings = () => {
     })
   }, [])
 
+  useEffect(() => {
+    if (inView && !isLoading && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView])
+
+  const recordings = data?.pages.flat();
+
   return ( 
     <Page  contentClass="gap-0">
-      <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-10 pb-8">
+      <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-10 pb-3">
         <PageTitle> Game Recordings </PageTitle>
         <div className="flex items-center gap-3">
           <Select value={queueFilter} options={queueOptions}/>
@@ -61,10 +77,17 @@ const Recordings = () => {
         </div>
       </PageInnerHeader>
       <PageBody>
-        { data?.map((rec, key) => (
-          <RecordingCard recording={rec} position={key + 1} key={key}/>
-        )) }
-        { data && data.length === 0
+        <ViewportList items={recordings} overscan={1}>
+          { (rec, key) => {
+            return (
+              <RecordingCard recording={rec} key={key} position={key + 1}/>
+            )
+          }}
+        </ViewportList>
+        { hasNextPage &&
+          <div ref={ref}/>
+        }
+        { recordings && recordings.length === 0
           ? <InfoMessage className="bg-woodsmoke-800 rounded-lg px-5 py-10"> No results found </InfoMessage>
           : null
         }

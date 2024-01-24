@@ -7,7 +7,8 @@ export const getHighlights = async (
     champion?: string,
     role?: string,
     queue?: string | number,
-    match?: string
+    match?: string,
+    start?: number
   }
 ): Promise<(IHighlight & { match: string })[]> => {
 

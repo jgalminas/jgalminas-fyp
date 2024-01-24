@@ -8,14 +8,18 @@ import PageBody from "@renderer/core/page/PageBody";
 import { useQueueFilter } from "@renderer/core/hooks/filter/useQueueFilter";
 import { useDateFilter } from "@renderer/core/hooks/filter/useDateFilter";
 import { useChampionFilter } from "@renderer/core/hooks/filter/useChampionFilter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useIPCSubscription } from "@renderer/core/hooks/useIPCSubsription";
 import { HighlightIPC } from "@root/shared/ipc";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { getHighlights } from "@renderer/api/highlight";
 import HighlightCard from "@renderer/core/highlight/HighlightCard";
 import { IHighlight } from "@fyp/types";
 import { queryClient } from "@renderer/App";
+import { useInView } from "react-intersection-observer";
+import { ViewportList } from "react-viewport-list";
+
+const ITEMS_PER_PAGE = 10;
 
 const Highlights = () => {
 
@@ -24,9 +28,13 @@ const Highlights = () => {
   const [championFilter, championOptions] = useChampionFilter();
   const [roleFilter, setRoleFilter] = useState<Role>('FILL');
 
-  const { data } = useQuery({
+  const { ref, inView } = useInView();
+
+  const { isLoading, data, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ['highlights', queueFilter.id, dateFilter.id, championFilter.id, roleFilter],
-    queryFn: () => getHighlights({ champion: championFilter.id, date: dateFilter.id, role: roleFilter, queue: queueFilter.id})
+    initialPageParam: 0,
+    queryFn: ({ pageParam }) => getHighlights({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id, start: pageParam }),
+    getNextPageParam: (prevPage) => prevPage.length === ITEMS_PER_PAGE ? prevPage.length : undefined
   })
 
   useIPCSubscription<IHighlight>(HighlightIPC.Created, (_, highlight) => {
@@ -38,6 +46,14 @@ const Highlights = () => {
       ]
     })
   }, [])
+
+  useEffect(() => {
+    if (inView && !isLoading && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView])
+
+  const highlights = data?.pages.flat();
 
   return ( 
     <Page contentClass="gap-0">
@@ -52,11 +68,16 @@ const Highlights = () => {
       </PageInnerHeader>
       
       <PageBody>
-        { data?.map((hl, i) => {
-          return (
-            <HighlightCard key={i} highlight={hl} position={i + 1} linkToGame/>
-          )
-        }) }
+        <ViewportList items={highlights} overscan={1}>
+          { (hl, key) => {
+            return (
+              <HighlightCard highlight={hl} key={key} position={key + 1}/>
+            )
+          }}
+        </ViewportList>
+        { hasNextPage &&
+          <div ref={ref}/>
+        }
       </PageBody>
     </Page>
   )
