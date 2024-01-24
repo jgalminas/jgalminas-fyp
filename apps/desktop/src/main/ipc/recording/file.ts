@@ -77,12 +77,14 @@ export default () => {
 
     const create = async(start: number, name: string, duration: number): Promise<boolean> => {
       return new Promise(async(resolve, reject) => {
+        const filePath = path.join(outputPath, `${name}.${VIDEO_FORMAT}`);
         ffmpeg(recordingPath)
           .setStartTime(start)
           .setDuration(duration)
           .outputOptions('-c', 'copy')
-          .output(path.join(outputPath, `${name}.${VIDEO_FORMAT}`))
-          .on('end', () => {
+          .output(filePath)
+          .on('end', async() => {
+            await captureThumbnail(filePath);
             resolve(true);
           })
           .on('error', (err) => {
