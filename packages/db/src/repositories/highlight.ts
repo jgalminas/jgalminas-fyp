@@ -58,7 +58,8 @@ export const getHighlights = async(
     date: -1 | 1,
     champion?: string,
     start: number,
-    offset: number
+    offset: number,
+    match?: string
   }
   ) => {
   
@@ -90,6 +91,9 @@ export const getHighlights = async(
           {
             $match: {
               $and: [
+                (filters?.match && filters.match.length === 24 ? {
+                  match: new Types.ObjectId(filters.match)
+                } : {}),
                 (filters?.champion && filters.champion !== 'all' ? {
                   champion: {
                     $regex: new RegExp(filters.champion, 'i')

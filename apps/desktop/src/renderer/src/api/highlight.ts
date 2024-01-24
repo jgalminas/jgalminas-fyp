@@ -3,10 +3,11 @@ import { ClientRequestBuilder } from "@renderer/util/request";
 
 export const getHighlights = async (
   filters: {
-    date: string | number,
-    champion: string,
-    role: string,
-    queue: string | number
+    date?: string | number,
+    champion?: string,
+    role?: string,
+    queue?: string | number,
+    match?: string
   }
 ): Promise<(IHighlight & { match: string })[]> => {
 

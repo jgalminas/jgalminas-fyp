@@ -21,7 +21,8 @@ router.get('/all', requireAuth, async(req, res) => {
       champion: z.string().optional(),
       date: z.union([z.literal("latest"), z.literal("oldest")]).optional().default("latest").transform((v) => v === "latest" ? -1 : 1),
       start: z.string().optional().transform((s) => s ? Number(s) : 0),
-      offset: z.string().optional().transform((s) => s ? Number(s) : 10)
+      offset: z.string().optional().transform((s) => s ? Number(s) : 10),
+      match: z.string().optional()
     })
   });
 
