@@ -8,7 +8,7 @@ export type IHighlight = {
   length: number,
   createdAt: Date,
   champion: string,
-  position: Position,
+  position?: Position,
   size: number,
   queueId: QueueType,
   publicUrl?: string,

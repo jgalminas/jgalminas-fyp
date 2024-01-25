@@ -41,10 +41,24 @@ const Recordings = () => {
 
   const { ref, inView } = useInView();
 
+  const getData = async(pageParam: number) => {
+    const recordings = await getRecordings({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id, start: pageParam });
+    const promises = recordings.map((rec) => window.api.file.getThumbnail(rec.gameId, "recordings"));
+    const results = await Promise.all(promises);    
+
+    return recordings.map((rec, i) => {
+      return {
+        recording: rec,
+        thumbnail: results[i]
+      }
+    })
+
+  }
+
   const { isLoading, data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['recordings', queueFilter.id, dateFilter.id, championFilter.id, roleFilter],
     initialPageParam: 0,
-    queryFn: ({ pageParam }) => getRecordings({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id, start: pageParam }),
+    queryFn: ({ pageParam }) => getData(pageParam),
     getNextPageParam: (prevPage) => prevPage.length === ITEMS_PER_PAGE ? prevPage.length : undefined
   })
 
@@ -80,10 +94,10 @@ const Recordings = () => {
       <PageBody>
         { !isLoading ?
           <div className="flex flex-col gap-5">
-            <ViewportList items={data?.pages.flat()} overscan={1}>
+            <ViewportList items={recordings} overscan={1}>
               { (rec, key) => {
                 return (
-                  <RecordingCard recording={rec} key={key} position={key + 1}/>
+                  <RecordingCard data={rec} key={key} position={key + 1}/>
                 )
               }}
             </ViewportList>

@@ -5,7 +5,7 @@ import { HIGHLIGHTS_SUBDIRECTORY, THUMBNAIL_FORMAT, VIDEO_DIRECTORY, VIDEO_FORMA
 import { fileExists } from '../../util/file';
 import { captureThumbnail } from '../../../shared/util/recording';
 import { FileIPC, HighlightIPC } from '../../../shared/ipc';
-import { mkdir } from 'fs/promises';
+import { mkdir, readFile } from 'fs/promises';
 import { ObjectId } from 'bson';
 import { ffmpegPath, ffprobePath } from 'ffmpeg-ffprobe-static';
 import { IRecording } from '@fyp/types';
@@ -51,9 +51,12 @@ export default () => {
       }
     }
 
+    const data = await readFile(thumbnailPath, 'base64');
+
     return {
+      id: id,
       message: 'OK',
-      path: 'local:\\' + thumbnailPath
+      path: `data:image/jpeg;base64,${data}`
     }
     
   });

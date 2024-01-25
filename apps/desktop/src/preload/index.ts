@@ -10,7 +10,7 @@ export type PreloadAPI = typeof api;
 
 const api = {
   file: {
-    getThumbnail: async(id: string, type: 'recordings' | 'highlights'): Promise<{ message: 'OK', path: string } | { message: 'VIDEO_NOT_FOUND' }> => {
+    getThumbnail: async(id: string, type: 'recordings' | 'highlights'): Promise<{ message: 'OK', path: string } | {  message: 'VIDEO_NOT_FOUND' }> => {
       return await ipcRenderer.invoke(FileIPC.GetThumbnail, id, type);
     },
     createHighlights: async(

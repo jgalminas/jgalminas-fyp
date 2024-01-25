@@ -31,10 +31,24 @@ const Highlights = () => {
 
   const { ref, inView } = useInView();
 
+  const getData = async(pageParam: number) => {
+    const recordings = await getHighlights({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id, start: pageParam });
+    const promises = recordings.map((hl) => window.api.file.getThumbnail(hl.fileId, "highlights"));
+    const results = await Promise.all(promises);    
+
+    return recordings.map((hl, i) => {
+      return {
+        highlight: hl,
+        thumbnail: results[i]
+      }
+    })
+
+  }
+
   const { isLoading, data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['highlights', queueFilter.id, dateFilter.id, championFilter.id, roleFilter],
     initialPageParam: 0,
-    queryFn: ({ pageParam }) => getHighlights({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id, start: pageParam }),
+    queryFn: ({ pageParam }) => getData(pageParam),
     getNextPageParam: (prevPage) => prevPage.length === ITEMS_PER_PAGE ? prevPage.length : undefined
   })
 
@@ -72,7 +86,7 @@ const Highlights = () => {
             <ViewportList items={data?.pages.flat()} overscan={1}>
               { (hl, key) => {
                 return (
-                  <HighlightCard highlight={hl} key={key} position={key + 1}/>
+                  <HighlightCard data={hl} key={key} position={key + 1}/>
                 )
               }}
             </ViewportList>
