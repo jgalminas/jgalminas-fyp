@@ -18,6 +18,7 @@ import { useSubscription } from "@renderer/core/hooks/useSubscription";
 import { DefaultHeader } from "@renderer/navigation/DefaultHeader";
 import { useInView } from 'react-intersection-observer';
 import { ViewportList } from 'react-viewport-list';
+import Loading from "@renderer/core/Loading";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -30,7 +31,7 @@ const Matches = () => {
 
   const { ref, inView } = useInView();
 
-  const { isLoading, data, fetchNextPage, hasNextPage } = useInfiniteQuery({
+  const { isLoading, data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['matches', queueFilter.id, dateFilter.id, championFilter.id, roleFilter],
     initialPageParam: 0,
     queryFn: ({ pageParam }) => getMatches({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id, start: pageParam }),
@@ -67,15 +68,23 @@ const Matches = () => {
         </div>
       </PageInnerHeader>
       <PageBody>
-        <ViewportList items={data?.pages.flat()} overscan={1}>
-          { (match, key) => {
-            return (
-              <MatchCard match={match} key={key}/>
-            )
-          }}
-        </ViewportList>
-        { hasNextPage &&
-          <div ref={ref}/>
+        { !isLoading ?
+          <div className="flex flex-col gap-5">
+            <ViewportList items={data?.pages.flat()} overscan={1}>
+              { (match, key) => {
+                return (
+                  <MatchCard match={match} key={key}/>
+                )
+              }}
+            </ViewportList>
+            { hasNextPage &&
+              <div ref={ref}/>
+            }
+          </div>
+          : <Loading className="w-full my-24"/>
+        }
+        { isFetchingNextPage &&
+          <Loading className="w-full mb-5"/>
         }
       </PageBody>
     </Page>

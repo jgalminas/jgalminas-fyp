@@ -9,7 +9,7 @@ export type PageBodyProps = {
 const PageBody = ({ className, children }: PageBodyProps) => {
 
   return (
-    <div className={cn("flex flex-col gap-5 h-full", className)}>
+    <div className={cn("flex flex-col h-full", className)}>
       { children }
     </div>
   )

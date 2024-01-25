@@ -18,6 +18,7 @@ import { IHighlight } from "@fyp/types";
 import { queryClient } from "@renderer/App";
 import { useInView } from "react-intersection-observer";
 import { ViewportList } from "react-viewport-list";
+import Loading from "@renderer/core/Loading";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -30,7 +31,7 @@ const Highlights = () => {
 
   const { ref, inView } = useInView();
 
-  const { isLoading, data, fetchNextPage, hasNextPage } = useInfiniteQuery({
+  const { isLoading, data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['highlights', queueFilter.id, dateFilter.id, championFilter.id, roleFilter],
     initialPageParam: 0,
     queryFn: ({ pageParam }) => getHighlights({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id, start: pageParam }),
@@ -53,8 +54,6 @@ const Highlights = () => {
     }
   }, [inView])
 
-  const highlights = data?.pages.flat();
-
   return ( 
     <Page contentClass="gap-0">
       <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-50 pb-3">
@@ -68,15 +67,23 @@ const Highlights = () => {
       </PageInnerHeader>
       
       <PageBody>
-        <ViewportList items={highlights} overscan={1}>
-          { (hl, key) => {
-            return (
-              <HighlightCard highlight={hl} key={key} position={key + 1}/>
-            )
-          }}
-        </ViewportList>
-        { hasNextPage &&
-          <div ref={ref}/>
+        { !isLoading ?
+          <div className="flex flex-col gap-5">
+            <ViewportList items={data?.pages.flat()} overscan={1}>
+              { (hl, key) => {
+                return (
+                  <HighlightCard highlight={hl} key={key} position={key + 1}/>
+                )
+              }}
+            </ViewportList>
+            { hasNextPage &&
+              <div ref={ref}/>
+            }
+          </div>
+          : <Loading className="w-full my-24"/>
+        }
+        { isFetchingNextPage &&
+          <Loading className="w-full mb-5"/>
         }
       </PageBody>
     </Page>
