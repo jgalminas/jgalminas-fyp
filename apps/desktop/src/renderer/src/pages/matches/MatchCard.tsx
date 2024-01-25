@@ -26,7 +26,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
   const user = player(match, session as Session);
   user.items.sort((a, b) => a.slot > b.slot ? 1 : -1);
 
-  const PositionIcon = RoleIcons[user.position];
+  const Role = user.position && RoleIcons[user.position];
 
   return (
     <Card className="grid grid-cols-[auto,auto,0.7fr,2.2fr,1.2fr,0.9fr] items-center grid-rows-[auto,auto] text-white p-0 gap-y-2.5 gap-x-5">
@@ -36,7 +36,9 @@ const MatchCard = ({ match }: MatchCardProps) => {
       )}/>
       
       <div className="pt-2.5">
-        <PositionIcon/>
+        { // @ts-expect-error
+          user.position && <Role/>
+        }
       </div>
 
       <div className="col-start-3 row-start-1 flex flex-col text-sm text-star-dust-300 pt-5">
@@ -64,8 +66,8 @@ const MatchCard = ({ match }: MatchCardProps) => {
 
       <div className="col-start-4 row-start-2 grid grid-cols-[auto,1fr] self-start gap-x-5 mt-1">
         <div className="col-start-1 flex mr-3 gap-1.5">
-          <SquareImage src={Asset.summonerSpell(user.summonerOne)}/>
-          <SquareImage src={Asset.summonerSpell(user.summonerTwo)}/>
+          <SquareImage src={Asset.primaryRune(user.primaryRune)}/>
+          <SquareImage className="p-0.5" src={Asset.secondaryRune(user.secondaryRune)}/>
           <SquareImage className="ml-1.5" src={Asset.summonerSpell(user.summonerOne)}/>
           <SquareImage src={Asset.summonerSpell(user.summonerTwo)}/>
         </div>
