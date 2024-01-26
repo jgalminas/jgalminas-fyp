@@ -19,3 +19,10 @@ export const getHighlights = async (
 
   return res.json();
 }
+
+export const getHighlight = async(id: string): Promise<IHighlight & { match: string }> => {
+  const res = await new ClientRequestBuilder()
+    .route('/v1/highlight/' + id)
+    .fetch()
+  return res.json();
+}

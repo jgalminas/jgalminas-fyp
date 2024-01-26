@@ -41,4 +41,15 @@ router.get('/all', requireAuth, async(req, res) => {
 
 })
 
+router.get('/:id', requireAuth, async(req, res) => {
+  
+  const highlight = await HighlightRepository.getHighlightById(req.user?._id.toString() as string, req.params.id);
+  
+  if (!highlight) {
+    res.status(404);
+  }
+  
+  res.status(200).json(highlight);
+})
+
 export default router;

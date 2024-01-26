@@ -19,6 +19,7 @@ import { queryClient } from "@renderer/App";
 import { useInView } from "react-intersection-observer";
 import { ViewportList } from "react-viewport-list";
 import Loading from "@renderer/core/Loading";
+import { Outlet } from "react-router";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -86,7 +87,7 @@ const Highlights = () => {
             <ViewportList items={data?.pages.flat()} overscan={1}>
               { (hl, key) => {
                 return (
-                  <HighlightCard data={hl} key={key} position={key + 1}/>
+                  <HighlightCard data={hl} key={key} position={key + 1} playPath={`/highlights/${hl.highlight._id}`}/>
                 )
               }}
             </ViewportList>
@@ -100,6 +101,7 @@ const Highlights = () => {
           <Loading className="w-full mb-5"/>
         }
       </PageBody>
+      <Outlet/>
     </Page>
   )
 }

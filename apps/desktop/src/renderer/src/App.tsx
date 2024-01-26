@@ -16,6 +16,7 @@ import ScoreBoard from './pages/match/tabs/Scoreboard';
 import Timeline from './pages/match/tabs/Timeline';
 import HighlightsTab from './pages/match/tabs/Highlights';
 import RecordingVideoModal from './pages/recordings/RecordingVideoModal';
+import { HighlightVideoModal } from './core/HighlightVideoModal';
 
 export const queryClient = new QueryClient();
 
@@ -35,9 +36,13 @@ const App = () => {
               <Route path='matches/:matchId' element={<SecureRoute element={<Match/>}/>}>
                 <Route index element={<SecureRoute element={<ScoreBoard/>}/>}/>
                 <Route path='timeline' element={<SecureRoute element={<Timeline/>}/>}/>
-                <Route path='highlights' element={<SecureRoute element={<HighlightsTab/>}/>}/>
+                <Route path='highlights' element={<SecureRoute element={<HighlightsTab/>}/>}>
+                  <Route path=':id' element={<SecureRoute element={<HighlightVideoModal viewGame={false}/>}/>}/>
+                </Route>
               </Route>
-              <Route path='highlights' element={<SecureRoute element={<Highlights/>}/>}/>
+              <Route path='highlights' element={<SecureRoute element={<Highlights/>}/>}>
+                <Route path=':id' element={<SecureRoute element={<HighlightVideoModal/>}/>}/>
+              </Route>
               <Route path='recordings' element={<SecureRoute element={<Recordings/>}/>}>
                 <Route path=':id' element={<SecureRoute element={<RecordingVideoModal/>}/>}/>
               </Route>

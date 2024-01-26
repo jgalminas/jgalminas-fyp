@@ -1,4 +1,3 @@
-import { getRecording } from "@renderer/api/recording";
 import Modal from "@renderer/core/video/Modal"
 import { videoUrl } from "@renderer/util/video";
 import { useQuery } from "@tanstack/react-query";
@@ -9,18 +8,23 @@ import { Asset } from "@renderer/util/asset";
 import { length } from '@renderer/util/time';
 import { queue } from "@renderer/util/queue";
 import LinkButton from "@renderer/core/LinkButton";
+import { getHighlight } from "@renderer/api/highlight";
 
-const RecordingVideoModal = () => {
+export type HighlightVideoModalProps = {
+  viewGame?: boolean
+}
+
+export const HighlightVideoModal = ({ viewGame = true }: HighlightVideoModalProps) => {
 
   const { id } = useParams();
   const navigate = useNavigate();
 
   const { data } = useQuery({
-    queryKey: ['recording', id],
-    queryFn: () => getRecording(id as string)
+    queryKey: ['highlight', id],
+    queryFn: () => getHighlight(id as string)
   });
 
-  const navigateBack = () => navigate('/recordings');
+  const navigateBack = () => navigate(-1);
 
   if (!data) return null;
 
@@ -31,7 +35,7 @@ const RecordingVideoModal = () => {
           <X className="text-star-dust-300 h-5 w-5"/>
         </button>
       </div>
-      <video controls src={videoUrl(data.gameId, 'recording')}/>
+      <video controls src={videoUrl(data.fileId, 'highlight')}/>
       <div className="p-3 flex gap-3 items-center">
         <RoundImage src={Asset.champion(data.champion)}/>
         <div className="flex flex-col text-sm">
@@ -39,12 +43,11 @@ const RecordingVideoModal = () => {
           <p className="text-star-dust-400"> { length(data.length) } </p>
         </div>
         <div className="flex gap-3 ml-auto">
-          <LinkButton to='/'> Create Highlight </LinkButton>
-          <LinkButton className="hover:bg-woodsmoke-200" to={`/matches/${data.match}`} type='text'> View Game </LinkButton>
+          { viewGame &&
+            <LinkButton className="hover:bg-woodsmoke-200" to={`/matches/${data.match}`} type='text'> View Game </LinkButton>
+          } 
         </div>
       </div>
     </Modal>
   )
 }
-
-export default RecordingVideoModal;

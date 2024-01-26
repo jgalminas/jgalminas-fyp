@@ -1,7 +1,7 @@
 import { getHighlights } from "@renderer/api/highlight";
 import HighlightCard from "@renderer/core/highlight/HighlightCard";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router";
+import { Outlet, useParams } from "react-router";
 
 const Highlights = () => {
 
@@ -30,9 +30,10 @@ const Highlights = () => {
     <div className="flex flex-col gap-5">
       { data?.map((hl, i) => {
         return (
-          <HighlightCard key={i} data={hl} position={i + 1}/>
+          <HighlightCard key={i} data={hl} position={i + 1} playPath={`/matches/${matchId}/highlights/${hl.highlight._id}`}/>
         )
       }) }
+      <Outlet/>
     </div>
   )
 }

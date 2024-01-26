@@ -128,3 +128,48 @@ export const getHighlights = async(
   }
 
 }
+
+export const getHighlightById = async(userId: string, id: string) => {
+
+  try {
+    const result = await User.aggregate<IHighlight>([
+      {
+        $match: {
+          _id: new Types.ObjectId(userId)
+        }
+      },
+      {
+        $lookup: {
+          from: 'highlights',
+          localField: 'highlights',
+          foreignField: '_id',
+          as: 'highlights',
+          pipeline: [
+            {
+              $match: {
+                _id: new Types.ObjectId(id)
+              }
+            }
+          ]
+        }
+      },
+      {
+        $unwind: '$highlights'
+      },
+      {
+        $replaceRoot: {
+          newRoot: '$highlights'
+        }
+      }
+    ]);
+  
+    if (result.length > 0) {
+      return result[0];
+    } else {
+      return null;
+    }
+  } catch (err) {
+    return null;
+  }
+
+};
