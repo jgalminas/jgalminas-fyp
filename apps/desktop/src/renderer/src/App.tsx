@@ -9,7 +9,7 @@ import UnauthedOnlyRoute from './auth/UnauthedOnlyRoute';
 import Matches from './pages/matches/Matches';
 import Highlights from './pages/Highlights';
 import Recordings from './pages/recordings/Recordings';
-import Settings from './pages/Settings';
+import Settings from './pages/settings/Settings';
 import Match from './pages/match/Match';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ScoreBoard from './pages/match/tabs/Scoreboard';
