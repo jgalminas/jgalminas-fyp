@@ -2,7 +2,7 @@ import { IHighlight } from "@fyp/types";
 import { ClientRequestBuilder } from "@renderer/util/request";
 
 export const getHighlights = async (
-  filters: {
+  filters?: {
     date?: string | number,
     champion?: string,
     role?: string,

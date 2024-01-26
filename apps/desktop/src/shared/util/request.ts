@@ -26,16 +26,18 @@ export class RequestBuilder {
     return this;
   }
 
-  public query(params: { [key: string]: string | number }) {
-    Object.keys(params).forEach((k, i) => {
-      if (i === 0) {
-        this.request.url += '?' + k + '=' + params[k];
-      } else if (i === params.length) {
-        this.request.url += k + '=' + params[k];
-      } else {
-        this.request.url += '&' + k + '=' + params[k];
-      }
-    })
+  public query(params: { [key: string]: string | number } | undefined) {
+    if (params) {
+      Object.keys(params).forEach((k, i) => {
+        if (i === 0) {
+          this.request.url += '?' + k + '=' + params[k];
+        } else if (i === params.length) {
+          this.request.url += k + '=' + params[k];
+        } else {
+          this.request.url += '&' + k + '=' + params[k];
+        }
+      })
+    }
     return this;
   }
 
