@@ -20,6 +20,7 @@ import { useInView } from "react-intersection-observer";
 import { ViewportList } from "react-viewport-list";
 import Loading from "@renderer/core/Loading";
 import { Outlet } from "react-router";
+import InfoMessage from "@renderer/core/message/InfoMessage";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -69,6 +70,8 @@ const Highlights = () => {
     }
   }, [inView])
 
+  const highlights = data?.pages.flat();
+
   return ( 
     <Page contentClass="gap-0">
       <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-50 pb-3">
@@ -84,7 +87,7 @@ const Highlights = () => {
       <PageBody>
         { !isLoading ?
           <div className="flex flex-col gap-5">
-            <ViewportList items={data?.pages.flat()} overscan={1}>
+            <ViewportList items={highlights} overscan={6} withCache>
               { (hl, key) => {
                 return (
                   <HighlightCard data={hl} key={key} position={key + 1} playPath={`/highlights/${hl.highlight._id}`}/>
@@ -99,6 +102,10 @@ const Highlights = () => {
         }
         { isFetchingNextPage &&
           <Loading className="w-full mb-5"/>
+        }
+        { highlights && highlights.length === 0
+          ? <InfoMessage className="bg-woodsmoke-800 rounded-lg px-5 py-10"> No results found </InfoMessage>
+          : null
         }
       </PageBody>
       <Outlet/>

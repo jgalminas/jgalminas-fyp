@@ -77,13 +77,13 @@ const Settings = () => {
 
   return ( 
     <Page>
-      <PageInnerHeader>
+      <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-50 pb-3">
         <PageTitle>
           Settings
         </PageTitle>
         <Divider/>
       </PageInnerHeader>
-      <PageBody className="grid grid-cols-2 gap-x-12">
+      <PageBody className="grid grid-cols-2 gap-x-12 pb-12">
         
         <Heading2 className="col-span-full"> Account Settings </Heading2>
         <div>
