@@ -94,7 +94,7 @@ const Recordings = () => {
       <PageBody>
         { !isLoading ?
           <div className="flex flex-col gap-5">
-            <ViewportList items={recordings} overscan={1}>
+            <ViewportList items={recordings} overscan={6} withCache>
               { (rec, key) => {
                 return (
                   <RecordingCard data={rec} key={key} position={key + 1}/>

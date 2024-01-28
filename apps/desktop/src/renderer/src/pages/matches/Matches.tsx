@@ -19,6 +19,7 @@ import { DefaultHeader } from "@renderer/navigation/DefaultHeader";
 import { useInView } from 'react-intersection-observer';
 import { ViewportList } from 'react-viewport-list';
 import Loading from "@renderer/core/Loading";
+import InfoMessage from "@renderer/core/message/InfoMessage";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -56,6 +57,8 @@ const Matches = () => {
     }
   }, [inView])
 
+  const matches = data?.pages.flat();
+
   return ( 
     <Page header={<DefaultHeader/>} contentClass="gap-0">
       <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-50 pb-3">
@@ -70,7 +73,7 @@ const Matches = () => {
       <PageBody>
         { !isLoading ?
           <div className="flex flex-col gap-5">
-            <ViewportList items={data?.pages.flat()} overscan={1}>
+            <ViewportList items={matches} overscan={6} withCache>
               { (match, key) => {
                 return (
                   <MatchCard match={match} key={key}/>
@@ -85,6 +88,10 @@ const Matches = () => {
         }
         { isFetchingNextPage &&
           <Loading className="w-full mb-5"/>
+        }
+        { matches && matches.length === 0
+          ? <InfoMessage className="bg-woodsmoke-800 rounded-lg px-5 py-10"> No results found </InfoMessage>
+          : null
         }
       </PageBody>
     </Page>
