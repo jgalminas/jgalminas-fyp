@@ -9,15 +9,15 @@ export type InputProps = {
 
 const Input = forwardRef(({ error, label, className, ...rest }: InputProps, ref: ForwardedRef<HTMLInputElement>) => {
   
-  const Error = <p className="text-red-600 text-sm"> { error } </p>;
-  const Label = <label htmlFor={rest?.name} className="text-sm font-medium text-gray-500"> { label } </label>;
+  const Error = <p className="text-accent-red text-sm"> { error } </p>;
+  const Label = <label htmlFor={rest?.name} className="text-sm font-medium text-star-dust-300"> { label } </label>;
 
   return (
     <div className="flex flex-col gap-1.5">
       { label && Label }
       <input ref={ref} {...rest}
-      className={cn(`border py-1.5 px-2 border-gray-300 rounded focus:ring focus:border-blue-500 
-      ring-blue-200 outline-none text-gray-700 transition-colors`, className)}/>
+      className={cn(`border py-2 px-2 border-woodsmoke-100 rounded-md focus:ring focus:border-science-blue-600 placeholder-star-dust-500
+      ring-woodsmoke-200 outline-none text-star-dust-200 text-sm bg-woodsmoke-500 transition-colors duration-75`, className)}/>
       { error && Error }
     </div>
   )

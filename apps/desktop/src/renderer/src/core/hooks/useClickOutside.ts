@@ -5,16 +5,21 @@ import { useEffect, useRef } from "react";
  * @param nodeRef React Ref of a node which is the target element.
  * @param callback The function that is to be executed upon clicking outside.
  */
-export const useClickOutside = <T extends HTMLElement>(callback: (() => void) | undefined) => {
+export const useClickOutside = <T extends HTMLElement>({
+    callback,
+    enabled = true
+}: {
+    callback: (() => void) | undefined,
+    enabled?: boolean
+}) => {
 
     const nodeRef = useRef<T>(null);
 
     useEffect(() => {
         
         function handleClick(e: MouseEvent) {
-       
             const target = e.target as HTMLElement;            
-            if (!nodeRef.current?.contains(target)) {    
+            if (enabled && !nodeRef.current?.contains(target)) {    
                 callback && callback();                
             }
         }

@@ -99,5 +99,6 @@ export const Asset = {
       default:
         return '';
     }
-  }
+  },
+  profileIcon: (id: number) => `${BASE_CDN}/${PATCH}/img/profileicon/${id}.png`
 };

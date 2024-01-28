@@ -51,7 +51,7 @@ module.exports = {
           'green': '#01A86C'
         },
       }
-    },
+    }
   },
   plugins: [],
 }

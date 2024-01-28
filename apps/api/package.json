@@ -31,7 +31,7 @@
     "nanoid": "3",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "twisted": "^1.54.0",
+    "twisted": "^1.57.0",
     "ws": "^8.16.0",
     "zod": "^3.22.2"
   },

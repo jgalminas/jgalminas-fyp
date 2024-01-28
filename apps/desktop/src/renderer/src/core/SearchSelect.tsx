@@ -41,12 +41,12 @@ const SearchSelect = ({ value, className, options }: SearchSelectProps) => {
   return (
     <Popover onOpenChange={onOpenChange} open={isOpen}>
       <PopoverTrigger className={cn("bg-woodsmoke-400 text-star-dust-300 border-woodsmoke-50 border flex items-center",
-      "focus:outline-none text-sm px-3 py-2 min-w-[12rem] w-fit gap-6 rounded-lg", className)}>
+      "focus:outline-none text-sm px-3 py-2 min-w-[12rem] w-fit gap-6 rounded-md", className)}>
         { value.value }
         <ChevronDown className={cn("text-star-dust-400 w-5 h-5 ml-auto transition-all", isOpen && "rotate-180")}/>
       </PopoverTrigger>
 
-      <PopoverContent className={cn("bg-woodsmoke-400 border-woodsmoke-50 text-sm text-star-dust-300 w-full mt-1 min-w-[12rem] z-50 rounded-lg",
+      <PopoverContent className={cn("bg-woodsmoke-400 border-woodsmoke-50 text-sm text-star-dust-300 w-full mt-1 min-w-[12rem] z-50 rounded-md",
       "py-1.5 border ")}>
         <div className="w-[188px] mx-[1px] hover:bg-woodsmoke-500 relative">
           <input autoFocus placeholder="Search" onChange={(e) => setSearch(e.target.value)}

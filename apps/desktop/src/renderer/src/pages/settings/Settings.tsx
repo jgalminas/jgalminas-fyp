@@ -88,7 +88,7 @@ const Settings = () => {
         <Heading2 className="col-span-full"> Account Settings </Heading2>
         <div>
           <Heading3> Profile </Heading3>
-          <ProfilePicker/>
+          <ProfilePicker className="mt-1"/>
         </div>
 
         <div className="flex flex-col">

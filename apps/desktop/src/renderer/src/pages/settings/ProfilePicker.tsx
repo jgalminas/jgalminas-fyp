@@ -1,14 +1,162 @@
+import { cn } from "@fyp/class-name-helper"
+import { zodResolver } from "@hookform/resolvers/zod"
+import Button from "@renderer/core/Button"
+import Input from "@renderer/core/Input"
+import RoundImage from "@renderer/core/RoundImage"
+import Select, { SelectOption } from "@renderer/core/Select"
+import ErrorMessage from "@renderer/core/message/ErrorMessage"
+import Divider from "@renderer/core/page/Divider"
+import Modal from "@renderer/core/video/Modal"
+import { Asset } from "@renderer/util/asset"
+import { Fragment, useState } from "react"
+import { Controller, useForm } from "react-hook-form"
+import { z } from "zod"
 
 
 export type ProfilePickerProps = {
-  
+  className?: string
 }
 
-export const ProfilePicker = ({  }: ProfilePickerProps) => {
+export const ProfilePicker = ({ className }: ProfilePickerProps) => {
+
+  const [isOpen, setOpen] = useState<boolean>(false);
+  
+  const data = {
+    username: "Z3N",
+    tag: "#8888",
+    profileIconId: 876
+  }
 
   return (
-    <div>
-      profile picker
+    <div className={cn(
+      "bg-woodsmoke-400 text-star-dust-300 border-woodsmoke-50 border flex items-center",
+      "focus:outline-none text-sm p-2 min-w-[8rem] w-fit gap-1.5 rounded-lg",
+      className
+    )}>
+      { data
+        ?
+        <Fragment>
+          <RoundImage className="border-none" src={Asset.profileIcon(data.profileIconId)}/>
+          <div className="mr-6 ml-1 flex items-center gap-1">
+            <div className="truncate max-w-24">
+              <span className="text-star-dust-300 font-medium "> { data.username } </span>
+            </div>
+            <span className="text-star-dust-400 text-xs"> { data.tag } </span>
+          </div>
+        </Fragment>
+        : <span className="mr-6"> Click to set your profile </span>
+      }
+      <div className="w-[1px] bg-woodsmoke-50 h-8 ml-auto"/>
+      <button onClick={() => setOpen(true)} className="text-xs px-1.5 py-2.5 hover:bg-woodsmoke-600 rounded-md"> Change </button>
+      { isOpen && <ProfilePickerModal onClose={() => setOpen(false)}/> }
     </div>
+  )
+}
+
+type ProfilePickerModalProps = {
+  onClose: () => void
+}
+
+const schema = z.object({
+  username: z.string().min(1, "Summoner name is required"),
+  region: z.number()
+});
+
+type SchemaType = z.infer<typeof schema>;
+
+const ProfilePickerModal = ({ onClose } : ProfilePickerModalProps) => {
+
+  const options: SelectOption[] = [
+    {
+      id: "ASIA",
+      value: "Asia",
+      onClick: () => setValue("region", 0)
+    },
+    {
+      id: "AMERICAS",
+      value: "Americas",
+      onClick: () => setValue("region", 1)
+    },
+    {
+      id: "EUROPE",
+      value: "Europe",
+      onClick: () => setValue("region", 2)
+    }
+  ]
+
+  const [responseError, setResponseError] = useState<string | null>(null);
+  const [isLoading, setLoading] = useState<boolean>(false);
+
+  const { register, handleSubmit, formState: { errors }, control, setValue } = useForm<SchemaType>({
+    resolver: zodResolver(schema),
+    mode: 'onBlur'
+  });
+
+  const onSubmit = handleSubmit(async(data) => {
+
+    setLoading(true);
+    setResponseError(null);
+    
+    // const error = await signUp(data);
+
+    // if (error) {
+    //   setResponseError(error.message);
+    // }
+
+    setLoading(false);
+    onClose();
+  });
+
+
+  return (
+    <Modal clickOutside={false} onClose={onClose} className="w-fit h-fit p-6 rounded-lg">
+
+      <h1 className=" text-star-dust-200 font-medium text-xl">
+        Set Summoner Profile
+      </h1>
+
+      <Divider className="my-4"/>
+
+      <form onSubmit={onSubmit} className="flex flex-col w-80 gap-5">
+        <Input
+        label="Summoner Name"
+        placeholder="summoner#tag"
+        error={errors.username?.message}
+        {...register("username", { required: true })}/>
+
+        <Controller
+        name="region"
+        defaultValue={0}
+        control={control}
+        render={
+          ({ field }) => (
+            <Select
+            className="w-full"
+            menuClass="w-full"
+            options={options}
+            value={options[field.value]}
+            label="Region"
+            name="RegionSelect"/>
+          )
+        }
+        />
+
+        <div className="flex gap-2 justify-end mt-4">
+          <Button isLoading={isLoading} type="submit">
+            Confirm
+          </Button>
+          <Button onClick={onClose} styleType="text" className="hover:bg-woodsmoke-400">
+            Cancel
+          </Button>
+        </div>
+
+        { responseError && 
+          <ErrorMessage>
+            { responseError }
+          </ErrorMessage>
+        }
+
+      </form>
+    </Modal>
   )
 }
