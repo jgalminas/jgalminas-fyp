@@ -9,7 +9,7 @@ import { MatchObserver } from './matchObserver';
 import { MatchRecorderIPC } from './matchRecorderIPC';
 import env from '../env';
 import { videoServer } from './videoServer';
-import { HighlightIPC } from '../shared/ipc';
+import { SettingsManager } from './settingsManager';
 
 registerChannels();
 
@@ -21,6 +21,8 @@ export const matchObserver = new MatchObserver(
   clientManager,
   new MatchRecorderIPC()
 );
+export const settingsManager = new SettingsManager();
+settingsManager.loadSettings();
 
 function createWindow(): void {
   // Create the browser window.

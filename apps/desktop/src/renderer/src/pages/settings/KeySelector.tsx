@@ -1,15 +1,10 @@
 import { cn } from "@fyp/class-name-helper"
+import { KeyCombo } from "@root/shared/types"
 import { Fragment, useState } from "react"
 
-export type KeyOption = {
-  key: string,
-  ctrlKey: boolean,
-  shiftKey: boolean
-}
-
 export type KeySelectorProps = {
-  value: KeyOption,
-  onChange: (value: KeyOption) => void,
+  value: KeyCombo,
+  onChange: (value: KeyCombo) => void,
   className?: string
 }
 

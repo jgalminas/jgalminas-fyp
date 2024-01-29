@@ -1,8 +1,9 @@
 import { IpcRendererEvent, contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { MatchRecorder } from './matchRecorder';
-import { ClientIPC, FileIPC } from '../shared/ipc';
+import { ClientIPC, FileIPC, SettingsIPC } from '../shared/ipc';
 import { IRecording } from '@fyp/types';
+import { Settings } from '../shared/settings';
 
 export type PreloadAPI = typeof api;
 
@@ -38,6 +39,10 @@ const api = {
         ipcRenderer.removeListener(channel, subscription);
       }
     }
+  },
+  settings: {
+    get: (): Settings | undefined => ipcRenderer.sendSync(SettingsIPC.Get),
+    set: async(settings: Settings): Promise<void> => await ipcRenderer.invoke(SettingsIPC.Set, settings)
   }
 }
 

@@ -7,11 +7,20 @@ import { Heading2 } from "./Heading2";
 import { Heading3 } from "./Heading3";
 import { ProfilePicker } from "./ProfilePicker";
 import { Paragraph } from "./Paragraph";
-import { KeyOption, KeySelector } from "./KeySelector";
+import { KeySelector } from "./KeySelector";
 import LinkButton from "@renderer/core/LinkButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select, { SelectOption } from "@renderer/core/Select";
 import { Switch } from "@renderer/core/Switch";
+import { KeyCombo } from "@root/shared/types";
+
+type SettingsState = {
+  frameRate: SelectOption,
+  highlightTimeframe: SelectOption,
+  recordMic: boolean,
+  resolution: SelectOption,
+  shortcutKey: KeyCombo
+}
 
 const Settings = () => {
 
@@ -69,11 +78,52 @@ const Settings = () => {
     }
   ];
 
+  const settings = window.api.settings.get();
+
   const [fps, setFps] = useState<SelectOption>(fpsOptions[0]);
   const [resolution, setResolution] = useState<SelectOption>(resolutionOptions[0]);
   const [timeframe, setTimeframe] = useState<SelectOption>(timeframeOptions[0]);
   const [recordMic, setRecordMic] = useState<boolean>(false);
-  const [key, setKey] = useState<KeyOption>({ key: 'c', ctrlKey: true, shiftKey: false });
+  const [key, setKey] = useState<KeyCombo>({ key: 'c', ctrlKey: true, shiftKey: false });
+
+  // const [settings, setSettings] = useState<SettingsState>(
+  //   (() => {
+  //     const data = window.api.settings.get();
+  //     return {
+  //       frameRate: fpsOptions.find(opt => opt.id === settings?.frameRate) ?? fpsOptions[0],
+  //       resolution: resolutionOptions.find(opt => opt.id === settings?.resolution) ?? resolutionOptions[0],
+  //       highlightTimeframe: timeframeOptions.find(opt => opt.id === settings?.highlightTimeframe) ?? timeframeOptions[0],
+  //       recordMic: data?.recordMic ?? false,
+  //       shortcutKey: settings?.shortcutKey
+  //     }
+  //   })
+  // );
+
+  useEffect(() => {
+    const settings = window.api.settings.get();
+
+    if (settings) {
+      setFps(fpsOptions.find(opt => opt.id === settings.frameRate) ?? fpsOptions[0]);
+      setResolution(resolutionOptions.find(opt => opt.id === settings.resolution) ?? resolutionOptions[0]);
+      setTimeframe(timeframeOptions.find(opt => opt.id === settings.highlightTimeframe) ?? timeframeOptions[0]);
+      setRecordMic(settings.recordMic);
+      setKey(settings.shortcutKey);
+    }
+
+  }, [])
+
+  useEffect(() => {
+    window.api.settings.set({
+      frameRate: 9000,
+      highlightTimeframe: timeframe.id as number,
+      recordMic: recordMic,
+      resolution: resolution.id as number,
+      shortcutKey: key
+    });
+    console.log("saved");
+    
+
+  }, [])
 
   return ( 
     <Page>
