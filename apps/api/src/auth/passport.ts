@@ -39,7 +39,7 @@ export const passportConfig = (passport: PassportStatic) => {
           _id: user._id,
           email: user.email,
           username: user.username,
-          puuid: user.puuid
+          summoner: user.summoner
         });
       } else {
         callback(null, false);

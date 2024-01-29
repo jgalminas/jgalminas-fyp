@@ -17,6 +17,7 @@ import Timeline from './pages/match/tabs/Timeline';
 import HighlightsTab from './pages/match/tabs/Highlights';
 import RecordingVideoModal from './pages/recordings/RecordingVideoModal';
 import { HighlightVideoModal } from './core/HighlightVideoModal';
+import SummonerProvider from './SummonerContext';
 
 export const queryClient = new QueryClient();
 
@@ -26,30 +27,32 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path='login' element={<UnauthedOnlyRoute element={<Login/>}/>}/>
-            <Route path='signup' element={<UnauthedOnlyRoute element={<SignUp/>}/>}/>
+          <SummonerProvider>
+            <Routes>
+              <Route path='login' element={<UnauthedOnlyRoute element={<Login/>}/>}/>
+              <Route path='signup' element={<UnauthedOnlyRoute element={<SignUp/>}/>}/>
 
-            <Route path='/' element={<SecureRoute element={<Main/>}/>}>
-              <Route index element={<SecureRoute element={<Home/>}/>}/>
-              <Route path='matches' element={<SecureRoute element={<Matches/>}/>}/>
-              <Route path='matches/:matchId' element={<SecureRoute element={<Match/>}/>}>
-                <Route index element={<SecureRoute element={<ScoreBoard/>}/>}/>
-                <Route path='timeline' element={<SecureRoute element={<Timeline/>}/>}/>
-                <Route path='highlights' element={<SecureRoute element={<HighlightsTab/>}/>}>
-                  <Route path=':id' element={<SecureRoute element={<HighlightVideoModal viewGame={false}/>}/>}/>
+              <Route path='/' element={<SecureRoute element={<Main/>}/>}>
+                <Route index element={<SecureRoute element={<Home/>}/>}/>
+                <Route path='matches' element={<SecureRoute element={<Matches/>}/>}/>
+                <Route path='matches/:matchId' element={<SecureRoute element={<Match/>}/>}>
+                  <Route index element={<SecureRoute element={<ScoreBoard/>}/>}/>
+                  <Route path='timeline' element={<SecureRoute element={<Timeline/>}/>}/>
+                  <Route path='highlights' element={<SecureRoute element={<HighlightsTab/>}/>}>
+                    <Route path=':id' element={<SecureRoute element={<HighlightVideoModal viewGame={false}/>}/>}/>
+                  </Route>
                 </Route>
+                <Route path='highlights' element={<SecureRoute element={<Highlights/>}/>}>
+                  <Route path=':id' element={<SecureRoute element={<HighlightVideoModal/>}/>}/>
+                </Route>
+                <Route path='recordings' element={<SecureRoute element={<Recordings/>}/>}>
+                  <Route path=':id' element={<SecureRoute element={<RecordingVideoModal/>}/>}/>
+                </Route>
+                <Route path='settings' element={<SecureRoute element={<Settings/>}/>}/>
               </Route>
-              <Route path='highlights' element={<SecureRoute element={<Highlights/>}/>}>
-                <Route path=':id' element={<SecureRoute element={<HighlightVideoModal/>}/>}/>
-              </Route>
-              <Route path='recordings' element={<SecureRoute element={<Recordings/>}/>}>
-                <Route path=':id' element={<SecureRoute element={<RecordingVideoModal/>}/>}/>
-              </Route>
-              <Route path='settings' element={<SecureRoute element={<Settings/>}/>}/>
-            </Route>
-            
-          </Routes>
+              
+            </Routes>
+          </SummonerProvider>
         </AuthProvider>
       </BrowserRouter>
   </QueryClientProvider>

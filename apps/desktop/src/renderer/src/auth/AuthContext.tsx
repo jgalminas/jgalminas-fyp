@@ -1,11 +1,12 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { ClientRequestBuilder } from "@renderer/util/request";
+import { IUser } from "@fyp/types";
 
 export type Session = {
   sessionId: string
   userId: string,
   username: string,
-  puuid: string | undefined
+  summoner?: Pick<IUser, "summoner">["summoner"]
 };
 
 export type AuthError = {
@@ -63,7 +64,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
               username: data.user.username,
               userId: data.user._id,
               sessionId: data.sessionId,
-              puuid: data.user.puuid
+              summoner: data.user.summoner
             }
           });
         } else {
@@ -98,7 +99,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
             username: data.user.username,
             userId: data.user._id,
             sessionId: data.sessionId,
-            puuid: data.user.puuid
+            summoner: data.user.summoner
           }
         });
         return null;
@@ -137,7 +138,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
             username: data.user.username,
             userId: data.user._id,
             sessionId: data.sessionId,
-            puuid: data.user.puuid
+            summoner: data.user.summoner
           }
         });
         return null;

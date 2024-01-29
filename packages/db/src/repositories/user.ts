@@ -1,4 +1,4 @@
-import { IUser } from "@fyp/types";
+import { IUser, Regions } from "@fyp/types";
 import { User } from "../schema/user";
 import { Types } from "mongoose";
 
@@ -26,7 +26,8 @@ export const updateSummoner = async(
     name: string,
     tag: string,
     profileIconId: number,
-    puuid: string
+    puuid: string,
+    region: Regions
   }
 ) => {
   return await User.updateOne(

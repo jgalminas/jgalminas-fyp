@@ -20,7 +20,7 @@ router.post('/login', (req, res, next) => {
           user: {
             username: user.username,
             _id: user._id,
-            puuid: user.puuid,
+            summoner: user.summoner
           },
           message: "Successfully logged in"
         });
@@ -49,7 +49,7 @@ router.post('/signup', async(req, res) => {
         user: {
           username: user.username,
           _id: user._id,
-          puuid: user.puuid,
+          summoner: user.summoner
         },
         message: "Successfully registered",
       });
@@ -80,7 +80,7 @@ router.get('/session', requireAuth, async(req, res) => {
     user: {
       username: req.user?.username,
       _id: req.user?._id,
-      puuid: req.user?.puuid,
+      summoner: req.user?.summoner
     },
   });
 

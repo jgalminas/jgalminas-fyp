@@ -2,14 +2,23 @@ import mongoose from "mongoose";
 import { ObjectId, Schema } from "../db";
 import bcrypt from 'bcrypt';
 import PassportLocalMongoose from 'passport-local-mongoose';
-import { IUser } from "@fyp/types";
+import { IUser, REGIONS } from "@fyp/types";
 
 const UserSchema = new Schema<IUser>({
   email: { type: String, required: true, index: true , unique: true },
   username: { type: String, required: true },
   password: { type: String, required: true },
   createdAt: { type: Date, required: true, default: Date.now() },
-  puuid: { type: String, required: false },
+  summoner: {
+    type: {
+      name: { type: String, required: true },
+      tag: { type: String, required: true },
+      puuid: { type: String, required: true },
+      region: { type: String, enum: REGIONS, required: true },
+      profileIconId: { type: Number, required: true }
+    },
+    required: false
+  },
   recordings: [{ type: ObjectId, required: true, ref: 'Recording' }],
   highlights: [{ type: ObjectId, required: true, ref: 'Highlight' }]
 });

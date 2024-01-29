@@ -1,5 +1,8 @@
 import { cn } from "@fyp/class-name-helper"
+import { REGIONS } from "@fyp/types"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useSummoner } from "@renderer/SummonerContext"
+import { updateSummoner } from "@renderer/api/user"
 import Button from "@renderer/core/Button"
 import Input from "@renderer/core/Input"
 import RoundImage from "@renderer/core/RoundImage"
@@ -8,6 +11,7 @@ import ErrorMessage from "@renderer/core/message/ErrorMessage"
 import Divider from "@renderer/core/page/Divider"
 import Modal from "@renderer/core/video/Modal"
 import { Asset } from "@renderer/util/asset"
+import { useMutation } from "@tanstack/react-query"
 import { Fragment, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { z } from "zod"
@@ -20,28 +24,23 @@ export type ProfilePickerProps = {
 export const ProfilePicker = ({ className }: ProfilePickerProps) => {
 
   const [isOpen, setOpen] = useState<boolean>(false);
+  const { summoner } = useSummoner();
   
-  const data = {
-    username: "Z3N",
-    tag: "#8888",
-    profileIconId: 876
-  }
-
   return (
     <div className={cn(
       "bg-woodsmoke-400 text-star-dust-300 border-woodsmoke-50 border flex items-center",
       "focus:outline-none text-sm p-2 min-w-[8rem] w-fit gap-1.5 rounded-lg",
       className
     )}>
-      { data
+      { summoner
         ?
         <Fragment>
-          <RoundImage className="border-none" src={Asset.profileIcon(data.profileIconId)}/>
+          <RoundImage className="border-none" src={Asset.profileIcon(summoner.profileIconId)}/>
           <div className="mr-6 ml-1 flex items-center gap-1">
             <div className="truncate max-w-24">
-              <span className="text-star-dust-300 font-medium "> { data.username } </span>
+              <span className="text-star-dust-300 font-medium "> { summoner.name } </span>
             </div>
-            <span className="text-star-dust-400 text-xs"> { data.tag } </span>
+            <span className="text-star-dust-400 text-xs"> #{ summoner.tag } </span>
           </div>
         </Fragment>
         : <span className="mr-6"> Click to set your profile </span>
@@ -66,45 +65,39 @@ type SchemaType = z.infer<typeof schema>;
 
 const ProfilePickerModal = ({ onClose } : ProfilePickerModalProps) => {
 
-  const options: SelectOption[] = [
-    {
-      id: "ASIA",
-      value: "Asia",
-      onClick: () => setValue("region", 0)
-    },
-    {
-      id: "AMERICAS",
-      value: "Americas",
-      onClick: () => setValue("region", 1)
-    },
-    {
-      id: "EUROPE",
-      value: "Europe",
-      onClick: () => setValue("region", 2)
-    }
-  ]
+  const options: SelectOption[] = REGIONS.map((r, i) => ({
+    id: i,
+    value: r,
+    onClick: () => setValue("region", i) 
+  }))
 
-  const [responseError, setResponseError] = useState<string | null>(null);
-  const [isLoading, setLoading] = useState<boolean>(false);
+  const { summoner, setSummoner } = useSummoner();
 
   const { register, handleSubmit, formState: { errors }, control, setValue } = useForm<SchemaType>({
     resolver: zodResolver(schema),
-    mode: 'onBlur'
+    mode: 'onBlur',
+    defaultValues: {
+      region: summoner ? REGIONS.findIndex(r => summoner.region === r) ?? 0 : 0,
+      username: summoner ? summoner?.name + '#' + summoner?.tag : ""
+    }
   });
 
-  const onSubmit = handleSubmit(async(data) => {
 
-    setLoading(true);
-    setResponseError(null);
+  const { mutateAsync, data, isPending } = useMutation({
+    mutationKey: ["summoner"],
+    mutationFn:  updateSummoner
+  });
+
+  const onSubmit = handleSubmit(async(form) => {
+
+    const [name, tag] = form.username.split('#');
+    const result = await mutateAsync({ name, tag, region: REGIONS[form.region] });
     
-    // const error = await signUp(data);
-
-    // if (error) {
-    //   setResponseError(error.message);
-    // }
-
-    setLoading(false);
-    onClose();
+    if (result.status === "success") {
+      setSummoner(result.summoner);
+      onClose();
+    }
+    
   });
 
 
@@ -141,20 +134,20 @@ const ProfilePickerModal = ({ onClose } : ProfilePickerModalProps) => {
         }
         />
 
+        { data?.status === "error" && 
+          <ErrorMessage>
+            { data.message }
+          </ErrorMessage>
+        }
+
         <div className="flex gap-2 justify-end mt-4">
-          <Button isLoading={isLoading} type="submit">
+          <Button isLoading={isPending} type="submit">
             Confirm
           </Button>
           <Button onClick={onClose} styleType="text" className="hover:bg-woodsmoke-400">
             Cancel
           </Button>
         </div>
-
-        { responseError && 
-          <ErrorMessage>
-            { responseError }
-          </ErrorMessage>
-        }
 
       </form>
     </Modal>

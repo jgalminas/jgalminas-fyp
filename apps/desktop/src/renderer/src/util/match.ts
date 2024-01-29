@@ -1,4 +1,4 @@
 import { Match } from "@fyp/types";
-import { Session } from "@renderer/auth/AuthContext";
+import { Summoner } from "@renderer/SummonerContext";
 
-export const player = (match: Match, session: Session) => match.participants.find(p => p.puuid === session?.puuid) as Match['participants'][number];
+export const player = (match: Match, summoner: Summoner) => match.participants.find(p => p.puuid === summoner?.puuid) as Match['participants'][number];
