@@ -1,5 +1,5 @@
 import BackButton from "@renderer/BackButton";
-import { useAuth } from "../auth/AuthContext";
+import { Profile } from "@renderer/core/Profile";
 
 export type DefaultHeaderProps = {
   back?: string
@@ -7,14 +7,10 @@ export type DefaultHeaderProps = {
 
 export const DefaultHeader = ({ back }: DefaultHeaderProps) => {
 
-  const { signOut } = useAuth();
-
   return (
     <div className="py-3 px-5 flex">
       { back && <BackButton to={back}/> }
-      <button onClick={signOut} className="ml-auto text-star-dust-300">
-        Sign Out
-      </button>
+      <Profile className="ml-auto"/>
     </div>
   )
 }

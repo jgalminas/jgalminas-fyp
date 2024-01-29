@@ -35,8 +35,8 @@ export const ProfilePicker = ({ className }: ProfilePickerProps) => {
       { summoner
         ?
         <Fragment>
-          <RoundImage className="border-none" src={Asset.profileIcon(summoner.profileIconId)}/>
-          <div className="mr-6 ml-1 flex items-center gap-1">
+          <RoundImage className="border-none outline outline-woodsmoke-50" src={Asset.profileIcon(summoner.profileIconId)}/>
+          <div className="mr-6 ml-1.5 flex items-center gap-1">
             <div className="truncate max-w-24">
               <span className="text-star-dust-300 font-medium "> { summoner.name } </span>
             </div>

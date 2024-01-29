@@ -9,7 +9,7 @@ import { Asset } from "@renderer/util/asset";
 import { length } from '@renderer/util/time';
 import { queue } from "@renderer/util/queue";
 import { fileSize } from "@renderer/util/file";
-import IconSelect, { DropdownOption } from "@renderer/core/Dropdown";
+import Dropdown, { DropdownOption } from "@renderer/core/Dropdown";
 import Ellipsis from '@assets/icons/Ellipsis.svg?react';
 import Info from '@assets/icons/Info.svg?react';
 
@@ -75,8 +75,11 @@ const RecordingCard = ({ data, position }: RecordingCardProps) => {
         { size[0] }
         <span className="text-xs font-normal text-star-dust-400"> { size[1] } </span>
       </p>
-      <IconSelect trigger={<Ellipsis className="h-6 w-6"/>} options={options} align="end"
-      className="p-1 rounded-md h-fit w-fit"/>
+      <Dropdown options={options} align="end" className="p-1 rounded-md h-fit w-fit">
+        { () => (
+          <Ellipsis className="h-6 w-6"/>
+        )}
+      </Dropdown>
     </div>
   </Card>
   )
