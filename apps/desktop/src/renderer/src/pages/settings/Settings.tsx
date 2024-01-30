@@ -9,10 +9,11 @@ import { ProfilePicker } from "./ProfilePicker";
 import { Paragraph } from "./Paragraph";
 import { KeySelector } from "./KeySelector";
 import LinkButton from "@renderer/core/LinkButton";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
 import Select, { SelectOption } from "@renderer/core/Select";
 import { Switch } from "@renderer/core/Switch";
 import { KeyCombo } from "@root/shared/types";
+import { FPS_OPTIONS, RESOLUTION_OPTIONS, Settings as SettingsType, TIMEFRAME_OPTIONS, defaultSettings } from "@root/shared/settings";
 
 type SettingsState = {
   frameRate: SelectOption,
@@ -22,107 +23,120 @@ type SettingsState = {
   shortcutKey: KeyCombo
 }
 
+type ReducerAction = {
+  action: "SET_FRAMERATE" | "SET_TIMEFRAME" | "SET_RESOLUTION",
+  value: SelectOption
+} | {
+  action: "SET_RECORD_MIC",
+  value: boolean
+} | {
+  action: "SET_SHORTCUT",
+  value: KeyCombo
+} | {
+  action: "SET",
+  value: SettingsState
+}
+
+const saveState = (state: SettingsState) => {
+  window.api.settings.set({
+    frameRate: state.frameRate.id as number,
+    highlightTimeframe: state.highlightTimeframe.id as number,
+    recordMic: state.recordMic,
+    resolution: state.resolution.id as number,
+    shortcutKey: state.shortcutKey
+  });
+}
+
+const reducer = (state: SettingsState, action: ReducerAction) => {
+  let newState: SettingsState;
+  switch (action.action) {
+    case "SET_TIMEFRAME":
+      newState = {
+        ...state,
+        highlightTimeframe: action.value
+      }
+      saveState(newState);
+      return newState;
+    case "SET_RECORD_MIC":
+      newState = {
+        ...state,
+        recordMic: action.value
+      }
+      saveState(newState);
+      return newState;
+    case "SET_RESOLUTION":
+      newState = {
+        ...state,
+        resolution: action.value
+      }
+      saveState(newState);
+      return newState;
+    case "SET_SHORTCUT":
+      newState = {
+        ...state,
+        shortcutKey: action.value
+      }
+      saveState(newState);
+      return newState;
+    case "SET_FRAMERATE":
+      newState = {
+        ...state,
+        frameRate: action.value
+      }
+      saveState(newState);
+      return newState;
+    case "SET":
+      return action.value
+  }
+}
+
 const Settings = () => {
 
-  const fpsOptions: SelectOption[] = [
-    {
-      id: 30,
-      value: "30 FPS",
-      onClick: (v) => setFps(v)
-    },
-    {
-      id: 60,
-      value: "60 FPS",
-      onClick: (v) => setFps(v)
+  const fpsOptions: SelectOption[] = Object.keys(FPS_OPTIONS).map((k) => {
+    return {
+      id: Number(k),
+      value: FPS_OPTIONS[k],
+      onClick: (value) => dispatch({ action: "SET_FRAMERATE", value })
     }
-  ];
+  })
 
-  const resolutionOptions: SelectOption[] = [
-    {
-      id: 720,
-      value: "1280 x 720",
-      onClick: (v) => setResolution(v)
-    },
-    {
-      id: 1080,
-      value: "1920 x 1080",
-      onClick: (v) => setResolution(v)
+  const resolutionOptions: SelectOption[] = Object.keys(RESOLUTION_OPTIONS).map((k) => {
+    return {
+      id: Number(k),
+      value: RESOLUTION_OPTIONS[k],
+      onClick: (value) => dispatch({ action: "SET_RESOLUTION", value })
     }
-  ];
+  })
 
-  const timeframeOptions: SelectOption[] = [
-    {
-      id: 15,
-      value: "15 seconds",
-      onClick: (v) => setTimeframe(v)
-    },
-    {
-      id: 30,
-      value: "30 seconds",
-      onClick: (v) => setTimeframe(v)
-    },
-    {
-      id: 45,
-      value: "45 seconds",
-      onClick: (v) => setTimeframe(v)
-    },
-    {
-      id: 60,
-      value: "60 seconds",
-      onClick: (v) => setTimeframe(v)
-    },
-    {
-      id: 120,
-      value: "120 seconds",
-      onClick: (v) => setTimeframe(v)
+  const timeframeOptions: SelectOption[] = Object.keys(TIMEFRAME_OPTIONS).map((k) => {
+    return {
+      id: Number(k),
+      value: TIMEFRAME_OPTIONS[k],
+      onClick: (value) => dispatch({ action: "SET_TIMEFRAME", value })
     }
-  ];
+  })
 
-  const settings = window.api.settings.get();
+  const settingsToState = (settings: SettingsType) => {
+    return {
+      frameRate: fpsOptions.find(opt => opt.id === settings.frameRate) as SelectOption,
+      resolution: resolutionOptions.find(opt => opt.id === settings.resolution) as SelectOption,
+      highlightTimeframe: timeframeOptions.find(opt => opt.id === settings.highlightTimeframe) as SelectOption,
+      recordMic: settings.recordMic,
+      shortcutKey: settings.shortcutKey
+    }
+  }
 
-  const [fps, setFps] = useState<SelectOption>(fpsOptions[0]);
-  const [resolution, setResolution] = useState<SelectOption>(resolutionOptions[0]);
-  const [timeframe, setTimeframe] = useState<SelectOption>(timeframeOptions[0]);
-  const [recordMic, setRecordMic] = useState<boolean>(false);
-  const [key, setKey] = useState<KeyCombo>({ key: 'c', ctrlKey: true, shiftKey: false });
-
-  // const [settings, setSettings] = useState<SettingsState>(
-  //   (() => {
-  //     const data = window.api.settings.get();
-  //     return {
-  //       frameRate: fpsOptions.find(opt => opt.id === settings?.frameRate) ?? fpsOptions[0],
-  //       resolution: resolutionOptions.find(opt => opt.id === settings?.resolution) ?? resolutionOptions[0],
-  //       highlightTimeframe: timeframeOptions.find(opt => opt.id === settings?.highlightTimeframe) ?? timeframeOptions[0],
-  //       recordMic: data?.recordMic ?? false,
-  //       shortcutKey: settings?.shortcutKey
-  //     }
-  //   })
-  // );
+  const [state, dispatch] = useReducer(reducer, settingsToState(defaultSettings));
 
   useEffect(() => {
     const settings = window.api.settings.get();
-
-    if (settings) {
-      setFps(fpsOptions.find(opt => opt.id === settings.frameRate) ?? fpsOptions[0]);
-      setResolution(resolutionOptions.find(opt => opt.id === settings.resolution) ?? resolutionOptions[0]);
-      setTimeframe(timeframeOptions.find(opt => opt.id === settings.highlightTimeframe) ?? timeframeOptions[0]);
-      setRecordMic(settings.recordMic);
-      setKey(settings.shortcutKey);
-    }
-
-  }, [])
-
-  useEffect(() => {
-    window.api.settings.set({
-      frameRate: 9000,
-      highlightTimeframe: timeframe.id as number,
-      recordMic: recordMic,
-      resolution: resolution.id as number,
-      shortcutKey: key
-    });
-    console.log("saved");
     
-
+    if (settings) {
+      dispatch({
+        action: "SET", 
+        value: settingsToState(settings)
+      })
+    }
   }, [])
 
   return ( 
@@ -157,7 +171,7 @@ const Settings = () => {
           <Paragraph>
             The frame rate at which matches are recorded. Higher frame rate leads to better quality, but uses more space and resources.
           </Paragraph>
-          <Select width={118} className="mt-5" value={fps} options={fpsOptions}/>
+          <Select width={118} className="mt-5" value={state.frameRate} options={fpsOptions}/>
         </div>
 
         <div>
@@ -165,7 +179,7 @@ const Settings = () => {
           <Paragraph>
             Include audio from your microphone in the recordings.
           </Paragraph>
-          <Switch rootClass="mt-5" value={recordMic} onChange={setRecordMic}/>
+          <Switch rootClass="mt-5" value={state.recordMic} onChange={(value) => dispatch({ action: "SET_RECORD_MIC", value })}/>
         </div>
 
         <div className="mt-9">
@@ -173,7 +187,7 @@ const Settings = () => {
           <Paragraph>
             The resolution at which matches are recorded. Higher resolution leads to better quality, but uses more space and resources.
           </Paragraph>
-          <Select width={156} className="mt-5" value={resolution} options={resolutionOptions}/>
+          <Select width={156} className="mt-5" value={state.resolution} options={resolutionOptions}/>
         </div>
 
         <div className="mt-9">
@@ -181,7 +195,7 @@ const Settings = () => {
           <Paragraph>
             The length of the highlight captured when pressing the <b> shortcut key. </b>  
           </Paragraph>
-          <Select width={156} className="mt-5" value={timeframe} options={timeframeOptions}/>
+          <Select width={156} className="mt-5" value={state.highlightTimeframe} options={timeframeOptions}/>
         </div>
 
         <div className="mt-9">
@@ -190,7 +204,7 @@ const Settings = () => {
             A mouse or keyboard key combination which can be pressed during the to create a highlight.
             Pressing this key will capture a clip in reverse based on the <b> highlight time frame </b> you have selected.
           </Paragraph>
-          <KeySelector className="mt-5" value={key} onChange={setKey}/>
+          <KeySelector className="mt-5" value={state.shortcutKey} onChange={(value) => dispatch({ action: "SET_SHORTCUT", value })}/>
         </div>
 
       </PageBody>

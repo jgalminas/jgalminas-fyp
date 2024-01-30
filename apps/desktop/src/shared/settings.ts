@@ -12,16 +12,34 @@ export const settingsSchema = z.object({
   resolution: z.number()
 })
 
+export type Settings = z.infer<typeof settingsSchema>;
+
+export const FPS_OPTIONS = {
+  30: "30 FPS",
+  60: "60 FPS"
+} as const
+
+export const RESOLUTION_OPTIONS = {
+  720: "1280 x 720",
+  1080: "1920 x 1080"
+} as const
+
+export const TIMEFRAME_OPTIONS = {
+  15: "15 Seconds",
+  30: "30 Seconds",
+  45: "45 Seconds",
+  60: "60 Seconds",
+  120: "120 Seconds"
+} as const
+
 export const defaultSettings: Settings = {
-  frameRate: 60,
-  highlightTimeframe: 30,
+  frameRate: Number(Object.keys(FPS_OPTIONS)[0]),
+  highlightTimeframe: Number(Object.keys(TIMEFRAME_OPTIONS)[1]),
   recordMic: false,
-  resolution: 1080,
+  resolution: Number(Object.keys(RESOLUTION_OPTIONS)[1]),
   shortcutKey: {
     key: 'F5',
     shiftKey: true,
     ctrlKey: false
   }
 }
-
-export type Settings = z.infer<typeof settingsSchema>;
