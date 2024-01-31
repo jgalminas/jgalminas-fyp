@@ -28,8 +28,6 @@ export class SettingsManager {
 
   public async setSettings(settings: Settings) {
     this.settings = settings;
-    console.log(settings);
-    
     await writeFile(SETTINGS_PATH, JSON.stringify(settings));    
   }
 

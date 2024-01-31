@@ -20,8 +20,10 @@ export const FPS_OPTIONS = {
 } as const
 
 export const RESOLUTION_OPTIONS = {
-  720: "1280 x 720",
-  1080: "1920 x 1080"
+  4000: "720p",
+  6000: "1080p",
+  10000: "1440p",
+  16000: "4K"
 } as const
 
 export const TIMEFRAME_OPTIONS = {

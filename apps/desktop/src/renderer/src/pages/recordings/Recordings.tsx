@@ -63,12 +63,30 @@ const Recordings = () => {
   })
 
   useIPCSubscription<IRecording>(RecordingIPC.Created, (_, recording) => {
-    queryClient.setQueryData(['recordings', 0, 'latest', 'all', 'FILL'], (prev: IRecording[]) => {
-      const items = prev ?? [];
-      return [
-        recording,
-        ...items
-      ]
+    queryClient.setQueryData(['recordings', 0, 'latest', 'all', 'FILL'], async(
+      prev: {
+        pageParams: number[],
+        pages: {
+          recording: IRecording,
+          thumbnail: Awaited<ReturnType<typeof window.api.file.getThumbnail>>
+        }[][]
+      }) => {
+
+      const items = prev ?? { pageParams: [], pages: [] };
+      const thumbnail = await window.api.file.getThumbnail(recording._id.toString(), "highlights");
+
+      console.log(items);
+        
+
+      // items.pages[0] = [
+      //   {
+      //     recording: recording,
+      //     thumbnail: thumbnail
+      //   },
+      //   ...items.pages[0]
+      // ]
+      
+      return items;
     })
   }, [])
 
