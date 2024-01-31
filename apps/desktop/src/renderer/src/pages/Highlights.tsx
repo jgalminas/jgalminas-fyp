@@ -54,13 +54,29 @@ const Highlights = () => {
     getNextPageParam: (prevPage) => prevPage.length === ITEMS_PER_PAGE ? prevPage.length : undefined
   })
 
-  useIPCSubscription<IHighlight>(HighlightIPC.Created, (_, highlight) => {
-    queryClient.setQueryData(['highlights', 0, 'latest', 'all', 'FILL'], (prev: IHighlight[]) => {
-      const items = prev ?? [];
-      return [
-        highlight,
-        ...items
+  useIPCSubscription<IHighlight>(HighlightIPC.Created, async(_, highlight) => {
+    const thumbnail = await window.api.file.getThumbnail(highlight._id.toString(), "highlights");
+    
+    queryClient.setQueryData(['highlights', 0, 'latest', 'all', 'FILL'], (
+      prev: {
+        pageParams: number[],
+        pages: {
+          highlight: IHighlight,
+          thumbnail: Awaited<ReturnType<typeof window.api.file.getThumbnail>>
+        }[][]
+      }) => {
+
+      const items = prev ?? { pageParams: [], pages: [] };
+
+      items.pages[0] = [
+        {
+          highlight: highlight,
+          thumbnail: thumbnail
+        },
+        ...items.pages[0]
       ]
+      
+      return items;
     })
   }, [])
 

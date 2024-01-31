@@ -62,8 +62,10 @@ const Recordings = () => {
     getNextPageParam: (prevPage) => prevPage.length === ITEMS_PER_PAGE ? prevPage.length : undefined
   })
 
-  useIPCSubscription<IRecording>(RecordingIPC.Created, (_, recording) => {
-    queryClient.setQueryData(['recordings', 0, 'latest', 'all', 'FILL'], async(
+  useIPCSubscription<IRecording>(RecordingIPC.Created, async(_, recording) => {
+    const thumbnail = await window.api.file.getThumbnail(recording._id.toString(), "recordings");
+
+    queryClient.setQueryData(['recordings', 0, 'latest', 'all', 'FILL'], (
       prev: {
         pageParams: number[],
         pages: {
@@ -73,18 +75,14 @@ const Recordings = () => {
       }) => {
 
       const items = prev ?? { pageParams: [], pages: [] };
-      const thumbnail = await window.api.file.getThumbnail(recording._id.toString(), "highlights");
 
-      console.log(items);
-        
-
-      // items.pages[0] = [
-      //   {
-      //     recording: recording,
-      //     thumbnail: thumbnail
-      //   },
-      //   ...items.pages[0]
-      // ]
+      items.pages[0] = [
+        {
+          recording: recording,
+          thumbnail: thumbnail
+        },
+        ...items.pages[0]
+      ]
       
       return items;
     })
