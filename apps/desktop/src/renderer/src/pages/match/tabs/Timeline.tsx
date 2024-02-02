@@ -92,6 +92,14 @@ const Timeline = () => {
     }
   };
 
+  const chartRef = useRef<ChartJSOrUndefined<"line"> | null>(null);
+
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart?.chartArea) return;
+    setSizing({ left: chart.chartArea.left, right: chart.scales['x'].paddingRight, width: chart.width })
+  }, [])
+
   if (!data) return;
 
   const labels = data.frames.map((fr) => msToLength(fr.timestamp));
@@ -165,13 +173,13 @@ const Timeline = () => {
 
   return (
     <div>
-      <Card className='relative overflow-x-hidden flex flex-col'>
+      <Card className='relative overflow-x-hidden flex flex-col pb-0'>
         <p className="mb-4 text-star-dust-300 uppercase font-medium text-xs"> Team Gold Advantage </p>
-        <Line options={options} data={lineData}/>
-        {/* <p className="mt-4 mb-2 text-star-dust-300 font-medium text-xs"> Events </p> */}
-        {/* <div className='h-24' style={{ width: sizing.width }}>
+        <Line ref={chartRef} options={options} data={lineData}/>
+        <p className="mt-4 mb-2 text-star-dust-300 font-medium text-xs"> Events </p>
+        <div className='h-28 w-full flex'>
         <Line options={{
-          // responsive: true,
+          responsive: true,
           maintainAspectRatio: false,
           layout: {
             padding: {
@@ -181,15 +189,16 @@ const Timeline = () => {
           },
           scales: {
             x: {
-              max: data.frames.length - 1,
+              // max: data.frames.length - 1,
+              border: {
+                display: false
+              },
               grid: {
                 color: '#202328',
                 lineWidth: 1
               },
               ticks: {
-                color: '#999999',
-                stepSize: 1,
-                display: false
+                color: '#99999900',
               }
             },
             y: {
@@ -202,69 +211,32 @@ const Timeline = () => {
           labels: labels,
           datasets: [
             {
-              // data: data.frames.map((fr) => ({
-              //   y: 2,
-              //   r: Math.random() * 10,
-              //   x: fr.timestamp / 60_000
-              // })),
-              data: data.frames.map((fr) => 0),
+              data: data.frames.map(() => {
+                return {
+                  x: 0,
+                  r: 0,
+                  y: 0
+                }
+              }),
               backgroundColor: red,
-              borderWidth: 0
+              borderWidth: 0,
+              pointRadius: () => Math.random() * 10
             },
-            // {
-            //   data: [
-            //     {
-            //       y: 0,
-            //       r: 2,
-            //       x: 0
-            //     },
-            //     {
-            //       y: 0,
-            //       r: 5,
-            //       x: 1
-            //     },
-            //     {
-            //       y: 0,
-            //       r: 5,
-            //       x: 2
-            //     },
-            //     {
-            //       y: 0,
-            //       r: 5,
-            //       x: 3
-            //     },
-            //     {
-            //       y: 0,
-            //       r: 2,
-            //       x: 4
-            //     },
-            //     {
-            //       y: 0,
-            //       r: 5,
-            //       x: 5
-            //     },
-            //     {
-            //       y: 0,
-            //       r: 5,
-            //       x: 6
-            //     },
-            //     {
-            //       y: 0,
-            //       r: 5,
-            //       x: 7
-            //     },
-            //     {
-            //       y: 0,
-            //       r: 5,
-            //       x: 8
-            //     }
-            //   ],
-            //   backgroundColor: blue,
-            //   borderWidth: 0
-            // }
-          ]
+            {
+              data: data.frames.map(() => {
+                return {
+                  x: 0,
+                  r: 0,
+                  y: 2
+                }
+              }),
+              backgroundColor: blue,
+              borderWidth: 0,
+              pointRadius: () => Math.random() * 10
+            }
+          ] 
         }} />
-        </div> */}
+        </div>
       </Card>
     </div>
   )
