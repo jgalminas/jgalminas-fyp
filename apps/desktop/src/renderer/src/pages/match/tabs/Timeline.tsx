@@ -1,4 +1,10 @@
+import { MatchWithGoldFrames } from '@fyp/types';
+import { useSummoner } from '@renderer/SummonerContext';
 import Card from '@renderer/core/Card';
+import { getPlayer } from '@renderer/util/match';
+import { ClientRequestBuilder } from '@renderer/util/request';
+import { length, timestampToMinutes, msToLength } from '@renderer/util/time';
+import { useQuery } from '@tanstack/react-query';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -8,9 +14,13 @@ import {
   Tooltip,
   ChartData,
   ChartOptions,
-  Filler
+  Filler,
+  ScriptableScaleContext
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { useEffect, useRef, useState } from 'react';
+import { Line, Bubble } from 'react-chartjs-2';
+import { ChartJSOrUndefined } from 'react-chartjs-2/dist/types';
+import { useParams } from 'react-router';
 
 ChartJS.register(
   CategoryScale,
@@ -21,50 +31,73 @@ ChartJS.register(
   Filler
 );
 
-export const options: ChartOptions<"line"> = {
-  responsive: true,
-  // maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      position: 'top' as const,
-    },
-    title: {
-      display: true,
-      text: 'Chart.js Line Chart',
-    }
-  },
-  scales: {
-    x: {
-      grid: {
-        color: '#202328'
-      },
-      ticks: {
-        color: '#999999'
-      }
-    },
-    y: {
-      grid: {
-        color: (context) => {
-          if (context.tick.value === 0) {
-            return '#3C3E42';
-          }
-          return '#202328'
-        }
-      },
-      ticks: {
-        callback: (value) => Number(value) / 1000 + "K",
-        color: '#999999'
-      }
-    }
+const tickColor = (context: ScriptableScaleContext) => {
+  if (context.tick.value === 0) {
+    return '#3C3E42';
   }
-};
+  return '#202328'
+}
+
+
 
 const Timeline = () => {
 
-  const labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+  const { matchId } = useParams();
 
-  const teamBlue = "#0068CA";
-  const teamRed = "#FF3B3A";
+  const { data } = useQuery<MatchWithGoldFrames>({
+    queryKey: ['gold', matchId],
+    queryFn: async() => {
+      const res = await new ClientRequestBuilder()
+        .route(`/v1/match/${matchId}/gold`)
+        .fetch();
+      return await res.json();
+    }
+  });
+
+  const [sizing, setSizing] = useState<{ left: number, right: number, width: number }>({ left: 0, right: 0, width: 0 });
+
+  const options: ChartOptions<"line"> = {
+    responsive: true,
+    onResize(chart, size) {
+      if (!chart.chartArea) return;
+      setSizing({ left: chart.chartArea.left, right: chart.scales['x'].paddingRight, width: size.width })
+    },
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: 'Chart.js Line Chart',
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          color: '#202328'
+        },
+        ticks: {
+          color: '#999999'
+        }
+      },
+      y: {
+        grid: {
+          color: tickColor
+        },
+        ticks: {
+          callback: (value) => value !== 0 ? Number(value) / 1000 + "K": "0",
+          color: '#999999'
+        }
+      }
+    }
+  };
+
+  if (!data) return;
+
+  const labels = data.frames.map((fr) => msToLength(fr.timestamp));
+  
+  const blue = data.winningTeam === 'BLUE' ? "#0068CA" : '#FF3B3A';
+  const red = data.winningTeam !== 'BLUE' ? "#0068CA" : '#FF3B3A';
 
   const caculateLineColor = (ctx) => {
     if (ctx.p0.parsed.y * ctx.p1.parsed.y < 0) {
@@ -90,33 +123,32 @@ const Timeline = () => {
       // from p0 to the point where the segment intersects the x axis
       const frac = Math.abs(y0) / (Math.abs(y0) + Math.abs(y1));
       // set colors at the ends of the segment
-      const [col_p0, col_p1] =
-        y0 > 0 ? [teamBlue, teamRed] : [teamRed, teamBlue];
+      const [col_p0, col_p1] = y0 > 0 ? [blue, red] : [red, blue];
       gradient.addColorStop(0, col_p0);
       gradient.addColorStop(frac, col_p0);
       gradient.addColorStop(frac, col_p1);
       gradient.addColorStop(1, col_p1);
       return gradient;
     }
-    return ctx.p0.parsed.y >= 0 ? teamBlue : teamRed;
+    return ctx.p0.parsed.y >= 0 ? blue : red;
   };
 
 
-  const data: ChartData<"line", number[], string> = {
+  const lineData: ChartData<"line", number[], string> = {
     labels,
     datasets: [
       {
         label: 'Dataset 1',
-        data: [0, 100, 0, 3000, -1000, 500, -400, -200, 0],
+        data: data.frames.map((fr) => data.winningTeam === 'RED' ? fr.redGold - fr.blueGold : fr.blueGold - fr.redGold),
         segment: {
           borderColor: caculateLineColor
         },
         pointBackgroundColor: (context) => {
           const y = context.parsed.y;
           if (y > 0) {
-            return teamBlue;
+            return blue;
           } else if (y < 0) {
-            return teamRed;
+            return red;
           } else {
             return '#6D6D6D'
           }          
@@ -124,8 +156,8 @@ const Timeline = () => {
         pointRadius: 4,
         fill: {
           target: 'origin',
-          below: '#FF3B3A11',
-          above: '#0068CA11'
+          below: data.winningTeam !== 'RED' ? '#FF3B3A11' : '#0068CA11',
+          above: data.winningTeam === 'RED' ? '#FF3B3A11' : '#0068CA11'
         }
       }
     ],
@@ -133,9 +165,106 @@ const Timeline = () => {
 
   return (
     <div>
-      <Card className='relative flex overflow-x-hidden aspect-video flex flex-col'>
-        <p className="mb-4 text-star-dust-300 uppercase font-medium text-xs"> Team Damage Distribution </p>
-        <Line options={options} data={data}/>
+      <Card className='relative overflow-x-hidden flex flex-col'>
+        <p className="mb-4 text-star-dust-300 uppercase font-medium text-xs"> Team Gold Advantage </p>
+        <Line options={options} data={lineData}/>
+        {/* <p className="mt-4 mb-2 text-star-dust-300 font-medium text-xs"> Events </p> */}
+        {/* <div className='h-24' style={{ width: sizing.width }}>
+        <Line options={{
+          // responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: {
+              right: sizing.right,
+              left: sizing.left
+            }
+          },
+          scales: {
+            x: {
+              max: data.frames.length - 1,
+              grid: {
+                color: '#202328',
+                lineWidth: 1
+              },
+              ticks: {
+                color: '#999999',
+                stepSize: 1,
+                display: false
+              }
+            },
+            y: {
+              min: -1,
+              max: 4,
+              display: false
+            }
+          }
+        }} data={{
+          labels: labels,
+          datasets: [
+            {
+              // data: data.frames.map((fr) => ({
+              //   y: 2,
+              //   r: Math.random() * 10,
+              //   x: fr.timestamp / 60_000
+              // })),
+              data: data.frames.map((fr) => 0),
+              backgroundColor: red,
+              borderWidth: 0
+            },
+            // {
+            //   data: [
+            //     {
+            //       y: 0,
+            //       r: 2,
+            //       x: 0
+            //     },
+            //     {
+            //       y: 0,
+            //       r: 5,
+            //       x: 1
+            //     },
+            //     {
+            //       y: 0,
+            //       r: 5,
+            //       x: 2
+            //     },
+            //     {
+            //       y: 0,
+            //       r: 5,
+            //       x: 3
+            //     },
+            //     {
+            //       y: 0,
+            //       r: 2,
+            //       x: 4
+            //     },
+            //     {
+            //       y: 0,
+            //       r: 5,
+            //       x: 5
+            //     },
+            //     {
+            //       y: 0,
+            //       r: 5,
+            //       x: 6
+            //     },
+            //     {
+            //       y: 0,
+            //       r: 5,
+            //       x: 7
+            //     },
+            //     {
+            //       y: 0,
+            //       r: 5,
+            //       x: 8
+            //     }
+            //   ],
+            //   backgroundColor: blue,
+            //   borderWidth: 0
+            // }
+          ]
+        }} />
+        </div> */}
       </Card>
     </div>
   )

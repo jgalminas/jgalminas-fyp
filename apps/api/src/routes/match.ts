@@ -78,4 +78,15 @@ router.get('/:id/timeline', requireAuth, async(req, res) => {
 
 })
 
+router.get('/:id/gold', requireAuth, async(req, res) => {
+
+  const gold = await MatchRepository.getGoldFrames(req.params.id);
+
+  if (!gold) {
+    res.status(404);
+  }
+
+  res.send(gold);
+})
+
 export default router;

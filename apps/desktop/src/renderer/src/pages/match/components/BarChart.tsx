@@ -51,7 +51,7 @@ const BarChart = ({ label, className, data, height, tickCount = 5, barWidth = 20
             <div key={i} className="absolute w-full items-center text-star-dust-400 gap-2 bottom-0 left-0"
             style={{ bottom: i * tickInterval }}>
               <p className="absolute -translate-y-1/2">
-                { tick > 1000 ? `${Math.round(tick / 1000)}K` : tick }
+                { tick >= 1000 ? `${Math.round(tick / 1000)}K` : tick }
               </p>
               <div className="ml-8 bottom-1/2 bg-woodsmoke-400 h-[1px] w-[100% - 2rem]"/>
             </div>  

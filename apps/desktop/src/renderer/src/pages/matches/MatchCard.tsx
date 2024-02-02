@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import { aggregateTeamKills, calcCSPM, calcKDA, calcKP } from "@renderer/util/stats";
 import SquareImage from "@renderer/core/SquareImage";
 import { queue } from "@renderer/util/queue";
-import { player } from "@renderer/util/match";
+import { getPlayer } from "@renderer/util/match";
 import { Summoner, useSummoner } from "@renderer/SummonerContext";
 
 
@@ -23,7 +23,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
 
   const { summoner } = useSummoner();
 
-  const user = player(match, summoner as Summoner);
+  const user = getPlayer(match, summoner as Summoner);
   user.items.sort((a, b) => a.slot > b.slot ? 1 : -1);
 
   const Role = user.position && RoleIcons[user.position];
