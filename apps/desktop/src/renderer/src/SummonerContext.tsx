@@ -28,7 +28,7 @@ const SummonerProvider = ({ children }: SummonerProviderProps) => {
     if (session?.summoner) {
       setSummoner(session.summoner);
     }
-  }, [])
+  }, [session])
 
   const context: SummonerContext = {
     summoner: summoner,

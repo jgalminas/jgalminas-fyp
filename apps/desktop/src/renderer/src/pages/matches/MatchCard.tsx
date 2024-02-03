@@ -22,7 +22,6 @@ export type MatchCardProps = {
 const MatchCard = ({ match }: MatchCardProps) => {
 
   const { summoner } = useSummoner();
-
   const user = getPlayer(match, summoner as Summoner);
   user.items.sort((a, b) => a.slot > b.slot ? 1 : -1);
 
