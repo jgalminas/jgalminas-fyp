@@ -4,7 +4,7 @@
   "description": "Backend server",
   "main": "src/index.ts",
   "scripts": {
-    "start": "pnpm with-env ts-node src/index.ts",
+    "start": "pnpm with-env node ./dist/index.js",
     "dev": "pnpm with-env nodemon",
     "build": "pnpm with-env tsc",
     "lint": "eslint --fix src test",

@@ -18,6 +18,10 @@ import HighlightsTab from './pages/match/tabs/Highlights';
 import RecordingVideoModal from './pages/recordings/RecordingVideoModal';
 import { HighlightVideoModal } from './core/HighlightVideoModal';
 import SummonerProvider from './SummonerContext';
+import { WebSocketManager } from './webSocketManager';
+
+export const socketManager = new WebSocketManager();
+socketManager.connect();
 
 export const queryClient = new QueryClient();
 
