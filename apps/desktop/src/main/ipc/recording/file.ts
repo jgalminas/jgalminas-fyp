@@ -8,7 +8,7 @@ import { FileIPC, HighlightIPC } from '../../../shared/ipc';
 import { mkdir, readFile } from 'fs/promises';
 import { ObjectId } from 'bson';
 import { ffmpegPath, ffprobePath } from 'ffmpeg-ffprobe-static';
-import { IRecording } from '@fyp/types';
+import { HighlightTimeframe, IRecording } from '@fyp/types';
 import { MainRequestBuilder } from '../../util/request';
 import { getApiCookieString } from '../../util/cookie';
 import { mainWindow } from '../..';
@@ -62,10 +62,7 @@ export default () => {
   });
 
   ipcMain.handle(FileIPC.CreateHighlights, async(_, { timeframes, recording, matchDuration }: {
-    timeframes: {
-      frame: number,
-      timestamp: number
-    }[],
+    timeframes: HighlightTimeframe[],
     matchDuration: number,
     recording: IRecording }
     ) => {
@@ -84,7 +81,7 @@ export default () => {
         ffmpeg(recordingPath)
           .setStartTime(start)
           .setDuration(duration)
-          .outputOptions('-c', 'copy')
+          // .outputOptions('-c', 'copy')
           .output(filePath)
           .on('end', async() => {
             await captureThumbnail(filePath);
@@ -101,18 +98,22 @@ export default () => {
     const files: string[] = [];
 
     const highlightPromises = timeframes.map((tf) => {
-      const start = Math.floor((tf.timestamp + offset) / 1000);
+      const start = Math.floor((tf.start + offset) / 1000);
+      const duration = Math.floor((tf.finish - tf.start) / 1000);
+      console.log(start, duration);
+      
       const name = new ObjectId().toString();
       files.push(name);
-      return create(start, name, 60);
+      return create(start, name, duration);
     })
 
     await Promise.all(highlightPromises);
 
-    const apiPromises = files.map((name): Promise<void> => {
+    const apiPromises = files.map((name, i): Promise<void> => {
       return new Promise(async(resolve, reject) => {
 
         const metadata = await getMetadata(path.join(outputPath, `${name}.${VIDEO_FORMAT}`));
+        const highlightTimeframe = timeframes[i];  
 
         const res = await new MainRequestBuilder()
         .route('/v1/highlight')
@@ -128,7 +129,7 @@ export default () => {
           position: recording.position,
           size: metadata.format.size,
           queueId: recording.queueId,
-          tags: []
+          tags: highlightTimeframe.tags
         })
         .fetch()
     

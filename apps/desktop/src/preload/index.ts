@@ -2,7 +2,7 @@ import { IpcRendererEvent, contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { MatchRecorder } from './matchRecorder';
 import { ClientIPC, FileIPC, SettingsIPC } from '../shared/ipc';
-import { IRecording } from '@fyp/types';
+import { HighlightTimeframe, IRecording } from '@fyp/types';
 import { Settings } from '../shared/settings';
 
 export type PreloadAPI = typeof api;
@@ -16,10 +16,7 @@ const api = {
     },
     createHighlights: async(
       data: {
-        timeframes: {
-          frame: number,
-          timestamp: number
-        }[],
+        timeframes: HighlightTimeframe[],
         matchDuration: number,
         recording: IRecording
       }) => {

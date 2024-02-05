@@ -1,4 +1,4 @@
-import { IMatch } from "@fyp/types";
+import { HighlightTimeframe, IMatch } from "@fyp/types";
 import os from 'os';
 import { spawn } from 'child_process';
 import { writeFile, unlink } from 'fs/promises'; 
@@ -7,7 +7,7 @@ import path from 'path';
 
 export class AIService {
 
-  public getTimeframes({ puuid, match }: { puuid: string, match: IMatch }): Promise<{ frame: number, timestamp: number }[]> {
+  public getTimeframes({ puuid, match }: { puuid: string, match: IMatch }): Promise<HighlightTimeframe[]> {
     return new Promise(async(resolve, reject) => {
 
       const baseDir = path.join(__dirname, '..', '..');
