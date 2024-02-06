@@ -36,7 +36,7 @@ const Select = ({ value, className, options, width, label, name, menuClass }: Se
         </DropdownMenuTrigger>
         <DropdownMenuContent style={{ minWidth: width }} sideOffset={4} className={cn(
           "bg-woodsmoke-400 border-woodsmoke-50 text-sm text-star-dust-300 min-w-[var(--radix-dropdown-menu-trigger-width)] z-50 rounded-md",
-          "py-1.5 border max-h-80 overflow-y-auto",
+          "py-1.5 border max-h-80 overflow-y-auto scrollbar-dark scrollbar-rounded",
           menuClass
         )}>
           { options.map((opt, key) => {

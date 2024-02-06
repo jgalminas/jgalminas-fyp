@@ -122,3 +122,7 @@
 .scrollbar-dark::-webkit-scrollbar-thumb:hover {
   @apply bg-woodsmoke-600;
 }
+
+.scrollbar-rounded::-webkit-scrollbar-thumb {
+  @apply rounded-md;
+}
