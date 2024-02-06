@@ -13,6 +13,11 @@ export const useSubscription = (callback: (event: WebSocketEvent) => void, deps:
 
     useEffect(() => {
 
+        const x = setInterval(() => {
+            console.log(socket);
+            
+        }, 5000)
+
         const onMessage = (event: MessageEvent<any>) => {
             callback(JSON.parse(event.data) as WebSocketEvent);
         }
@@ -22,6 +27,7 @@ export const useSubscription = (callback: (event: WebSocketEvent) => void, deps:
         }
 
         return () => {
+            clearInterval(x)
             socket?.removeEventListener('message', onMessage);
         }
 
