@@ -92,3 +92,33 @@
     box-shadow: 10014px 0 0 -5px;
   }
 }
+
+.scrollbar-stable { 
+  scrollbar-gutter: stable both-edges;
+}
+
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  @apply bg-woodsmoke-300;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-woodsmoke-100;
+}
+
+.scrollbar-dark::-webkit-scrollbar-thumb {
+  @apply bg-woodsmoke-800;
+}
+
+.scrollbar-dark::-webkit-scrollbar-thumb:hover {
+  @apply bg-woodsmoke-600;
+}

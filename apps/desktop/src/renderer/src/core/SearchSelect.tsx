@@ -56,7 +56,7 @@ const SearchSelect = ({ value, className, options }: SearchSelectProps) => {
 
         <Divider className="mt-2 border-woodsmoke-50"/>
 
-        <ul className="max-h-80 overflow-y-auto">
+        <ul className="max-h-80 overflow-y-auto scrollbar-dark">
           <ViewportList items={filteredOptions} overscan={1}>
             { (opt, key) => {
               const isSelected = opt.id === value?.id;

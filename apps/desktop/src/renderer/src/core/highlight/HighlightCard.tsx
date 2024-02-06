@@ -11,6 +11,7 @@ import { fileSize } from "@renderer/util/file";
 import Dropdown, { DropdownOption } from "@renderer/core/Dropdown";
 import Ellipsis from '@assets/icons/Ellipsis.svg?react';
 import Info from '@assets/icons/Info.svg?react';
+import { HighlightTag } from "./HighlightTag";
 
 export type HighlightCardProps = {
   data: {
@@ -62,8 +63,10 @@ const HighlightCard = ({ data, position, playPath, linkToGame = false }: Highlig
         </div>
       </div>
 
-      <div>
-        
+      <div className="flex mt-5 mb-auto gap-2">
+        { data.highlight.tags.map((tag, i) => (
+          <HighlightTag key={i} value={tag}/>
+        )) }
       </div>
       
       { linkToGame &&
