@@ -22,7 +22,13 @@ import { WebSocketClient } from './webSocketClient';
 import { WebSocketProvider } from './WebSocketContext';
 
 export const wsClient = new WebSocketClient();
-export const queryClient = new QueryClient();
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false
+    }
+  }
+});
 
 const App = () => {
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Page from "../../core/page/Page";
 import RecordingCard from "./RecordingCard";
 import PageTitle from "@renderer/core/page/PageTitle";
@@ -34,12 +34,13 @@ const ITEMS_PER_PAGE = 10;
 
 const Recordings = () => {
 
-  const [queueFilter, queueOptions] = useQueueFilter();
-  const [dateFilter, dateOptions] = useDateFilter();
-  const [championFilter, championOptions] = useChampionFilter();
+  const [queueFilter, queueOptions] = useQueueFilter({ onClick: () => currentOffset.current = 0 });
+  const [dateFilter, dateOptions] = useDateFilter({ onClick: () => currentOffset.current = 0 });
+  const [championFilter, championOptions] = useChampionFilter({ onClick: () => currentOffset.current = 0 });
   const [roleFilter, setRoleFilter] = useState<Role>('FILL');
 
   const { ref, inView } = useInView();
+  const currentOffset = useRef(0);
 
   const getData = async(pageParam: number) => {
     const recordings = await getRecordings({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id, start: pageParam });
@@ -58,7 +59,10 @@ const Recordings = () => {
   const { isLoading, data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['recordings', queueFilter.id, dateFilter.id, championFilter.id, roleFilter],
     initialPageParam: 0,
-    queryFn: ({ pageParam }) => getData(pageParam),
+    queryFn: ({ pageParam }) => {
+      currentOffset.current += pageParam;
+      return getData(currentOffset.current);
+    },
     getNextPageParam: (prevPage) => prevPage.length === ITEMS_PER_PAGE ? prevPage.length : undefined
   })
 
@@ -74,17 +78,22 @@ const Recordings = () => {
         }[][]
       }) => {
 
-      const items = prev ?? { pageParams: [], pages: [] };
-
-      items.pages[0] = [
-        {
-          recording: recording,
-          thumbnail: thumbnail
-        },
-        ...items.pages[0]
-      ]
-      
-      return items;
+        let items = prev ?? { pageParams: [0], pages: [] };
+        items = {
+          pageParams: items.pageParams,
+          pages: [
+            [
+              {
+                recording: recording,
+                thumbnail: thumbnail
+              },
+              ...items.pages[0]
+            ],
+            ...items.pages
+          ]
+        }
+        
+        return items;
     })
   }, [])
 
@@ -104,7 +113,7 @@ const Recordings = () => {
           <Select value={queueFilter} options={queueOptions}/>
           <Select value={dateFilter} options={dateOptions}/>
           <SearchSelect value={championFilter} options={championOptions}/>
-          <RoleSelector onChange={(r) => setRoleFilter(r)} role={roleFilter}/>
+          <RoleSelector onChange={(r) => { setRoleFilter(r); currentOffset.current = 0; }} role={roleFilter}/>
         </div>
       </PageInnerHeader>
       <PageBody>
@@ -118,7 +127,7 @@ const Recordings = () => {
               }}
             </ViewportList>
             { hasNextPage &&
-              <div ref={ref}/>
+              <div className="mb-0.5" ref={ref}/>
             }
           </div>
           : <Loading className="w-full my-24"/>

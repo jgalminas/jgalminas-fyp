@@ -8,7 +8,7 @@ import PageBody from "@renderer/core/page/PageBody";
 import { useQueueFilter } from "@renderer/core/hooks/filter/useQueueFilter";
 import { useDateFilter } from "@renderer/core/hooks/filter/useDateFilter";
 import { useChampionFilter } from "@renderer/core/hooks/filter/useChampionFilter";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useIPCSubscription } from "@renderer/core/hooks/useIPCSubsription";
 import { HighlightIPC } from "@root/shared/ipc";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -26,12 +26,13 @@ const ITEMS_PER_PAGE = 10;
 
 const Highlights = () => {
 
-  const [queueFilter, queueOptions] = useQueueFilter();
-  const [dateFilter, dateOptions] = useDateFilter();
-  const [championFilter, championOptions] = useChampionFilter();
+  const [queueFilter, queueOptions] = useQueueFilter({ onClick: () => currentOffset.current = 0 });
+  const [dateFilter, dateOptions] = useDateFilter({ onClick: () => currentOffset.current = 0 });
+  const [championFilter, championOptions] = useChampionFilter({ onClick: () => currentOffset.current = 0 });
   const [roleFilter, setRoleFilter] = useState<Role>('FILL');
 
   const { ref, inView } = useInView();
+  const currentOffset = useRef(0);
 
   const getData = async(pageParam: number) => {
     const recordings = await getHighlights({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id, start: pageParam });
@@ -50,13 +51,22 @@ const Highlights = () => {
   const { isLoading, data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['highlights', queueFilter.id, dateFilter.id, championFilter.id, roleFilter],
     initialPageParam: 0,
-    queryFn: ({ pageParam }) => getData(pageParam),
+    queryFn: ({ pageParam }) => {
+      currentOffset.current += pageParam;
+      return getData(currentOffset.current);
+    },
     getNextPageParam: (prevPage) => prevPage.length === ITEMS_PER_PAGE ? prevPage.length : undefined
   })
 
-  useIPCSubscription<IHighlight>(HighlightIPC.Created, async(_, highlight) => {
-    const thumbnail = await window.api.file.getThumbnail(highlight._id.toString(), "highlights");
-    
+  useIPCSubscription<{
+    highlight: IHighlight,
+    thumbnail: {
+      id: string,
+      message: 'OK',
+      path: string
+    }
+  }>(HighlightIPC.Created, async(_, highlight) => {
+
     queryClient.setQueryData(['highlights', 0, 'latest', 'all', 'FILL'], (
       prev: {
         pageParams: number[],
@@ -66,15 +76,18 @@ const Highlights = () => {
         }[][]
       }) => {
 
-      const items = prev ?? { pageParams: [], pages: [] };
+      let items = prev ?? { pageParams: [0], pages: [] };
 
-      items.pages[0] = [
-        {
-          highlight: highlight,
-          thumbnail: thumbnail
-        },
-        ...items.pages[0]
-      ]
+      items = {
+        pageParams: items.pageParams,
+        pages: [
+          [
+            highlight,
+            ...items.pages[0]
+          ],
+          ...items.pages
+        ]
+      }
       
       return items;
     })
@@ -96,7 +109,7 @@ const Highlights = () => {
           <Select value={queueFilter} options={queueOptions}/>
           <Select value={dateFilter} options={dateOptions}/>
           <SearchSelect value={championFilter} options={championOptions}/>
-          <RoleSelector onChange={(r) => setRoleFilter(r)} role={roleFilter}/>
+          <RoleSelector onChange={(r) => { setRoleFilter(r); currentOffset.current = 0; }} role={roleFilter}/>
         </div>
       </PageInnerHeader>
       
@@ -111,7 +124,7 @@ const Highlights = () => {
               }}
             </ViewportList>
             { hasNextPage &&
-              <div ref={ref}/>
+              <div className="mb-0.5" ref={ref}/>
             }
           </div>
           : <Loading className="w-full my-24"/>

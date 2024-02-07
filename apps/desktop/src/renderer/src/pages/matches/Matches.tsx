@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Page from "../../core/page/Page";
 import MatchCard from "./MatchCard";
 import PageInnerHeader from "@renderer/core/page/PageInnerHeader";
@@ -13,7 +13,7 @@ import { useQueueFilter } from "@renderer/core/hooks/filter/useQueueFilter";
 import { useDateFilter } from "@renderer/core/hooks/filter/useDateFilter";
 import { useChampionFilter } from "@renderer/core/hooks/filter/useChampionFilter";
 import { queryClient } from "@renderer/App";
-import { Match } from "@fyp/types";
+import { IMatch } from "@fyp/types";
 import { useSubscription } from "@renderer/core/hooks/useSubscription";
 import { DefaultHeader } from "@renderer/navigation/DefaultHeader";
 import { useInView } from 'react-intersection-observer';
@@ -25,28 +25,46 @@ const ITEMS_PER_PAGE = 10;
 
 const Matches = () => {
 
-  const [queueFilter, queueOptions] = useQueueFilter();
-  const [dateFilter, dateOptions] = useDateFilter();
-  const [championFilter, championOptions] = useChampionFilter();
+  const [queueFilter, queueOptions] = useQueueFilter({ onClick: () => currentOffset.current = 0 });
+  const [dateFilter, dateOptions] = useDateFilter({ onClick: () => currentOffset.current = 0 });
+  const [championFilter, championOptions] = useChampionFilter({ onClick: () => currentOffset.current = 0 });
   const [roleFilter, setRoleFilter] = useState<Role>('FILL');
 
   const { ref, inView } = useInView();
+  const currentOffset = useRef(0);
 
   const { isLoading, data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['matches', queueFilter.id, dateFilter.id, championFilter.id, roleFilter],
     initialPageParam: 0,
-    queryFn: ({ pageParam }) => getMatches({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id, start: pageParam }),
+    queryFn: ({ pageParam }) => {
+      currentOffset.current += pageParam;
+      return getMatches({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id, start: currentOffset.current })
+    },
     getNextPageParam: (prevPage) => prevPage.length === ITEMS_PER_PAGE ? prevPage.length : undefined
   })
 
   useSubscription((event) => {
     if (event.type === 'MATCH_UPLOADED') {
-      queryClient.setQueryData(['matches', 0, 'latest', 'all', 'FILL'], (prev: Match[]) => {
-        const items = prev ?? [];
-        return [
-          event.payload.match,
-          ...items
-        ]
+      queryClient.setQueryData(['matches', 0, 'latest', 'all', 'FILL'], (
+      prev: {
+        pageParams: number[],
+        pages: IMatch[][]
+      }
+    ) => {
+        
+        let items = prev ?? { pageParams: [0], pages: [] };
+        items = {
+          pageParams: items.pageParams,
+          pages: [
+            [
+              event.payload.match,
+              ...items.pages[0]
+            ],
+            ...items.pages
+          ]
+        }
+        
+        return items;
       })
     }
   }, [])
@@ -67,7 +85,7 @@ const Matches = () => {
           <Select value={queueFilter} options={queueOptions}/>
           <Select value={dateFilter} options={dateOptions}/>
           <SearchSelect value={championFilter} options={championOptions}/>
-          <RoleSelector onChange={(r) => setRoleFilter(r)} role={roleFilter}/>
+          <RoleSelector onChange={(r) => { setRoleFilter(r); currentOffset.current = 0; }} role={roleFilter}/>
         </div>
       </PageInnerHeader>
       <PageBody>
@@ -81,7 +99,7 @@ const Matches = () => {
               }}
             </ViewportList>
             { hasNextPage &&
-              <div ref={ref}/>
+              <div className="mb-0.5" ref={ref}/>
             }
           </div>
           : <Loading className="w-full my-24"/>
