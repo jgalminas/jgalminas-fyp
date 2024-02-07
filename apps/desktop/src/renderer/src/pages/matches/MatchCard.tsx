@@ -89,9 +89,9 @@ const MatchCard = ({ match }: MatchCardProps) => {
             return (
               <div className="flex items-center gap-2" key={p.username}>
                 <SquareImage src={Asset.champion(p.champion)}/>
-                <WithTooltip tooltip={<UsernameTooltip username={p.username} tag={p.tag}/>}>
+                {/* <WithTooltip tooltip={<UsernameTooltip username={p.username} tag={p.tag}/>}> */}
                   <p className="text-star-dust-300 text-xs max-w-[3rem] truncate"> { p.username } </p>
-                </WithTooltip>
+                {/* </WithTooltip> */}
               </div>
             )
           }) }
@@ -100,9 +100,9 @@ const MatchCard = ({ match }: MatchCardProps) => {
           { match.participants.filter(p => p.team !== user.team).sort((a, b) => a.participantId > b.participantId ? 1 : -1).map((p) => {
             return (
               <div className="flex items-center gap-2" key={p.username}>
-                <WithTooltip tooltip={<UsernameTooltip username={p.username} tag={p.tag}/>}>
+                {/* <WithTooltip tooltip={<UsernameTooltip username={p.username} tag={p.tag}/>}> */}
                   <p className="text-star-dust-300 text-xs max-w-[3rem] truncate"> { p.username } </p>
-                </WithTooltip>
+                {/* </WithTooltip> */}
                 <SquareImage src={Asset.champion(p.champion)}/>
               </div>
             )
