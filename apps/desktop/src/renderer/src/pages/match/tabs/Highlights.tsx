@@ -8,7 +8,7 @@ const Highlights = () => {
   const { matchId } = useParams();
 
   const getData = async() => {
-    const recordings = await getHighlights();
+    const recordings = await getHighlights({ match: matchId });
     const promises = recordings.map((hl) => window.api.file.getThumbnail(hl.fileId, "highlights"));
     const results = await Promise.all(promises);    
 

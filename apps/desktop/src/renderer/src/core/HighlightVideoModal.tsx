@@ -9,6 +9,7 @@ import { length } from '@renderer/util/time';
 import { queue } from "@renderer/util/queue";
 import LinkButton from "@renderer/core/LinkButton";
 import { getHighlight } from "@renderer/api/highlight";
+import { HighlightTag } from "./highlight/HighlightTag";
 
 export type HighlightVideoModalProps = {
   viewGame?: boolean
@@ -42,6 +43,13 @@ export const HighlightVideoModal = ({ viewGame = true }: HighlightVideoModalProp
           <p className="text-star-dust-300 font-medium"> { queue(data.queueId) } </p>
           <p className="text-star-dust-400"> { length(data.length) } </p>
         </div>
+
+        <div className="flex gap-2 ml-6">
+          { data.tags.map((tag, i) => (
+            <HighlightTag key={i} value={tag}/>
+          )) }
+        </div>
+
         <div className="flex gap-3 ml-auto">
           { viewGame &&
             <LinkButton className="hover:bg-woodsmoke-200" to={`/matches/${data.match}`} type='text'> View Game </LinkButton>
