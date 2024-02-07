@@ -76,7 +76,7 @@ const Highlights = () => {
         }[][]
       }) => {
 
-      let items = prev ?? { pageParams: [0], pages: [] };
+      let items = prev ?? { pageParams: [], pages: [] };
 
       items = {
         pageParams: items.pageParams,
@@ -119,7 +119,7 @@ const Highlights = () => {
             <ViewportList items={highlights} overscan={6} withCache>
               { (hl, key) => {
                 return (
-                  <HighlightCard data={hl} key={key} position={key + 1} playPath={`/highlights/${hl.highlight._id}`}/>
+                  <HighlightCard linkToGame data={hl} key={key} position={key + 1} playPath={`/highlights/${hl.highlight._id}`}/>
                 )
               }}
             </ViewportList>

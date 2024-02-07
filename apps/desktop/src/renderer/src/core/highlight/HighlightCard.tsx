@@ -71,7 +71,10 @@ const HighlightCard = ({ data, position, playPath, linkToGame = false }: Highlig
       
       { linkToGame &&
         <div className="flex gap-3">
-          <LinkButton to={`/matches/${data.highlight.match}`} type='text'> View Game </LinkButton>
+          <LinkButton to={`/matches/${data.highlight.match}`} type='text'
+          className="px-0 hover:bg-transparent">
+            View Game
+          </LinkButton>
         </div>
       }
     </div>
