@@ -13,6 +13,8 @@ import SquareImage from "@renderer/core/SquareImage";
 import { queue } from "@renderer/util/queue";
 import { getPlayer } from "@renderer/util/match";
 import { Summoner, useSummoner } from "@renderer/SummonerContext";
+import { WithTooltip } from "@renderer/core/WithTooltip";
+import { UsernameTooltip } from "@renderer/core/tooltips/UsernameTooltip";
 
 
 export type MatchCardProps = {
@@ -87,7 +89,9 @@ const MatchCard = ({ match }: MatchCardProps) => {
             return (
               <div className="flex items-center gap-2" key={p.username}>
                 <SquareImage src={Asset.champion(p.champion)}/>
-                <p className="text-star-dust-300 text-xs max-w-[3rem] truncate"> { p.username } </p>
+                <WithTooltip tooltip={<UsernameTooltip username={p.username} tag={p.tag}/>}>
+                  <p className="text-star-dust-300 text-xs max-w-[3rem] truncate"> { p.username } </p>
+                </WithTooltip>
               </div>
             )
           }) }
@@ -96,7 +100,9 @@ const MatchCard = ({ match }: MatchCardProps) => {
           { match.participants.filter(p => p.team !== user.team).sort((a, b) => a.participantId > b.participantId ? 1 : -1).map((p) => {
             return (
               <div className="flex items-center gap-2" key={p.username}>
-                <p className="text-star-dust-300 text-xs max-w-[3rem] truncate"> { p.username } </p>
+                <WithTooltip tooltip={<UsernameTooltip username={p.username} tag={p.tag}/>}>
+                  <p className="text-star-dust-300 text-xs max-w-[3rem] truncate"> { p.username } </p>
+                </WithTooltip>
                 <SquareImage src={Asset.champion(p.champion)}/>
               </div>
             )

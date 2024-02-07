@@ -3,7 +3,7 @@ import { DefaultHeader } from "@renderer/navigation/DefaultHeader";
 import { Fragment, ReactNode } from "react";
 
 export type PageProps = {
-  children: ReactNode,
+  children?: ReactNode,
   pageClass?: string,
   contentClass?: string,
   header?: ReactNode
