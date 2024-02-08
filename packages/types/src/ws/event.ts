@@ -1,4 +1,4 @@
-import { IMatch, IRecording } from "../index"
+import { HighlightTimeframe, IMatch, IRecording } from "../index"
 
 export type WebSocketEvent = {
   type: 'MATCH_UPLOADED',
@@ -10,9 +10,6 @@ export type WebSocketEvent = {
   payload: {
     recording: IRecording,
     matchDuration: number,
-    timeframes: {
-      frame: number,
-      timestamp: number
-    }[]
+    timeframes: HighlightTimeframe[]
   }
 }

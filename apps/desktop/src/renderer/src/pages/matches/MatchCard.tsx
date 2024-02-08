@@ -11,8 +11,10 @@ import { Link } from "react-router-dom";
 import { aggregateTeamKills, calcCSPM, calcKDA, calcKP } from "@renderer/util/stats";
 import SquareImage from "@renderer/core/SquareImage";
 import { queue } from "@renderer/util/queue";
-import { Session, useAuth } from "@renderer/auth/AuthContext";
-import { player } from "@renderer/util/match";
+import { getPlayer } from "@renderer/util/match";
+import { Summoner, useSummoner } from "@renderer/SummonerContext";
+import { WithTooltip } from "@renderer/core/WithTooltip";
+import { UsernameTooltip } from "@renderer/core/tooltips/UsernameTooltip";
 
 
 export type MatchCardProps = {
@@ -21,12 +23,11 @@ export type MatchCardProps = {
 
 const MatchCard = ({ match }: MatchCardProps) => {
 
-  const { session } = useAuth();
-
-  const user = player(match, session as Session);
+  const { summoner } = useSummoner();
+  const user = getPlayer(match, summoner as Summoner);
   user.items.sort((a, b) => a.slot > b.slot ? 1 : -1);
 
-  const PositionIcon = RoleIcons[user.position];
+  const Role = user.position && RoleIcons[user.position];
 
   return (
     <Card className="grid grid-cols-[auto,auto,0.7fr,2.2fr,1.2fr,0.9fr] items-center grid-rows-[auto,auto] text-white p-0 gap-y-2.5 gap-x-5">
@@ -36,7 +37,9 @@ const MatchCard = ({ match }: MatchCardProps) => {
       )}/>
       
       <div className="pt-2.5">
-        <PositionIcon/>
+        { // @ts-expect-error
+          user.position && <Role/>
+        }
       </div>
 
       <div className="col-start-3 row-start-1 flex flex-col text-sm text-star-dust-300 pt-5">
@@ -64,8 +67,8 @@ const MatchCard = ({ match }: MatchCardProps) => {
 
       <div className="col-start-4 row-start-2 grid grid-cols-[auto,1fr] self-start gap-x-5 mt-1">
         <div className="col-start-1 flex mr-3 gap-1.5">
-          <SquareImage src={Asset.summonerSpell(user.summonerOne)}/>
-          <SquareImage src={Asset.summonerSpell(user.summonerTwo)}/>
+          <SquareImage src={Asset.primaryRune(user.primaryRune)}/>
+          <SquareImage className="p-0.5" src={Asset.secondaryRune(user.secondaryRune)}/>
           <SquareImage className="ml-1.5" src={Asset.summonerSpell(user.summonerOne)}/>
           <SquareImage src={Asset.summonerSpell(user.summonerTwo)}/>
         </div>
@@ -86,7 +89,9 @@ const MatchCard = ({ match }: MatchCardProps) => {
             return (
               <div className="flex items-center gap-2" key={p.username}>
                 <SquareImage src={Asset.champion(p.champion)}/>
-                <p className="text-star-dust-300 text-xs max-w-[3rem] truncate"> { p.username } </p>
+                {/* <WithTooltip tooltip={<UsernameTooltip username={p.username} tag={p.tag}/>}> */}
+                  <p className="text-star-dust-300 text-xs max-w-[3rem] truncate"> { p.username } </p>
+                {/* </WithTooltip> */}
               </div>
             )
           }) }
@@ -95,7 +100,9 @@ const MatchCard = ({ match }: MatchCardProps) => {
           { match.participants.filter(p => p.team !== user.team).sort((a, b) => a.participantId > b.participantId ? 1 : -1).map((p) => {
             return (
               <div className="flex items-center gap-2" key={p.username}>
-                <p className="text-star-dust-300 text-xs max-w-[3rem] truncate"> { p.username } </p>
+                {/* <WithTooltip tooltip={<UsernameTooltip username={p.username} tag={p.tag}/>}> */}
+                  <p className="text-star-dust-300 text-xs max-w-[3rem] truncate"> { p.username } </p>
+                {/* </WithTooltip> */}
                 <SquareImage src={Asset.champion(p.champion)}/>
               </div>
             )

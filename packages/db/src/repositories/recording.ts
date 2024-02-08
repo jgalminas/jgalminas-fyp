@@ -34,7 +34,7 @@ export const insertRecording = async(userId: string, data: InsertRecording) => {
 
       await session.commitTransaction();
       session.endSession();
-      return result[0]._id;
+      return result[0];
 
     } else {
       await session.abortTransaction();

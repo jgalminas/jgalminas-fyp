@@ -94,8 +94,7 @@ export const extractMatchData = (match: MatchV5DTOs.MatchDto, timeline: MatchV5T
     participants: match.info.participants.map((p) => ({
       puuid: p.puuid,
       champion: p.championName,
-      // @ts-ignore
-      username: p.riotIdGameName,
+      username: p.riotIdGameName as string,
       tag: p.riotIdTagline,
       participantId: p.participantId,
       position: p.teamPosition as Position,

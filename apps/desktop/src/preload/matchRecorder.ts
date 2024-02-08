@@ -5,7 +5,8 @@ import ffmpegStatic from 'ffmpeg-static';
 import { Readable } from "stream";
 import path from "path";
 import { captureThumbnail } from "../shared/util/recording";
-import { PathIPC, RecorderIPC } from "../shared/ipc";
+import { PathIPC, RecorderIPC, SettingsIPC } from "../shared/ipc";
+import { Settings } from "../shared/settings";
 
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
@@ -34,6 +35,8 @@ export class MatchRecorder {
     const videoPath = path.join(this.videosPath, `${fileName}.${VIDEO_FORMAT}`);
     this.running = true;
 
+    const settings: Settings = ipcRenderer.sendSync(SettingsIPC.Get);
+
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: {
         // @ts-ignore
@@ -47,16 +50,15 @@ export class MatchRecorder {
         mandatory: {
           chromeMediaSource: 'desktop',
           chromeMediaSourceId: source.id,
-          minWidth: 1920,
-          maxWidth: 1920,
-          minHeight: 1080,
-          maxHeight: 1080,
+          width: { ideal: 4096 },
+          height: { ideal: 2160 },
           frameRate: {
-            ideal: 60
+            ideal: settings.frameRate,
+            max: settings.frameRate
           }
         }
       }
-    });    
+    });
 
     this.recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=h264' });
     this.readable = new Readable({
@@ -83,8 +85,9 @@ export class MatchRecorder {
     ffmpeg()
     .input(this.readable)
     .inputFormat('webm')
-    .videoCodec('libx264')
+    .videoCodec('copy')
     .audioCodec('aac')
+    .videoBitrate(settings.resolution)
     .output(videoPath)
     .on('end', async() => {
       await captureThumbnail(videoPath);

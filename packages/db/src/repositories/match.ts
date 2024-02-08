@@ -1,4 +1,4 @@
-import { IEvent, IFrame, IMatch, IParticipant, IParticipantStats, Match as RMatch } from "@fyp/types";
+import { MatchWithGoldFrames, IEvent, IFrame, IMatch, IParticipant, IParticipantStats, Match as RMatch } from "@fyp/types";
 import { Types } from 'mongoose';
 import { db } from "../db";
 import { Event } from "../schema/event";
@@ -226,6 +226,140 @@ export const getMatchTimeline = async(id: string) => {
               foreignField: '_id',
               localField: 'participantStats',
               as: 'participantStats'
+            }
+          }
+        ]
+      }
+    },
+    {
+      $project: {
+        bans: 0
+      }
+    }
+  ]);
+
+  if (result.length > 0) {
+    return result[0];
+  } else {
+    return null;
+  }
+}
+
+export const getGoldFrames = async(id: string) => {
+
+  const result = await Match.aggregate<MatchWithGoldFrames>([
+    {
+      $match: {
+        _id: new Types.ObjectId(id)
+      }
+    },
+    {
+      $lookup: {
+        from: 'participants',
+        foreignField: '_id',
+        localField: 'participants',
+        as: 'participants',
+      }
+    },
+    {
+      $lookup: {
+        from: 'frames',
+        foreignField: '_id',
+        localField: 'frames',
+        as: 'frames',
+        pipeline: [
+          {
+            $sort: {
+              timestamp: 1
+            }
+          },
+          {
+            $lookup: {
+              from: 'events',
+              foreignField: '_id',
+              localField: 'events',
+              as: 'events',
+              pipeline: [
+                {
+                  $sort: {
+                    timestamp: 1
+                  }
+                }
+              ]
+            }
+          },
+          {
+            $lookup: {
+              from: 'participantstats',
+              foreignField: '_id',
+              localField: 'participantStats',
+              as: 'participantStats'
+            }
+          },
+          {
+            $unwind: "$participantStats"
+          },
+          {
+            $group: {
+              _id: {
+                team: '$team',
+                timestamp: '$timestamp',
+                frameId: '$_id',
+                participantId: '$participantStats.participantId'
+              },
+              totalGold: { $sum: '$participantStats.totalGold' }
+            }
+          },
+          {
+            $project: {
+              team: '$_id.team',
+              frameId: '$_id.frameId',
+              timestamp: '$_id.timestamp',
+              participantId: '$_id.participantId',
+              totalGold: 1,
+              _id: 0
+            }
+          },
+          {
+            $group: {
+              _id: {
+                team: '$team',
+                timestamp: '$timestamp',
+                frameId: '$frameId'
+              },
+              blueGold: {
+                $sum: {
+                  $cond: {
+                    if: { $lte: ['$participantId', 5] },
+                    then: '$totalGold',
+                    else: 0
+                  }
+                }
+              },
+              redGold: {
+                $sum: {
+                  $cond: {
+                    if: { $gt: ['$participantId', 5] },
+                    then: '$totalGold',
+                    else: 0
+                  }
+                }
+              }
+            }
+          },
+          {
+            $sort: {
+              "_id.timestamp": 1
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              team: '$_id.team',
+              frameId: '$_id.frameId',
+              timestamp: '$_id.timestamp',
+              blueGold: 1,
+              redGold: 1
             }
           }
         ]

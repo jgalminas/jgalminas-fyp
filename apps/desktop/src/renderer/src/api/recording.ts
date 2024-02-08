@@ -6,7 +6,8 @@ export const getRecordings = async (
     date: string | number,
     champion: string,
     role: string,
-    queue: string | number
+    queue: string | number,
+    start?: number
   }
 ): Promise<(IRecording & { match: string })[]> => {
 

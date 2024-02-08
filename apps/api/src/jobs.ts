@@ -38,7 +38,7 @@ export default () => {
         const recording = await RecordingRepository.findRecordingByMatchId(userId, matchId);
         const timeframes = await new AIService().getTimeframes({ puuid: puuid, match: result });
 
-        if (recording && timeframes) {
+        if (recording) {
           WSService.send(sessions, {
             type: 'AI_HIGHLIGHTS',
             payload: {

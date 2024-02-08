@@ -1,12 +1,12 @@
 import { cn } from "@fyp/class-name-helper";
 import { ReactNode } from "react";
 
-export type PageHeaderProps = {
+export type PageInnerHeaderProps = {
   children: ReactNode,
   className?: string
 }
 
-const PageHeader = ({ children, className }: PageHeaderProps) => {
+const PageInnerHeader = ({ children, className }: PageInnerHeaderProps) => {
 
   return (
     <div className={cn("flex flex-col gap-5 pt-5", className)}>
@@ -15,4 +15,4 @@ const PageHeader = ({ children, className }: PageHeaderProps) => {
   )
 }
 
-export default PageHeader;
+export default PageInnerHeader;

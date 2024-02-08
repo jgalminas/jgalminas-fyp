@@ -1,8 +1,9 @@
 import { IpcRendererEvent, contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { MatchRecorder } from './matchRecorder';
-import { ClientIPC, FileIPC } from '../shared/ipc';
-import { IRecording } from '@fyp/types';
+import { ClientIPC, FileIPC, SettingsIPC } from '../shared/ipc';
+import { HighlightTimeframe, IRecording } from '@fyp/types';
+import { Settings } from '../shared/settings';
 
 export type PreloadAPI = typeof api;
 
@@ -10,15 +11,12 @@ export type PreloadAPI = typeof api;
 
 const api = {
   file: {
-    getThumbnail: async(id: string): Promise<{ message: 'OK', path: string } | { message: 'VIDEO_NOT_FOUND' }> => {
-      return await ipcRenderer.invoke(FileIPC.GetThumbnail, id);
+    getThumbnail: async(id: string, type: 'recordings' | 'highlights'): Promise<{ message: 'OK', path: string } | {  message: 'VIDEO_NOT_FOUND' }> => {
+      return await ipcRenderer.invoke(FileIPC.GetThumbnail, id, type);
     },
     createHighlights: async(
       data: {
-        timeframes: {
-          frame: number,
-          timestamp: number
-        }[],
+        timeframes: HighlightTimeframe[],
         matchDuration: number,
         recording: IRecording
       }) => {
@@ -30,8 +28,18 @@ const api = {
   },
   events: {
     on: <T>(channel: string, callback: (event: IpcRendererEvent, data: T) => void) => {
-      ipcRenderer.on(channel, callback);
+      
+      const subscription = (event: IpcRendererEvent, data: T) => callback(event, data);
+      ipcRenderer.on(channel, subscription);
+
+      return () => {
+        ipcRenderer.removeListener(channel, subscription);
+      }
     }
+  },
+  settings: {
+    get: (): Settings | undefined => ipcRenderer.sendSync(SettingsIPC.Get),
+    set: async(settings: Settings): Promise<void> => await ipcRenderer.invoke(SettingsIPC.Set, settings)
   }
 }
 

@@ -58,7 +58,8 @@ export const getHighlights = async(
     date: -1 | 1,
     champion?: string,
     start: number,
-    offset: number
+    offset: number,
+    match?: string
   }
   ) => {
   
@@ -90,6 +91,9 @@ export const getHighlights = async(
           {
             $match: {
               $and: [
+                (filters?.match && filters.match.length === 24 ? {
+                  match: new Types.ObjectId(filters.match)
+                } : {}),
                 (filters?.champion && filters.champion !== 'all' ? {
                   champion: {
                     $regex: new RegExp(filters.champion, 'i')
@@ -118,9 +122,54 @@ export const getHighlights = async(
   ]);
 
   if (result.length > 0) {
-    return result[0].recordings;
+    return result[0].highlights;
   } else {
     return [];
   }
 
 }
+
+export const getHighlightById = async(userId: string, id: string) => {
+
+  try {
+    const result = await User.aggregate<IHighlight>([
+      {
+        $match: {
+          _id: new Types.ObjectId(userId)
+        }
+      },
+      {
+        $lookup: {
+          from: 'highlights',
+          localField: 'highlights',
+          foreignField: '_id',
+          as: 'highlights',
+          pipeline: [
+            {
+              $match: {
+                _id: new Types.ObjectId(id)
+              }
+            }
+          ]
+        }
+      },
+      {
+        $unwind: '$highlights'
+      },
+      {
+        $replaceRoot: {
+          newRoot: '$highlights'
+        }
+      }
+    ]);
+  
+    if (result.length > 0) {
+      return result[0];
+    } else {
+      return null;
+    }
+  } catch (err) {
+    return null;
+  }
+
+};

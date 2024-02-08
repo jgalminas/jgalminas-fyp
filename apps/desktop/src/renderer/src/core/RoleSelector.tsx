@@ -14,7 +14,7 @@ export type RoleSelectorProps = {
 const RoleSelector = ({ className, onChange, role }: RoleSelectorProps) => {
 
   return (
-    <div className={cn("flex items-center text-star-dust-400 divide-x border border-woodsmoke-50 divide-woodsmoke-50 w-fit rounded-lg overflow-hidden",
+    <div className={cn("flex items-center text-star-dust-400 divide-x border border-woodsmoke-50 divide-woodsmoke-50 w-fit rounded-md overflow-hidden",
     className)}>
       { ROLE.map((r) => {
         const Icon = RoleIcons[r];

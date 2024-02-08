@@ -1,5 +1,6 @@
 import { Types } from "mongoose";
 import { IHighlight, IRecording } from ".";
+import { Regions } from "..";
 
 export type IUser = {
   _id: Types.ObjectId,
@@ -7,7 +8,13 @@ export type IUser = {
   username: string,
   password: string,
   createdAt: Date,
-  puuid: string | undefined,
+  summoner?: {
+    name: string,
+    tag: string,
+    puuid: string,
+    profileIconId: number,
+    region: Regions
+  },
   recordings: IRecording[]
   highlights: IHighlight[]
 }

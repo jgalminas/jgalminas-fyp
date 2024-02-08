@@ -1,10 +1,9 @@
-import Page from "../layouts/Page";
+import Page from "../core/page/Page";
 
 const Home = () => {
 
   return ( 
-    <Page>
-        Home
+    <Page>  
     </Page>
   )
 }

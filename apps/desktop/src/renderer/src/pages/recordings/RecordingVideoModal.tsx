@@ -31,7 +31,7 @@ const RecordingVideoModal = () => {
           <X className="text-star-dust-300 h-5 w-5"/>
         </button>
       </div>
-      <video controls src={videoUrl(data.gameId)}/>
+      <video controls src={videoUrl(data.gameId, 'recording')}/>
       <div className="p-3 flex gap-3 items-center">
         <RoundImage src={Asset.champion(data.champion)}/>
         <div className="flex flex-col text-sm">

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { useWebSocket } from "./useWebSocket";
 import { WebSocketEvent } from "@fyp/types";
+import { useSocket } from "@renderer/WebSocketContext";
 
 /**
  * A custom hook to create a socket connection and register a message listener
@@ -9,7 +9,7 @@ import { WebSocketEvent } from "@fyp/types";
  */
 export const useSubscription = (callback: (event: WebSocketEvent) => void, deps: any[] = []) => {
 
-    const { socket } = useWebSocket();
+    const { socket } = useSocket();
 
     useEffect(() => {
 

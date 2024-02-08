@@ -14,7 +14,16 @@ router.post('/', requireAuth, async(req, res) => {
   const matchId = req.body.matchId;
   const region = regionToRegionGroup(req.body.region);
 
-  await agenda.now<MatchDataContract>('GET_MATCH_DATA', { gameId, matchId, region, userId: req.user?._id.toString(), puuid: req.user?.puuid });
+  await agenda.now<MatchDataContract>(
+    'GET_MATCH_DATA',
+    {
+      gameId,
+      matchId,
+      region,
+      userId: req.user?._id.toString(),
+      puuid: req.user?.summoner?.puuid
+    }
+  );
 
   res.status(200).send();
 })
@@ -36,7 +45,7 @@ router.get('/all', requireAuth, async(req, res) => {
 
   if (parsed.success) {
 
-    const match = await MatchRepository.getUserMatches(req.user?.puuid as string, parsed.data.query);
+    const match = await MatchRepository.getUserMatches(req.user?.summoner?.puuid as string, parsed.data.query);
 
     res.status(200).json(match);
   } else {
@@ -67,6 +76,17 @@ router.get('/:id/timeline', requireAuth, async(req, res) => {
     res.status(404).send();
   }
 
+})
+
+router.get('/:id/gold', requireAuth, async(req, res) => {
+
+  const gold = await MatchRepository.getGoldFrames(req.params.id);
+
+  if (!gold) {
+    res.status(404);
+  }
+
+  res.send(gold);
 })
 
 export default router;

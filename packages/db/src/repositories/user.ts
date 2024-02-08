@@ -1,5 +1,6 @@
-import { IUser } from "@fyp/types";
+import { IUser, Regions } from "@fyp/types";
 import { User } from "../schema/user";
+import { Types } from "mongoose";
 
 export type RegisterCredentials = {
   username: string,
@@ -17,4 +18,20 @@ export const createUser = async(credentials: RegisterCredentials) => {
 
   await user.save();
   return user;
+}
+
+export const updateSummoner = async(
+  userId: string,
+  summoner: {
+    name: string,
+    tag: string,
+    profileIconId: number,
+    puuid: string,
+    region: Regions
+  }
+) => {
+  return await User.updateOne(
+    { _id: new Types.ObjectId(userId) },
+    { summoner: summoner }
+  )
 }

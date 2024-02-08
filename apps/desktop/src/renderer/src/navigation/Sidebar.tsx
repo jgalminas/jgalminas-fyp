@@ -14,7 +14,7 @@ export type SidebarProps = {
 const Sidebar = ({ className }: SidebarProps) => {
 
   return (
-    <div className={cn("flex flex-col text-sm w-20 bg-woodsmoke-700 pt-28", className)}>
+    <div className={cn("flex flex-col text-sm min-w-20 bg-woodsmoke-700 pt-28", className)}>
 
       <SidebarLink to="/" icon={Home}>
         Home

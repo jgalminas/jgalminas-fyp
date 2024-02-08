@@ -5,7 +5,7 @@ export type ErrorMessageProps = {
 
 const ErrorMessage = ({ children }: ErrorMessageProps) => {
   return (
-    <div className="text-red-600 text-sm bg-red-100 p-2.5 rounded">
+    <div className="text-accent-red text-sm bg-red-500 bg-opacity-10 p-2.5 rounded">
       { children }
     </div>
   )

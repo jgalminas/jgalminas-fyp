@@ -22,3 +22,12 @@ export enum ClientIPC {
 export enum HighlightIPC {
   Created = "highlight:created"
 }
+
+export enum RecordingIPC {
+  Created = "recording:created"
+}
+
+export enum SettingsIPC {
+  Get = "settings:get",
+  Set = "settings:set"
+}

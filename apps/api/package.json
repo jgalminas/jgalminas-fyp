@@ -4,7 +4,7 @@
   "description": "Backend server",
   "main": "src/index.ts",
   "scripts": {
-    "start": "pnpm with-env ts-node src/index.ts",
+    "start": "pnpm with-env node ./dist/index.js",
     "dev": "pnpm with-env nodemon",
     "build": "pnpm with-env tsc",
     "lint": "eslint --fix src test",
@@ -31,7 +31,7 @@
     "nanoid": "3",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "twisted": "^1.54.0",
+    "twisted": "^1.57.0",
     "ws": "^8.16.0",
     "zod": "^3.22.2"
   },

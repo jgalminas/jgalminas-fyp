@@ -4,7 +4,8 @@ import { useEffect } from "react";
 export const useIPCSubscription = <T>(channel: string, callback: (event: IpcRendererEvent, data: T) => void, deps: any[] = []) => {
 
   useEffect(() => {
-    window.api.events.on(channel, callback)
-  }, [...deps]) 
+    const unsubscribe = window.api.events.on(channel, callback);
+    return () => unsubscribe();
+  }, deps) 
 
 } 

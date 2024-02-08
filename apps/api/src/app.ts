@@ -10,7 +10,7 @@ import passport from 'passport';
 import { passportConfig } from './auth/passport';
 import session from 'express-session';
 import env from './env';
-import { LolApi } from 'twisted';
+import { LolApi, RiotApi } from 'twisted';
 import MongoStore from 'connect-mongo';
 import Agenda from 'agenda';
 import jobs from './jobs';
@@ -20,6 +20,7 @@ import { WebSocketService } from './services/webSocketService';
 
 export const app = express();
 export const twisted = new LolApi(env.RIOT_KEY);
+export const riot = new RiotApi(env.RIOT_KEY);
 
 export const agenda = new Agenda({
   db: {

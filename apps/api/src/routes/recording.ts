@@ -7,9 +7,9 @@ const router = Router();
 
 router.post('/', requireAuth, async(req, res) => {
 
-  const id = await RecordingRepository.insertRecording(req.user?._id.toString() as string, req.body);
+  const recording = await RecordingRepository.insertRecording(req.user?._id.toString() as string, req.body);
 
-  res.status(200).send(id);
+  res.status(200).send(recording);
 })
 
 router.get('/all', requireAuth, async(req, res) => {

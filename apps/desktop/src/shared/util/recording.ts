@@ -3,7 +3,8 @@ import ffmpegStatic from 'ffmpeg-static';
 import { THUMBNAIL_FORMAT, VIDEO_FORMAT } from '../../constants';
 ffmpeg.setFfmpegPath(ffmpegStatic as string);
 
-export const captureThumbnail = async(filePath: string): Promise<void> => {
+export const captureThumbnail = async(filePath: string): Promise<string> => {
+  const thumbnailPath = filePath.replace(VIDEO_FORMAT, THUMBNAIL_FORMAT);
   return new Promise((resolve, reject) => {
     try {
       ffmpeg()
@@ -11,8 +12,8 @@ export const captureThumbnail = async(filePath: string): Promise<void> => {
       .inputFormat('mp4')
       .videoCodec('mjpeg')
       .frames(1)
-      .output(filePath.replace(VIDEO_FORMAT, THUMBNAIL_FORMAT))
-      .on('end', () => resolve())
+      .output(thumbnailPath)
+      .on('end', () => resolve(thumbnailPath))
       .on('error', () => reject())
       .run()
     } catch (err) {
