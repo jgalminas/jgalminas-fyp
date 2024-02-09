@@ -80,12 +80,17 @@ export const Editor = ({  }: EditorProps) => {
 
 const ResizableDiv = () => {
 
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  // TODO:
+  // make left side resizeable
+  // style
+  // prevent accross right handle and vice versa
+
 
   const [width, setWidth] = useState(200);
+  const [offset, setOffset] = useState(100);
   const divRef = useRef<HTMLDivElement>(null);
 
-  const move = (e: DragEvent<HTMLDivElement>) => {
+  const move = (e: DragEvent<HTMLDivElement>, side: 'left' | 'right') => {
     // if (e.buttons === 1) {
     //   console.log(e);
     //   setWidth(e.offsetX);
@@ -94,36 +99,26 @@ const ResizableDiv = () => {
     const parentRect = e.currentTarget.parentElement?.getBoundingClientRect();
   
     if (e.clientX !== 0 && parentRect) {
-      setWidth(e.clientX - parentRect.left)
+      setWidth(e.clientX - parentRect.left);
+      
     }
     
   }
 
-  const onMouseDown = () => {
-    setIsDragging(true);
-  }
-
-  // useEffect(() => {
-    
-  //   document.addEventListener("mousemove", move);
-
-  //   return () => {
-  //     document.removeEventListener("mousemove", move)
-  //   }
-  // }, [])
-
   return (
-    <div ref={divRef} className="relative h-8 bg-red-100" style={{ width: width }}>
-      {/* <div
-        className="absolute inset-y-0 left-0 w-2 bg-gray-500 cursor-col-resize"
-        onMouseDown={}
-      ></div> */}
+    <div ref={divRef} className="flex h-8 bg-red-100" style={{ width: width }}>
       <div
         draggable
-        onDrag={move}
-        className="inset-y-0 right-0 w-2 bg-gray-500 cursor-col-resize resize ml-auto"
-        // onMouseDown={onMouseDown}
-      >x</div>
+        onDragStart={(e) => { e.dataTransfer.setDragImage(new Image(), 0, 0); } }
+        onDrag={(e) => move(e, "left")}
+        className=" w-2 min-h-full bg-gray-500 cursor-col-resize resize"
+      />
+      <div
+        draggable
+        onDragStart={(e) => { e.dataTransfer.setDragImage(new Image(), 0, 0); } }
+        onDrag={(e) => move(e, "right")}
+        className=" w-2 min-h-full bg-gray-500 cursor-col-resize resize ml-auto"
+      />
     </div>
   );
 };
