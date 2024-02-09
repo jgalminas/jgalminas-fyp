@@ -1,10 +1,10 @@
 import Page from "../core/page/Page";
+import { Editor } from "./Editor";
 
 const Home = () => {
 
   return ( 
-    <Page>  
-    </Page>
+    <Editor/>
   )
 }
 
