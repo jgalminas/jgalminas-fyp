@@ -1,6 +1,6 @@
+import { cn } from "@fyp/class-name-helper";
 import { msToLength } from "@renderer/util/time";
-import { DragEvent, MouseEvent as ReactMouseEvent, useEffect, useRef, useState } from "react";
-import * as Slider from '@radix-ui/react-slider'; 
+import { Dispatch, DragEvent, MouseEvent as ReactMouseEvent, SetStateAction, useRef, useState } from "react";
 
 export type EditorProps = {
   
@@ -15,6 +15,9 @@ export const Editor = ({  }: EditorProps) => {
 
   const intervalCount = Math.ceil(length / (scale * zoom));
 
+  const [width, setWidth] = useState(120);
+  const [offset, setOffset] = useState(0);
+
   const onMouseMove = (e: ReactMouseEvent, index: number) => {
     // () => console.log(i, i * (scale * zoom))
     // console.log(index * (scale * zoom));
@@ -25,49 +28,43 @@ export const Editor = ({  }: EditorProps) => {
     
   }
 
-  const [width, setWidth] = useState<number>(0);
+  // with to milis
+  // (width / intervalCount / 10) * scale * zoom
 
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (ref.current) {
-      setWidth(ref.current.scrollWidth);
-    }
-  }, [ref, zoom])
-
-  console.log(intervalCount * (zoom * 0.1));
+  console.log("w: ", (width / intervalCount / 10) * scale * zoom);
   
 
   return (  
     <div className="w-full">
       
-      <div className="overflow-x-auto bg-woodsmoke-600 p-5">
-        <div ref={ref} className="flex mt-64">
-          { Array.from({ length: intervalCount + 1 }).map((_, i) => (
-            <div onMouseOver={(e) => onMouseMove(e, i)} key={i}
-            style={{ minWidth: intervalCount * (zoom * 0.1) }}
-            className="bg-green-700">
-              | { msToLength(i * (length / intervalCount)) }
-            </div>
-          )) }
+      <div className="bg-woodsmoke-600 mt-64 px-5 pt-12">
+        <div className="overflow-x-auto flex flex-col">
+          <div className="flex text-star-dust-300 text-xs pb-3">
+            { Array.from({ length: intervalCount }).map((_, i) => {
+              return (
+                <div onMouseOver={(e) => onMouseMove(e, i)} key={i}
+                style={{ minWidth: intervalCount * (zoom * 0.1) }}
+                className="relative flex justify-between">
+                  <div className="flex items-end h-8 w-[1px] bg-star-dust-300 ml-[0.5px] relative">
+                    <span className="ml-2"> { msToLength(i * (length / intervalCount)) } </span>
+                  </div>
+                  <span className="absolute left-1/2 top-0 min-h-4 min-w-[1px] bg-star-dust-300"/>
+                  { i + 1 === intervalCount &&
+                    <div className="flex items-end h-8 w-[1px] bg-star-dust-300 ml-[0.5px] relative">
+                      <span className="ml-2"> { msToLength((i + 1) * (length / intervalCount)) } </span>
+                    </div>
+                  }
+                </div>
+              )
+            }) }
+          </div>
+          <Slider maxWidth={(intervalCount * (zoom * 0.1)) * intervalCount}
+          offset={offset}
+          setOffset={setOffset}
+          width={width}
+          setWidth={setWidth}
+          />
         </div>
-        {/* <div className="bg-blue-500 ml-[30px] flex gap-2 w-[60px]"
-        onMouseOver={(e) => {
-
-          const intervalWidth = intervalCount * (zoom * 0.1);
-          const width = e.currentTarget.getBoundingClientRect().width;
-
-          const intervalValueInMs = scale * zoom;
-          const msPerPx = intervalValueInMs / intervalWidth;
-
-          const start = e.currentTarget.offsetLeft * msPerPx;
-          const end = width * msPerPx;
-          
-        }}>
-          Drag Me
-        </div> */}
-
-        <ResizableDiv/>
       </div>
 
 
@@ -77,50 +74,96 @@ export const Editor = ({  }: EditorProps) => {
   )
 }
 
+type SliderProps = {
+  maxWidth: number,
+  width: number,
+  setWidth: Dispatch<SetStateAction<number>>,
+  offset: number,
+  setOffset: Dispatch<SetStateAction<number>>
+}
 
-const ResizableDiv = () => {
+const Slider = ({ maxWidth, width, setWidth, offset, setOffset }: SliderProps) => {
 
   // TODO:
-  // make left side resizeable
   // style
   // prevent accross right handle and vice versa
+  // account for scroll position in move
+  // fix width being set past max width
+  // scale width with zoom
+  // drag (maybe)
 
+  const prevOffsetX = useRef<number>(0);
 
-  const [width, setWidth] = useState(200);
-  const [offset, setOffset] = useState(100);
-  const divRef = useRef<HTMLDivElement>(null);
+  const onDrag = (e: DragEvent<HTMLDivElement>, side: 'left' | 'right') => {
 
-  const move = (e: DragEvent<HTMLDivElement>, side: 'left' | 'right') => {
-    // if (e.buttons === 1) {
-    //   console.log(e);
-    //   setWidth(e.offsetX);
-    // }
-
+    const mainElement = e.currentTarget.parentElement?.parentElement;
     const parentRect = e.currentTarget.parentElement?.getBoundingClientRect();
+    const mainRect = mainElement?.getBoundingClientRect();
   
-    if (e.clientX !== 0 && parentRect) {
-      setWidth(e.clientX - parentRect.left);
+    if (e.clientX && mainElement && parentRect && mainRect) {
+
+      // Get the parent container's left padding
+      const parentPaddingLeft = parseFloat(getComputedStyle(mainElement).paddingLeft); 
       
+      // Calculate starting position
+      const startX = e.clientX - mainRect.left - parentPaddingLeft;
+      
+      // Calculate difference between previous offsetX and current offsetX
+      const diff = startX - (prevOffsetX.current - mainRect?.left - parentPaddingLeft);
+      
+      const isNotMin = offset + diff >= 0;   
+
+      if (diff !== 0) {
+        if (side === "left") {
+          if (isNotMin) {
+            setOffset(prev => prev + diff); 
+            setWidth(width => width - diff);
+          }
+
+        } else {
+          setWidth(prev => prev + diff);
+        }
+
+        // Set previous offsetX as current offsetX
+        prevOffsetX.current = e.clientX;
+      }
+
     }
     
   }
 
+  const onDragStart = (e: DragEvent<HTMLDivElement>) => {
+    e.dataTransfer.setDragImage(new Image(), 0, 0);
+    prevOffsetX.current = e.clientX;
+  }
+
   return (
-    <div ref={divRef} className="flex h-8 bg-red-100" style={{ width: width }}>
-      <div
-        draggable
-        onDragStart={(e) => { e.dataTransfer.setDragImage(new Image(), 0, 0); } }
-        onDrag={(e) => move(e, "left")}
-        className=" w-2 min-h-full bg-gray-500 cursor-col-resize resize"
-      />
-      <div
-        draggable
-        onDragStart={(e) => { e.dataTransfer.setDragImage(new Image(), 0, 0); } }
-        onDrag={(e) => move(e, "right")}
-        className=" w-2 min-h-full bg-gray-500 cursor-col-resize resize ml-auto"
-      />
+    <div className="w-full bg-woodsmoke-800 rounded-lg mb-2 select-none" style={{ width: maxWidth }}>
+      <div style={{ width: width, marginLeft: offset, maxWidth: maxWidth - offset }}
+      className="flex h-12 bg-science-blue-600 bg-opacity-15 border-2 rounded-lg border-science-blue-600">
+        <div
+          draggable
+          onDragStart={onDragStart}
+          onDrag={(e) => onDrag(e, "left")}
+          className={cn(
+            "p-1 min-h-full bg-science-blue-600 bg-opacity-25 cursor-col-resize resize",
+            "flex items-center justify-center text-science-blue-600"
+            )}>
+          ||
+        </div>
+        <div
+          draggable
+          onDragStart={onDragStart}
+          onDrag={(e) => onDrag(e, "right")}
+          className={cn(
+            "p-1 min-h-full bg-science-blue-600 bg-opacity-25 cursor-col-resize resize",
+            "ml-auto flex items-center justify-center text-science-blue-600"
+            )}>
+          ||
+        </div>
+      </div>
     </div>
   );
 };
 
-export default ResizableDiv;
+export default Slider;
