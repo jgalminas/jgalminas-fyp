@@ -1,6 +1,6 @@
 import { cn } from "@fyp/class-name-helper";
 import { msToLength } from "@renderer/util/time";
-import { Dispatch, DragEvent, MouseEvent as ReactMouseEvent, SetStateAction, useRef, useState } from "react";
+import { Dispatch, DragEvent, MouseEvent, SetStateAction, useEffect, useRef, useState } from "react";
 
 export type EditorProps = {
   
@@ -18,7 +18,9 @@ export const Editor = ({  }: EditorProps) => {
   const [width, setWidth] = useState(120);
   const [offset, setOffset] = useState(0);
 
-  // with to milis
+  const maxWidth = (intervalCount + zoom) * intervalCount;
+
+  // width to milis
   // (width / intervalCount / 10) * scale * zoom
 
   // console.log("w: ", (width / intervalCount / 10) * scale * zoom);
@@ -27,19 +29,31 @@ export const Editor = ({  }: EditorProps) => {
 
 
   // TODO: fix zooming - at the moment it is not symmetrical
-  const onZoomIn = () => {
-    const newZoom = Math.floor(zoom - 10);
-    setZoom(newZoom);
-    setWidth(prev => prev * (1 + (1 - newZoom / 100)));
-  }
+  // const onZoomIn = () => {
+  //   const newZoom = Math.max(10, zoom - 10);
+  //   setZoom(newZoom);
+  //   const scaleFactor = newZoom / 100;
+  //   setWidth(initialWidth.current / scaleFactor);
+  //   // setWidth(prev => prev * (1 + (1 - newZoom / 100)));
+  // }
 
-  const onZoomOut = () => {
-    const newZoom = Math.floor(zoom + 10);
+  console.log("w", width, "mw", maxWidth, "z", zoom);
+
+  const onZoomIn = () => {
+    const newZoom = Math.max(10, zoom - 10);
+    const scaleFactor = newZoom / zoom;
     setZoom(newZoom);
-    const newWidth = width / (1 + (1 - newZoom / 100))
-    setWidth(newWidth < 50 ? 50 : newWidth);
-  }
-  
+    const newWidth = width * scaleFactor;
+    setWidth(newWidth > maxWidth ? maxWidth : newWidth);
+}
+
+const onZoomOut = () => {
+    const newZoom = Math.min(300, zoom + 10);
+    const scaleFactor = newZoom / zoom;
+    setZoom(newZoom);
+    const newWidth = width / scaleFactor;
+    setWidth(Math.max(50, newWidth > maxWidth ? maxWidth : newWidth));
+}
 
   return (  
     <div className="w-full">
@@ -49,7 +63,7 @@ export const Editor = ({  }: EditorProps) => {
           <div className="flex text-star-dust-300 text-xs pb-3">
             { Array.from({ length: intervalCount }).map((_, i) => {
               return (
-                <div key={i} style={{ minWidth: intervalCount * (zoom * 0.1) }}
+                <div key={i} style={{ minWidth: intervalCount + zoom }}
                 className="relative flex justify-between">
                   <div className="flex items-end h-8 w-[1px] bg-star-dust-300 ml-[0.5px] relative">
                     <span className="ml-2"> { msToLength(i * (length / intervalCount)) } </span>
@@ -64,7 +78,8 @@ export const Editor = ({  }: EditorProps) => {
               )
             }) }
           </div>
-          <Slider maxWidth={(intervalCount * (zoom * 0.1)) * intervalCount}
+          <Slider
+          maxWidth={maxWidth}
           offset={offset}
           setOffset={setOffset}
           width={width}
@@ -72,7 +87,6 @@ export const Editor = ({  }: EditorProps) => {
           />
         </div>
       </div>
-
 
       <button onClick={onZoomIn}> zoom in </button>
       <button onClick={onZoomOut}> zoom out </button>
