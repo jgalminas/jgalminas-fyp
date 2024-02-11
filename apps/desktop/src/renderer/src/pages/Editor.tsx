@@ -18,20 +18,27 @@ export const Editor = ({  }: EditorProps) => {
   const [width, setWidth] = useState(120);
   const [offset, setOffset] = useState(0);
 
-  const onMouseMove = (e: ReactMouseEvent, index: number) => {
-    // () => console.log(i, i * (scale * zoom))
-    // console.log(index * (scale * zoom));
-    console.log(index * (scale * zoom));
-    
-    // console.log(e.currentTarget.getBoundingClientRect());
-    
-    
-  }
-
   // with to milis
   // (width / intervalCount / 10) * scale * zoom
 
-  console.log("w: ", (width / intervalCount / 10) * scale * zoom);
+  // console.log("w: ", (width / intervalCount / 10) * scale * zoom);
+
+  // console.log(width, width / (zoom / 100));
+
+
+  // TODO: fix zooming - at the moment it is not symmetrical
+  const onZoomIn = () => {
+    const newZoom = Math.floor(zoom - 10);
+    setZoom(newZoom);
+    setWidth(prev => prev * (1 + (1 - newZoom / 100)));
+  }
+
+  const onZoomOut = () => {
+    const newZoom = Math.floor(zoom + 10);
+    setZoom(newZoom);
+    const newWidth = width / (1 + (1 - newZoom / 100))
+    setWidth(newWidth < 50 ? 50 : newWidth);
+  }
   
 
   return (  
@@ -42,8 +49,7 @@ export const Editor = ({  }: EditorProps) => {
           <div className="flex text-star-dust-300 text-xs pb-3">
             { Array.from({ length: intervalCount }).map((_, i) => {
               return (
-                <div onMouseOver={(e) => onMouseMove(e, i)} key={i}
-                style={{ minWidth: intervalCount * (zoom * 0.1) }}
+                <div key={i} style={{ minWidth: intervalCount * (zoom * 0.1) }}
                 className="relative flex justify-between">
                   <div className="flex items-end h-8 w-[1px] bg-star-dust-300 ml-[0.5px] relative">
                     <span className="ml-2"> { msToLength(i * (length / intervalCount)) } </span>
@@ -68,13 +74,14 @@ export const Editor = ({  }: EditorProps) => {
       </div>
 
 
-      <button onClick={() => setZoom(zoom => Math.floor(zoom * 0.9))}> zoom in </button>
-      <button onClick={() => setZoom(zoom => Math.floor(zoom * 1.1))}> zoom out </button>
+      <button onClick={onZoomIn}> zoom in </button>
+      <button onClick={onZoomOut}> zoom out </button>
     </div>
   )
 }
 
 type SliderProps = {
+  minRange?: number
   maxWidth: number,
   width: number,
   setWidth: Dispatch<SetStateAction<number>>,
@@ -82,15 +89,13 @@ type SliderProps = {
   setOffset: Dispatch<SetStateAction<number>>
 }
 
-const Slider = ({ maxWidth, width, setWidth, offset, setOffset }: SliderProps) => {
+const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }: SliderProps) => {
 
   // TODO:
-  // style
-  // prevent accross right handle and vice versa
   // account for scroll position in move
-  // fix width being set past max width
   // scale width with zoom
   // drag (maybe)
+  // prevent cursor from chaging to red circle
 
   const prevOffsetX = useRef<number>(0);
 
@@ -111,17 +116,16 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset }: SliderProps) =
       // Calculate difference between previous offsetX and current offsetX
       const diff = startX - (prevOffsetX.current - mainRect?.left - parentPaddingLeft);
       
-      const isNotMin = offset + diff >= 0;   
-
       if (diff !== 0) {
         if (side === "left") {
-          if (isNotMin) {
+          if (offset + diff >= 0 && width - diff >= minRange) {
             setOffset(prev => prev + diff); 
             setWidth(width => width - diff);
           }
-
         } else {
-          setWidth(prev => prev + diff);
+          if (width + diff <= (maxWidth - offset) && width + diff >= minRange) {
+            setWidth(prev => prev + diff);
+          }
         }
 
         // Set previous offsetX as current offsetX
