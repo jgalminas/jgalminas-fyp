@@ -7,6 +7,9 @@ export type EditorProps = {
   
 }
 
+const pxToMs = (px: number, maxWidth: number, length: number) => px * (length / maxWidth);
+const msToPx = (ms: number, maxWidth: number, length: number) => Math.ceil(ms * (maxWidth / length));
+
 export const Editor = ({  }: EditorProps) => {
 
   const length = 1_200_000;
@@ -15,17 +18,13 @@ export const Editor = ({  }: EditorProps) => {
   const [zoom, setZoom] = useState(100);
   const [width, setWidth] = useState(120);
   const [offset, setOffset] = useState(0);
-  const [position, setPosition] = useState(200);
+  const [position, setPosition] = useState(112);
 
   const intervalCount = Math.ceil(length / (scale * zoom));
   const maxWidth = (intervalCount + zoom) * intervalCount;
 
-  // width to milis
-  // (width / intervalCount / 10) * scale * zoom
 
-  // console.log("w: ", (width / intervalCount / 10) * scale * zoom);
 
-  // console.log("w", width, "mw", maxWidth, "z", zoom);
 
   const onZoomIn = () => {
     const newZoom = Math.max(10, zoom - 10);
@@ -48,49 +47,96 @@ const onZoomOut = () => {
   return (  
     <div className="w-full">
       
-      <div className="bg-woodsmoke-600 mt-64">
+      {/* <video /> */}
 
-        <div className="py-2 flex border-y items-center justify-center text-star-dust-300 border-woodsmoke-200">
-          time
-        </div>
+      {/* control icon buttons */}
 
-        <div className="overflow-x-auto flex flex-col relative px-5">
-          <TimeCursor position={position}/>
-
-          <div className="py-5">
-            events
-          </div>
-
-          <div className="flex text-star-dust-300 text-xs pb-3">
-            { Array.from({ length: intervalCount }).map((_, i) => {
-              return (
-                <div key={i} style={{ minWidth: intervalCount + zoom }}
-                className="relative flex justify-between">
-                  <div className="flex items-end h-8 w-[1px] bg-star-dust-300 ml-[0.5px] relative">
-                    <span className="ml-2"> { msToLength(i * (length / intervalCount)) } </span>
-                  </div>
-                  <span className="absolute left-1/2 top-0 min-h-4 min-w-[1px] bg-star-dust-300"/>
-                  { i + 1 === intervalCount &&
-                    <div className="flex items-end h-8 w-[1px] bg-star-dust-300 ml-[0.5px] relative">
-                      <span className="ml-2 pr-3"> { msToLength((i + 1) * (length / intervalCount)) } </span>
-                    </div>
-                  }
-                </div>
-              )
-            }) }
-          </div>
-          <Slider
-          maxWidth={maxWidth}
-          offset={offset}
-          setOffset={setOffset}
-          width={width}
-          setWidth={setWidth}
-          />
-        </div>
-      </div>
+      <Timeline
+      intervalCount={intervalCount}
+      maxWidth={maxWidth}
+      offset={offset}
+      position={position}
+      width={width}
+      setOffset={setOffset}
+      setWidth={setWidth}
+      zoom={zoom}
+      length={length}
+      />
 
       <button onClick={onZoomIn}> zoom in </button>
       <button onClick={onZoomOut}> zoom out </button>
+    </div>
+  )
+}
+
+
+export type TimelineProps = {
+  length: number,
+  position: number,
+  width: number,
+  maxWidth: number,
+  zoom: number,
+  intervalCount: number,
+  setWidth: Dispatch<SetStateAction<number>>,
+  offset: number,
+  setOffset: Dispatch<SetStateAction<number>>
+}
+
+export const Timeline = ({
+  maxWidth,
+  zoom,
+  intervalCount,
+  setWidth,
+  offset,
+  setOffset,
+  position,
+  width,
+  length
+}: TimelineProps) => {
+
+  return (
+    <div className="bg-woodsmoke-600 mt-64">
+      <div className="py-2 flex border-y items-center justify-center text-star-dust-300 border-woodsmoke-200">
+        <p className="text-sm">
+          <span className="font-medium"> { msToLength(pxToMs(position, maxWidth, length)) } </span>
+          <span> / </span>
+          { msToLength(length) }
+        </p>
+      </div>
+
+      <div className="overflow-x-auto flex flex-col relative mx-5">
+        <TimeCursor position={position}/>
+
+        <div className="py-5">
+          events
+        </div>
+
+        <div className="flex text-star-dust-300 text-xs pb-3">
+          { Array.from({ length: intervalCount }).map((_, i) => {
+            return (
+              <div key={i} style={{ minWidth: intervalCount + zoom }}
+              className="relative flex justify-between">
+                <div className="flex items-end h-8 w-[1px] bg-star-dust-300 ml-[0.5px]">
+                  <span className="ml-2"> { msToLength(i * (length / intervalCount)) } </span>
+                </div>
+                <span className="absolute left-1/2 top-0 min-h-4 min-w-[1px] bg-star-dust-300"/>
+                { i + 1 === intervalCount &&
+                  <div className="flex items-end h-8 w-[1px] bg-star-dust-300 ml-[0.5px]">
+                    <span className="ml-2"> { msToLength((i + 1) * (length / intervalCount)) } </span>
+                  </div>
+                }
+              </div>
+            )
+          }) }
+        </div>
+        <Slider
+        maxWidth={maxWidth}
+        offset={offset}
+        setOffset={setOffset}
+        width={width}
+        setWidth={setWidth}
+        />
+      </div>
     </div>
   )
 }
@@ -184,18 +230,14 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }:
   );
 };
 
-export default Slider;
-
-
-
 export type TimeCursorProps = {
   position: number
 }
 
 export const TimeCursor = ({ position }: TimeCursorProps) => {
   return (
-    <div className="bg-science-blue-600 w-[1px] h-full absolute flex flex-col items-center" style={{ left: position }}>
-      <Mark/>
+    <div className="bg-science-blue-600 w-[1px] h-full absolute flex flex-col items-center z-50" style={{ left: position }}>
+      <Mark className="w-6 h-6"/>
     </div>
   )
 }
