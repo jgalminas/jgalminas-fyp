@@ -1,6 +1,7 @@
 import { cn } from "@fyp/class-name-helper";
 import { msToLength } from "@renderer/util/time";
-import { Dispatch, DragEvent, MouseEvent, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, DragEvent, SetStateAction, useRef, useState } from "react";
+import Mark from '@assets/icons/Mark.svg?react';
 
 export type EditorProps = {
   
@@ -12,12 +13,11 @@ export const Editor = ({  }: EditorProps) => {
   const scale = 1000;
 
   const [zoom, setZoom] = useState(100);
-
-  const intervalCount = Math.ceil(length / (scale * zoom));
-
   const [width, setWidth] = useState(120);
   const [offset, setOffset] = useState(0);
+  const [position, setPosition] = useState(200);
 
+  const intervalCount = Math.ceil(length / (scale * zoom));
   const maxWidth = (intervalCount + zoom) * intervalCount;
 
   // width to milis
@@ -25,22 +25,7 @@ export const Editor = ({  }: EditorProps) => {
 
   // console.log("w: ", (width / intervalCount / 10) * scale * zoom);
 
-  // console.log(width, width / (zoom / 100));
-
-
-  // TODO: fix zooming - at the moment it is not symmetrical
-  // const onZoomIn = () => {
-  //   const newZoom = Math.max(10, zoom - 10);
-  //   setZoom(newZoom);
-  //   const scaleFactor = newZoom / 100;
-  //   setWidth(initialWidth.current / scaleFactor);
-  //   // setWidth(prev => prev * (1 + (1 - newZoom / 100)));
-  // }
-
   // console.log("w", width, "mw", maxWidth, "z", zoom);
-
-  console.log("old", intervalCount);
-  
 
   const onZoomIn = () => {
     const newZoom = Math.max(10, zoom - 10);
@@ -63,8 +48,19 @@ const onZoomOut = () => {
   return (  
     <div className="w-full">
       
-      <div className="bg-woodsmoke-600 mt-64 px-5 pt-12">
-        <div className="overflow-x-auto flex flex-col">
+      <div className="bg-woodsmoke-600 mt-64">
+
+        <div className="py-2 flex border-y items-center justify-center text-star-dust-300 border-woodsmoke-200">
+          time
+        </div>
+
+        <div className="overflow-x-auto flex flex-col relative px-5">
+          <TimeCursor position={position}/>
+
+          <div className="py-5">
+            events
+          </div>
+
           <div className="flex text-star-dust-300 text-xs pb-3">
             { Array.from({ length: intervalCount }).map((_, i) => {
               return (
@@ -76,7 +72,7 @@ const onZoomOut = () => {
                   <span className="absolute left-1/2 top-0 min-h-4 min-w-[1px] bg-star-dust-300"/>
                   { i + 1 === intervalCount &&
                     <div className="flex items-end h-8 w-[1px] bg-star-dust-300 ml-[0.5px] relative">
-                      <span className="ml-2"> { msToLength((i + 1) * (length / intervalCount)) } </span>
+                      <span className="ml-2 pr-3"> { msToLength((i + 1) * (length / intervalCount)) } </span>
                     </div>
                   }
                 </div>
@@ -112,7 +108,6 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }:
 
   // TODO:
   // account for scroll position in move
-  // scale width with zoom
   // drag (maybe)
   // prevent cursor from chaging to red circle
 
@@ -190,3 +185,17 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }:
 };
 
 export default Slider;
+
+
+
+export type TimeCursorProps = {
+  position: number
+}
+
+export const TimeCursor = ({ position }: TimeCursorProps) => {
+  return (
+    <div className="bg-science-blue-600 w-[1px] h-full absolute flex flex-col items-center" style={{ left: position }}>
+      <Mark/>
+    </div>
+  )
+}
