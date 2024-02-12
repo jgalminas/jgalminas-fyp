@@ -37,13 +37,18 @@ export const Editor = ({  }: EditorProps) => {
   //   // setWidth(prev => prev * (1 + (1 - newZoom / 100)));
   // }
 
-  console.log("w", width, "mw", maxWidth, "z", zoom);
+  // console.log("w", width, "mw", maxWidth, "z", zoom);
+
+  console.log("old", intervalCount);
+  
 
   const onZoomIn = () => {
     const newZoom = Math.max(10, zoom - 10);
     const scaleFactor = newZoom / zoom;
     setZoom(newZoom);
-    const newWidth = width * scaleFactor;
+    const newWidth = width * (1 + (1 - (scaleFactor)));
+    const intervalCount = Math.ceil(length / (scale * newZoom));
+    const maxWidth = (intervalCount + newZoom) * intervalCount;
     setWidth(newWidth > maxWidth ? maxWidth : newWidth);
 }
 
