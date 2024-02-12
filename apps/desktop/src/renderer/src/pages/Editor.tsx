@@ -1,7 +1,7 @@
 import { cn } from "@fyp/class-name-helper";
 import { msToLength } from "@renderer/util/time";
 import { Dispatch, DragEvent, SetStateAction, useRef, useState } from "react";
-import Mark from '@assets/icons/Mark.svg?react';
+import TimeCursorHead from '@assets/icons/TimeCursorHead.svg?react';
 
 export type EditorProps = {
   
@@ -236,8 +236,8 @@ export type TimeCursorProps = {
 
 export const TimeCursor = ({ position }: TimeCursorProps) => {
   return (
-    <div className="bg-science-blue-600 w-[1px] h-full absolute flex flex-col items-center z-50" style={{ left: position }}>
-      <Mark className="w-6 h-6"/>
+    <div className="bg-science-blue-600 w-[2px] h-full absolute flex flex-col items-center z-50" style={{ left: position }}>
+      <TimeCursorHead className="w-6 h-6"/>
     </div>
   )
 }
