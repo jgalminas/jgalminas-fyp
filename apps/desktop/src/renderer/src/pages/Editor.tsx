@@ -2,6 +2,9 @@ import { cn } from "@fyp/class-name-helper";
 import { msToLength } from "@renderer/util/time";
 import { Dispatch, DragEvent, SetStateAction, useRef, useState } from "react";
 import TimeCursorHead from '@assets/icons/TimeCursorHead.svg?react';
+import Button from "@renderer/core/Button";
+import ZoomIn from "@assets/icons/ZoomIn.svg?react";
+import ZoomOut from "@assets/icons/ZoomOut.svg?react";
 
 export type EditorProps = {
   
@@ -16,7 +19,7 @@ export const Editor = ({  }: EditorProps) => {
   const scale = 1000;
 
   const [zoom, setZoom] = useState(100);
-  const [width, setWidth] = useState(120);
+  const [width, setWidth] = useState(112);
   const [offset, setOffset] = useState(0);
   const [position, setPosition] = useState(112);
 
@@ -24,6 +27,8 @@ export const Editor = ({  }: EditorProps) => {
   const maxWidth = (intervalCount + zoom) * intervalCount;
 
 
+  console.log(msToLength(pxToMs(width, maxWidth, length)));
+  
 
 
   const onZoomIn = () => {
@@ -34,15 +39,15 @@ export const Editor = ({  }: EditorProps) => {
     const intervalCount = Math.ceil(length / (scale * newZoom));
     const maxWidth = (intervalCount + newZoom) * intervalCount;
     setWidth(newWidth > maxWidth ? maxWidth : newWidth);
-}
+  }
 
-const onZoomOut = () => {
-    const newZoom = Math.min(300, zoom + 10);
-    const scaleFactor = newZoom / zoom;
-    setZoom(newZoom);
-    const newWidth = width / scaleFactor;
-    setWidth(Math.max(50, newWidth > maxWidth ? maxWidth : newWidth));
-}
+  const onZoomOut = () => {
+      const newZoom = Math.min(300, zoom + 10);
+      const scaleFactor = newZoom / zoom;
+      setZoom(newZoom);
+      const newWidth = width / scaleFactor;
+      setWidth(Math.max(50, newWidth > maxWidth ? maxWidth : newWidth));
+  }
 
   return (  
     <div className="w-full">
@@ -61,10 +66,10 @@ const onZoomOut = () => {
       setWidth={setWidth}
       zoom={zoom}
       length={length}
+      zoomIn={onZoomIn}
+      zoomOut={onZoomOut}
       />
 
-      <button onClick={onZoomIn}> zoom in </button>
-      <button onClick={onZoomOut}> zoom out </button>
     </div>
   )
 }
@@ -80,6 +85,8 @@ export type TimelineProps = {
   setWidth: Dispatch<SetStateAction<number>>,
   offset: number,
   setOffset: Dispatch<SetStateAction<number>>
+  zoomIn: () => void,
+  zoomOut: () => void
 }
 
 export const Timeline = ({
@@ -91,17 +98,30 @@ export const Timeline = ({
   setOffset,
   position,
   width,
-  length
+  length,
+  zoomIn,
+  zoomOut
 }: TimelineProps) => {
 
   return (
-    <div className="bg-woodsmoke-600 mt-64">
-      <div className="py-2 flex border-y items-center justify-center text-star-dust-300 border-woodsmoke-200">
-        <p className="text-sm">
+    <div className="bg-woodsmoke-600 select-none">
+      <div className="py-2 grid grid-cols-3 border-y items-center justify-between text-star-dust-300 border-woodsmoke-200 px-2 text-sm">
+        <p className="col-start-2 justify-self-center">
           <span className="font-medium"> { msToLength(pxToMs(position, maxWidth, length)) } </span>
           <span> / </span>
           { msToLength(length) }
         </p>
+        <div className="flex items-center justify-end gap-2">
+          <Button styleType="text" onClick={zoomIn}
+          className="p-1.5 hover:bg-woodsmoke-300">
+            <ZoomIn className="w-5 h-5"/>
+          </Button>
+          <p> { zoom }% </p>
+          <Button styleType="text" onClick={zoomOut}
+          className="p-1.5 hover:bg-woodsmoke-300">
+            <ZoomOut className="w-5 h-5"/>
+          </Button>
+        </div>
       </div>
 
       <div className="overflow-x-auto flex flex-col relative mx-5">
