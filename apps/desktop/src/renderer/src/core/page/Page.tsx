@@ -6,17 +6,18 @@ export type PageProps = {
   children?: ReactNode,
   pageClass?: string,
   contentClass?: string,
-  header?: ReactNode
+  header?: ReactNode,
+  className?: string
 }
 
-const Page = ({ pageClass, contentClass, children, header }: PageProps) => {
+const Page = ({ pageClass, contentClass, children, header, className }: PageProps) => {
 
   const headerComponent = header ? header : <DefaultHeader/>
 
   return (
     <Fragment>
       { headerComponent }
-      <div className="flex flex-col overflow-y-auto w-full px-5 scrollbar-stable">
+      <div className={cn("flex flex-col overflow-y-auto w-full px-5 scrollbar-stable", className)}>
         <div className={cn("w-full max-w-[60rem] self-center", pageClass)}>
           <div className={cn("flex flex-col gap-7", contentClass)}>
             { children }

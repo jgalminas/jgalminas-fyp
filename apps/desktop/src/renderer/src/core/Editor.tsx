@@ -5,6 +5,7 @@ import TimeCursorHead from '@assets/icons/TimeCursorHead.svg?react';
 import Button from "@renderer/core/Button";
 import ZoomIn from "@assets/icons/ZoomIn.svg?react";
 import ZoomOut from "@assets/icons/ZoomOut.svg?react";
+import { videoUrl } from "@renderer/util/video";
 
 export type EditorProps = {
   
@@ -52,8 +53,13 @@ export const Editor = ({  }: EditorProps) => {
   return (  
     <div className="w-full">
       
-      {/* <video /> */}
+      <div>
+        {/* <video className="aspect-video" src={videoUrl("6802422436", "recording")}/> */}
+      </div>
 
+      <div>
+        controls
+      </div>
       {/* control icon buttons */}
 
       <Timeline
@@ -105,21 +111,21 @@ export const Timeline = ({
 
   return (
     <div className="bg-woodsmoke-600 select-none">
-      <div className="py-2 grid grid-cols-3 border-y items-center justify-between text-star-dust-300 border-woodsmoke-200 px-2 text-sm">
+      <div className="grid grid-cols-3 border-y items-center justify-between text-star-dust-300 border-woodsmoke-200 px-2 py-0.5 text-sm">
         <p className="col-start-2 justify-self-center">
           <span className="font-medium"> { msToLength(pxToMs(position, maxWidth, length)) } </span>
           <span> / </span>
           { msToLength(length) }
         </p>
         <div className="flex items-center justify-end gap-2">
-          <Button styleType="text" onClick={zoomIn}
-          className="p-1.5 hover:bg-woodsmoke-300">
-            <ZoomIn className="w-5 h-5"/>
-          </Button>
-          <p> { zoom }% </p>
           <Button styleType="text" onClick={zoomOut}
           className="p-1.5 hover:bg-woodsmoke-300">
             <ZoomOut className="w-5 h-5"/>
+          </Button>
+          <p> { zoom }% </p>
+          <Button styleType="text" onClick={zoomIn}
+          className="p-1.5 hover:bg-woodsmoke-300">
+            <ZoomIn className="w-5 h-5"/>
           </Button>
         </div>
       </div>
