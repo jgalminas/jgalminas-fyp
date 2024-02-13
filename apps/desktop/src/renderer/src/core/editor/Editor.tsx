@@ -1,36 +1,41 @@
 import { cn } from "@fyp/class-name-helper";
 import { msToLength } from "@renderer/util/time";
-import { Dispatch, DragEvent, SetStateAction, useRef, useState } from "react";
+import { Dispatch, DragEvent, MouseEvent, SetStateAction, useRef, useState } from "react";
 import TimeCursorHead from '@assets/icons/TimeCursorHead.svg?react';
 import Button from "@renderer/core/Button";
 import ZoomIn from "@assets/icons/ZoomIn.svg?react";
 import ZoomOut from "@assets/icons/ZoomOut.svg?react";
-import { videoUrl } from "@renderer/util/video";
+import { useVideoDuration } from "./useVideoDuration";
+import FastForward from "@assets/icons/FastForward.svg?react";
+import Pause from "@assets/icons/Pause.svg?react";
+import Play from "@assets/icons/Play.svg?react";
+import Rewind from "@assets/icons/Rewind.svg?react";
+import RewindToStart from "@assets/icons/RewindToStart.svg?react";
+import ForwardToEnd from "@assets/icons/ForwardToEnd.svg?react";
+
 
 export type EditorProps = {
-  
+  videoSrc: string
 }
 
 const pxToMs = (px: number, maxWidth: number, length: number) => px * (length / maxWidth);
 const msToPx = (ms: number, maxWidth: number, length: number) => Math.ceil(ms * (maxWidth / length));
 
-export const Editor = ({  }: EditorProps) => {
+export const Editor = ({ videoSrc }: EditorProps) => {
 
-  const length = 1_200_000;
   const scale = 1000;
 
+  const [length, setLength] = useState(0);
   const [zoom, setZoom] = useState(100);
   const [width, setWidth] = useState(112);
   const [offset, setOffset] = useState(0);
-  const [position, setPosition] = useState(112);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const intervalCount = Math.ceil(length / (scale * zoom));
   const maxWidth = (intervalCount + zoom) * intervalCount;
 
-
-  console.log(msToLength(pxToMs(width, maxWidth, length)));
-  
-
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const onZoomIn = () => {
     const newZoom = Math.max(10, zoom - 10);
@@ -50,31 +55,128 @@ export const Editor = ({  }: EditorProps) => {
       setWidth(Math.max(50, newWidth > maxWidth ? maxWidth : newWidth));
   }
 
+  const onTimeUpdate = () => {
+    if (videoRef.current) {
+      setCurrentTime(msToPx(videoRef.current.currentTime * scale, maxWidth, length));
+    }
+  }
+
+  const play = () => videoRef.current?.play();
+  const pause = () => videoRef.current?.pause();
+
+  const fastForward = () => {
+    const video = videoRef.current;
+    if (video) {
+      if (video.currentTime + 15 >= length / scale) {
+        video.currentTime = length / scale;
+      } else {
+        video.currentTime += 15;
+      }
+    }
+  }
+
+  const rewindToEnd = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+    }
+  }
+
+  const forwardToEnd = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = length / scale;
+    }
+  }
+
+  const rewind = () => {
+    const video = videoRef.current;
+    if (video) {
+      if (video.currentTime - 15 < 0) {
+        video.currentTime = 0;
+      } else {
+        video.currentTime -= 15;
+      }
+    }
+  }
+
+  const updateCurrentTime = (px: number) => {
+    if (videoRef.current) {
+      setCurrentTime(px);
+      videoRef.current.currentTime = pxToMs(px, maxWidth, length) / scale;
+    }
+  }
+
+  useVideoDuration({
+    ref: videoRef,
+    setDuration: (num) => setLength(Math.ceil(num) * scale)
+  });
+
   return (  
-    <div className="w-full">
+    <div className="w-full grid grid-rows-[auto,1fr,auto,auto]">
+
+      <div className="flex justify-end p-5">
+        <Button>
+          Create Highlight
+        </Button>
+      </div>
       
-      <div>
-        {/* <video className="aspect-video" src={videoUrl("6802422436", "recording")}/> */}
+      <div className="relative w-full">
+        <video
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+        onTimeUpdate={onTimeUpdate} ref={videoRef}
+        src={videoSrc}
+        className="absolute top-0 left-0 w-full h-full"/>
       </div>
 
-      <div>
-        controls
-      </div>
-      {/* control icon buttons */}
+      <div className="flex items-center gap-1 justify-center p-5">
+        <Button styleType="text" onClick={rewindToEnd}
+        className="p-1.5 hover:bg-woodsmoke-300">
+          <RewindToStart className="w-5 h-5"/>
+        </Button>
+        <Button styleType="text" onClick={rewind}
+        className="p-1.5 hover:bg-woodsmoke-300">
+          <Rewind className="w-5 h-5"/>
+        </Button>
 
-      <Timeline
-      intervalCount={intervalCount}
-      maxWidth={maxWidth}
-      offset={offset}
-      position={position}
-      width={width}
-      setOffset={setOffset}
-      setWidth={setWidth}
-      zoom={zoom}
-      length={length}
-      zoomIn={onZoomIn}
-      zoomOut={onZoomOut}
-      />
+        { !isPlaying
+          ?
+          <Button styleType="text" onClick={play}
+          className="p-2 hover:bg-woodsmoke-300">
+            <Play className="w-4 h-4"/>
+          </Button>
+          :
+          <Button styleType="text" onClick={pause}
+          className="p-1.5 hover:bg-woodsmoke-300">
+            <Pause className="w-5 h-5"/>
+          </Button>
+        }
+
+        <Button styleType="text" onClick={fastForward}
+        className="p-1.5 hover:bg-woodsmoke-300">
+          <FastForward className="w-5 h-5"/>
+        </Button>
+        <Button styleType="text" onClick={forwardToEnd}
+        className="p-1.5 hover:bg-woodsmoke-300">
+          <ForwardToEnd className="w-5 h-5"/>
+        </Button>
+      </div>
+      
+      <div className="mt-auto w-full overflow-x-auto">
+        <Timeline
+        intervalCount={intervalCount}
+        maxWidth={maxWidth}
+        offset={offset}
+        position={currentTime}
+        width={width}
+        setOffset={setOffset}
+        setWidth={setWidth}
+        zoom={zoom}
+        length={length}
+        zoomIn={onZoomIn}
+        zoomOut={onZoomOut}
+        updateCurrentTime={updateCurrentTime}
+        />
+      </div>
 
     </div>
   )
@@ -91,8 +193,10 @@ export type TimelineProps = {
   setWidth: Dispatch<SetStateAction<number>>,
   offset: number,
   setOffset: Dispatch<SetStateAction<number>>
+  updateCurrentTime: (px: number) => void,
   zoomIn: () => void,
-  zoomOut: () => void
+  zoomOut: () => void,
+  className?: string
 }
 
 export const Timeline = ({
@@ -106,16 +210,27 @@ export const Timeline = ({
   width,
   length,
   zoomIn,
-  zoomOut
+  zoomOut,
+  className,
+  updateCurrentTime
 }: TimelineProps) => {
 
+  const timelineRef = useRef<HTMLDivElement>(null);
+
+  const onTimelineClick = (e: MouseEvent<HTMLDivElement>) => {
+    const timeline = timelineRef.current;
+    if (timeline) {
+      updateCurrentTime(e.clientX - timeline.getBoundingClientRect().left);
+    }
+  }
+
   return (
-    <div className="bg-woodsmoke-600 select-none">
+    <div className={cn("bg-woodsmoke-600 select-none", className)}>
       <div className="grid grid-cols-3 border-y items-center justify-between text-star-dust-300 border-woodsmoke-200 px-2 py-0.5 text-sm">
         <p className="col-start-2 justify-self-center">
           <span className="font-medium"> { msToLength(pxToMs(position, maxWidth, length)) } </span>
-          <span> / </span>
-          { msToLength(length) }
+          <span className="text-star-dust-400 mx-1"> / </span>
+          <span className="text-star-dust-400"> { msToLength(length) } </span>
         </p>
         <div className="flex items-center justify-end gap-2">
           <Button styleType="text" onClick={zoomOut}
@@ -130,14 +245,14 @@ export const Timeline = ({
         </div>
       </div>
 
-      <div className="overflow-x-auto flex flex-col relative mx-5">
-        <TimeCursor position={position}/>
+      <div className="overflow-x-auto flex flex-col relative px-5">
+        <TimeCursor offset={timelineRef.current?.offsetLeft ?? 0} position={position}/>
 
-        <div className="py-5">
-          events
+        <div className="py-5 text-star-dust-300 w-full" onClick={onTimelineClick}>
+          events will go here
         </div>
 
-        <div className="flex text-star-dust-300 text-xs pb-3">
+        <div ref={timelineRef} className="flex text-star-dust-300 text-xs pb-3" onClick={onTimelineClick}>
           { Array.from({ length: intervalCount }).map((_, i) => {
             return (
               <div key={i} style={{ minWidth: intervalCount + zoom }}
@@ -148,7 +263,7 @@ export const Timeline = ({
                 <span className="absolute left-1/2 top-0 min-h-4 min-w-[1px] bg-star-dust-300"/>
                 { i + 1 === intervalCount &&
                   <div className="flex items-end h-8 w-[1px] bg-star-dust-300 ml-[0.5px]">
-                    <span className="ml-2"> { msToLength((i + 1) * (length / intervalCount)) } </span>
+                    <span className="ml-2 pr-3"> { msToLength((i + 1) * (length / intervalCount)) } </span>
                   </div>
                 }
               </div>
@@ -161,6 +276,7 @@ export const Timeline = ({
         setOffset={setOffset}
         width={width}
         setWidth={setWidth}
+        onTimelineClick={onTimelineClick}
         />
       </div>
     </div>
@@ -173,10 +289,11 @@ type SliderProps = {
   width: number,
   setWidth: Dispatch<SetStateAction<number>>,
   offset: number,
-  setOffset: Dispatch<SetStateAction<number>>
+  setOffset: Dispatch<SetStateAction<number>>,
+  onTimelineClick: (e: MouseEvent<HTMLDivElement>) => void
 }
 
-const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }: SliderProps) => {
+const Slider = ({ maxWidth, width, setWidth, offset, setOffset, onTimelineClick, minRange = 50 }: SliderProps) => {
 
   // TODO:
   // account for scroll position in move
@@ -228,7 +345,7 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }:
   }
 
   return (
-    <div className="w-full bg-woodsmoke-800 rounded-lg mb-2 select-none" style={{ width: maxWidth }}>
+    <div className="w-full bg-woodsmoke-800 rounded-lg mb-2 select-none" style={{ width: maxWidth }} onClick={onTimelineClick}>
       <div style={{ width: width, marginLeft: offset, maxWidth: maxWidth - offset }}
       className="flex h-12 bg-science-blue-600 bg-opacity-15 border-2 rounded-lg border-science-blue-600">
         <div
@@ -257,12 +374,13 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }:
 };
 
 export type TimeCursorProps = {
-  position: number
+  position: number,
+  offset: number
 }
 
-export const TimeCursor = ({ position }: TimeCursorProps) => {
+export const TimeCursor = ({ position, offset }: TimeCursorProps) => {
   return (
-    <div className="bg-science-blue-600 w-[2px] h-full absolute flex flex-col items-center z-50" style={{ left: position }}>
+    <div className="bg-science-blue-600 w-[2px] h-full absolute flex flex-col items-center z-50" style={{ left: position + offset }}>
       <TimeCursorHead className="w-6 h-6"/>
     </div>
   )

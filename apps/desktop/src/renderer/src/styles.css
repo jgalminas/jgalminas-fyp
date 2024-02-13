@@ -126,3 +126,9 @@
 .scrollbar-rounded::-webkit-scrollbar-thumb {
   @apply rounded-md;
 }
+
+.editor-video {
+  @media (min-height: 600px) {
+    max-height: 400px;
+  }
+}
