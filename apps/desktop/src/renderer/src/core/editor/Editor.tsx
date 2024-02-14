@@ -5,14 +5,14 @@ import TimeCursorHead from '@assets/icons/TimeCursorHead.svg?react';
 import Button from "@renderer/core/Button";
 import ZoomIn from "@assets/icons/ZoomIn.svg?react";
 import ZoomOut from "@assets/icons/ZoomOut.svg?react";
-import { useVideoDuration } from "./useVideoDuration";
+import { useVideoDuration } from "./hooks/useVideoDuration";
 import FastForward from "@assets/icons/FastForward.svg?react";
 import Pause from "@assets/icons/Pause.svg?react";
 import Play from "@assets/icons/Play.svg?react";
 import Rewind from "@assets/icons/Rewind.svg?react";
 import RewindToStart from "@assets/icons/RewindToStart.svg?react";
 import ForwardToEnd from "@assets/icons/ForwardToEnd.svg?react";
-import { useKeyPress } from "./useKeyPress";
+import { useKeyPress } from "./hooks/useKeyPress";
 
 
 export type EditorProps = {
