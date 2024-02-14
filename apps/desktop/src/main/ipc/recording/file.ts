@@ -34,6 +34,55 @@ export const getMetadata = (filePath: string): Promise<ffmpeg.FfprobeData> => {
   })
 }
 
+const createHighlight = async({
+  recordingPath,
+  outputPath,
+  start,
+  name,
+  duration
+}: {
+  recordingPath: string,
+  outputPath: string,
+  start: number,
+  name: string,
+  duration: number
+}): Promise<{
+  id: string,
+  message: 'OK',
+  path: string
+}> => {
+  return new Promise(async(resolve, reject) => {
+    const filePath = path.join(outputPath, `${name}.${VIDEO_FORMAT}`);
+    ffmpeg(recordingPath)
+      .setStartTime(start)
+      .setDuration(duration)
+      .outputOptions('-c:v', 'copy', '-r', settingsManager.getSettings()?.frameRate.toString() ?? defaultSettings.frameRate.toString())
+      .output(filePath)
+      .on('end', async() => {
+        const thumbnailPath = await captureThumbnail(filePath);
+
+        try {
+          const data = await readFile(thumbnailPath, 'base64');
+          resolve({
+            id: name,
+            message: 'OK',
+            path: `data:image/jpeg;base64,${data}`
+          });
+        } catch {
+          reject({
+            message: 'VIDEO_NOT_FOUND'
+          });
+        }
+
+      })
+      .on('error', (err) => {
+        console.log(err);
+        reject();
+      })
+      .run()
+  })
+}
+
 export default () => {
 
   ipcMain.handle(FileIPC.GetThumbnail, async(_, id: string, type: 'recordings' | 'highlights') => {
@@ -77,43 +126,6 @@ export default () => {
       await mkdir(outputPath);
     }
 
-    const create = async(start: number, name: string, duration: number): Promise<{
-      id: string,
-      message: 'OK',
-      path: string
-    }> => {
-      return new Promise(async(resolve, reject) => {
-        const filePath = path.join(outputPath, `${name}.${VIDEO_FORMAT}`);
-        ffmpeg(recordingPath)
-          .setStartTime(start)
-          .setDuration(duration)
-          .outputOptions('-c:v', 'copy', '-r', settingsManager.getSettings()?.frameRate.toString() ?? defaultSettings.frameRate.toString())
-          .output(filePath)
-          .on('end', async() => {
-            const thumbnailPath = await captureThumbnail(filePath);
-
-            try {
-              const data = await readFile(thumbnailPath, 'base64');
-              resolve({
-                id: name,
-                message: 'OK',
-                path: `data:image/jpeg;base64,${data}`
-              });
-            } catch {
-              reject({
-                message: 'VIDEO_NOT_FOUND'
-              });
-            }
- 
-          })
-          .on('error', (err) => {
-            console.log(err);
-            reject();
-          })
-          .run()
-      })
-    }
-
     const files: string[] = [];
 
     const highlightPromises = timeframes.map((tf) => {
@@ -121,7 +133,14 @@ export default () => {
       const duration = (tf.finish - tf.start) / 1000;
       const name = new ObjectId().toString();
       files.push(name);
-      return create(start, name, duration);
+
+      return createHighlight({
+        recordingPath,
+        outputPath,
+        duration,
+        start,
+        name
+      });
     })
 
     const highlightResults = await Promise.all(highlightPromises);
@@ -168,4 +187,69 @@ export default () => {
 
   })
   
+  ipcMain.handle(FileIPC.CreateHighlight, async(_, { timeframe, recording }: {
+    timeframe: HighlightTimeframe,
+    recording: IRecording
+  }
+  ) => {
+
+    const recordingPath = path.join(app.getPath('videos'), VIDEO_DIRECTORY, `${recording.gameId.toString()}.${VIDEO_FORMAT}`);
+    const outputPath = path.join(app.getPath('videos'), VIDEO_DIRECTORY, HIGHLIGHTS_SUBDIRECTORY);
+
+    if (!await fileExists(outputPath)) {
+      await mkdir(outputPath);
+    }
+
+    const start = (timeframe.start / 1000);
+    const duration = (timeframe.finish - timeframe.start) / 1000;
+    const name = new ObjectId().toString();
+
+    const thumbnail = await createHighlight({
+      recordingPath,
+      outputPath,
+      duration,
+      start,
+      name
+    });
+
+    const metadata = await getMetadata(path.join(outputPath, `${name}.${VIDEO_FORMAT}`));
+
+    const res = await new MainRequestBuilder()
+    .route('/v1/highlight')
+    .method('POST')
+    .headers({
+      Cookie: await getApiCookieString()
+    })
+    .body({
+      match: recording.match,
+      fileId: name,
+      length: metadata.format.duration,
+      champion: recording.champion,
+      position: recording.position,
+      size: metadata.format.size,
+      queueId: recording.queueId,
+      tags: timeframe.tags
+    })
+    .fetch()
+
+    if (res.ok) {
+      const highlight = await res.json();
+      mainWindow?.webContents.send(HighlightIPC.Created, {
+        highlight: highlight,
+        thumbnail: thumbnail
+      });
+
+      return {
+        status: "OK",
+        message: "Success!"
+      }
+    } else {
+      return {
+        status: "Error",
+        message: "Failed to create."
+      }
+    }
+
+  })
+
 }

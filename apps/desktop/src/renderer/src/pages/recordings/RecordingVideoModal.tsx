@@ -39,7 +39,7 @@ const RecordingVideoModal = () => {
           <p className="text-star-dust-400"> { length(data.length) } </p>
         </div>
         <div className="flex gap-3 ml-auto">
-          <LinkButton to='/'> Create Highlight </LinkButton>
+          <LinkButton to={`/editor/${data.match}/${data._id}`}> Create Highlight </LinkButton>
           <LinkButton className="hover:bg-woodsmoke-200" to={`/matches/${data.match}`} type='text'> View Game </LinkButton>
         </div>
       </div>

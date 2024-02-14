@@ -1,6 +1,6 @@
 import { cn } from "@fyp/class-name-helper";
 import { secToLength } from "@renderer/util/time";
-import { Dispatch, DragEvent, MouseEvent, SetStateAction, useRef, useState } from "react";
+import { Dispatch, DragEvent, MouseEvent, SetStateAction, useEffect, useRef, useState } from "react";
 import TimeCursorHead from '@assets/icons/TimeCursorHead.svg?react';
 import Button from "@renderer/core/Button";
 import ZoomIn from "@assets/icons/ZoomIn.svg?react";
@@ -13,32 +13,52 @@ import Rewind from "@assets/icons/Rewind.svg?react";
 import RewindToStart from "@assets/icons/RewindToStart.svg?react";
 import ForwardToEnd from "@assets/icons/ForwardToEnd.svg?react";
 import { useKeyPress } from "./hooks/useKeyPress";
+import { IRecording } from "@fyp/types";
+import { videoUrl } from "@renderer/util/video";
+import Modal from "../video/Modal";
+import Loading from "../Loading";
+import CheckCircle from "@assets/icons/CheckCircle.svg?react";
 
-
-export type EditorProps = {
-  videoSrc: string
-}
 
 const pxToSec = (px: number, maxWidth: number, length: number) => px * (length / maxWidth);
 const secToPx = (sec: number, maxWidth: number, length: number) => Math.round(sec * (maxWidth / length));
 
-export const Editor = ({ videoSrc }: EditorProps) => {
+export type EditorProps = {
+  recording: IRecording & { match: string }
+}
+
+export const Editor = ({ recording }: EditorProps) => {
 
   const MAX_ZOOM = 200;
   const MIN_ZOOM = 50;
 
-  const [length, setLength] = useState(0);
-  const [zoom, setZoom] = useState(100);
-  const [width, setWidth] = useState(112);
-  const [offset, setOffset] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [length, setLength] = useState<number>(0);
+  const [zoom, setZoom] = useState<number>(100);
+  const [width, setWidth] = useState<number>(112);
+  const [offset, setOffset] = useState<number>(0);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
   const intervalCount = Math.ceil(length / invertZoom(zoom));
   const intervalWidth = intervalCount + invertZoom(zoom);  
   const maxWidth = intervalWidth * intervalCount;
 
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  const create = async() => {
+    const start = pxToSec(offset, maxWidth, length) * 1000;
+    const finish = start + pxToSec(width, maxWidth, length) * 1000;
+    return await window.api.file.createHighlight({
+      recording,
+      timeframe: {
+        frame: 0,
+        start,
+        finish,
+        tags: []
+      }
+    })
+  };
 
   const scalePx = (zoom: number, value: number) => {
     const newIntervalCount = Math.ceil(length / invertZoom(zoom));
@@ -142,7 +162,7 @@ export const Editor = ({ videoSrc }: EditorProps) => {
     <div className="w-full grid grid-rows-[auto,1fr,auto,auto]">
 
       <div className="flex justify-end p-5">
-        <Button>
+        <Button onClick={() => setModalOpen(true)}>
           Create Highlight
         </Button>
       </div>
@@ -152,7 +172,7 @@ export const Editor = ({ videoSrc }: EditorProps) => {
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onTimeUpdate={onTimeUpdate} ref={videoRef}
-        src={videoSrc}
+        src={videoUrl(recording.gameId, "recording")}
         className="absolute top-0 left-0 w-full h-full"/>
       </div>
 
@@ -207,10 +227,60 @@ export const Editor = ({ videoSrc }: EditorProps) => {
         />
       </div>
 
+      { isModalOpen &&
+        <CreateHighlightModal
+        onCreate={create}
+        onClose={() => setModalOpen(false)}
+        />
+      }
+
     </div>
   )
 }
 
+
+export type CreateHighlightModalProps = {
+  onClose: () => void,
+  onCreate: () => ReturnType<typeof window.api.file.createHighlight>
+}
+
+export const CreateHighlightModal = ({ onClose, onCreate }: CreateHighlightModalProps) => {
+
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [result, setResult] = useState<ReturnType<typeof onCreate> | undefined>(undefined);
+
+  useEffect(() => {
+    (async() => {
+      const result = await onCreate();
+      setIsLoading(false);
+    })();
+  }, [])
+
+  return (
+    <Modal clickOutside={false}
+    className="w-fit h-fit p-5 rounded-lg min-w-64 min-h-64 flex items-center justify-center flex-col">
+      {
+        isLoading
+        ?
+        <div className="flex flex-col items-center mt-4">
+          <Loading/>
+          <p className="text-star-dust-200 mt-6 mb-1"> Creating Highlight </p>
+          <p className="text-star-dust-300 text-sm mb-4 max-w-48 text-center"> This should only take a few seconds </p>
+        </div>
+        :
+        <div className="flex flex-col items-center gap-3">
+          <div className="bg-green-500 rounded-lg bg-opacity-15 text-green-600 p-2">
+            <CheckCircle className="w-14 h-14"/>
+          </div>
+          <p className="text-star-dust-200 mb-2"> Success! </p>
+          <Button styleType="text" onClick={onClose}>
+              Close
+          </Button>
+        </div>
+      }
+    </Modal>
+  )
+}
 
 export type TimelineProps = {
   intervalWidth: number,

@@ -89,4 +89,11 @@ router.get('/:id/gold', requireAuth, async(req, res) => {
   res.send(gold);
 })
 
+router.get('/:id/events', requireAuth, async(req, res) => {
+
+  const events = await MatchRepository.getEvents(req.params.id, req.user?.summoner?.puuid as string);
+  res.send(events);
+})
+
+
 export default router;

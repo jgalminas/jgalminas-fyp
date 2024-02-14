@@ -13,3 +13,8 @@ export type MatchWithGoldFrames = Omit<IMatch, 'frames' | 'bans'> & {
     timestamp: number
   }[]
 }
+
+export type AggregatedEvent = {
+  type: 'KILL' | 'ASSIT' | 'DEATH',
+  timestamp: number
+}
