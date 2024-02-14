@@ -12,6 +12,7 @@ import Play from "@assets/icons/Play.svg?react";
 import Rewind from "@assets/icons/Rewind.svg?react";
 import RewindToStart from "@assets/icons/RewindToStart.svg?react";
 import ForwardToEnd from "@assets/icons/ForwardToEnd.svg?react";
+import { useKeyPress } from "./useKeyPress";
 
 
 export type EditorProps = {
@@ -129,6 +130,12 @@ export const Editor = ({ videoSrc }: EditorProps) => {
   useVideoDuration({
     ref: videoRef,
     setDuration: (num) => setLength(Math.ceil(num))
+  });
+
+  useKeyPress({
+    key: "space",
+    callback: () => isPlaying ? pause() : play(),
+    deps: [isPlaying]
   });
 
   return (  
