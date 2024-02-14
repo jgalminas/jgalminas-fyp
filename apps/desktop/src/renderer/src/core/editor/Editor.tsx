@@ -1,5 +1,5 @@
 import { cn } from "@fyp/class-name-helper";
-import { msToLength } from "@renderer/util/time";
+import { secToLength } from "@renderer/util/time";
 import { Dispatch, DragEvent, MouseEvent, SetStateAction, useRef, useState } from "react";
 import TimeCursorHead from '@assets/icons/TimeCursorHead.svg?react';
 import Button from "@renderer/core/Button";
@@ -18,12 +18,13 @@ export type EditorProps = {
   videoSrc: string
 }
 
-const pxToMs = (px: number, maxWidth: number, length: number) => px * (length / maxWidth);
-const msToPx = (ms: number, maxWidth: number, length: number) => Math.ceil(ms * (maxWidth / length));
+const pxToSec = (px: number, maxWidth: number, length: number) => px * (length / maxWidth);
+const secToPx = (sec: number, maxWidth: number, length: number) => Math.round(sec * (maxWidth / length));
 
 export const Editor = ({ videoSrc }: EditorProps) => {
 
-  const scale = 1000;
+  const MAX_ZOOM = 200;
+  const MIN_ZOOM = 50;
 
   const [length, setLength] = useState(0);
   const [zoom, setZoom] = useState(100);
@@ -32,32 +33,42 @@ export const Editor = ({ videoSrc }: EditorProps) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const intervalCount = Math.ceil(length / (scale * zoom));
-  const maxWidth = (intervalCount + zoom) * intervalCount;
+  const intervalCount = Math.ceil(length / invertZoom(zoom));
+  const intervalWidth = intervalCount + invertZoom(zoom);  
+  const maxWidth = intervalWidth * intervalCount;
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  const scalePx = (zoom: number, value: number) => {
+    const newIntervalCount = Math.ceil(length / invertZoom(zoom));
+    const newIntervalWidth = newIntervalCount + invertZoom(zoom);
+    const newMaxWidth = newIntervalWidth * newIntervalCount;
+    const scale = newMaxWidth / maxWidth;
+    const newWidth = Math.round(value * scale);
+    return [newWidth, newMaxWidth];
+  }
+
   const onZoomIn = () => {
-    const newZoom = Math.max(10, zoom - 10);
-    const scaleFactor = newZoom / zoom;
+    const newZoom = Math.min(MAX_ZOOM, zoom + 10);
+    const [newWidth, newMaxWidth] = scalePx(newZoom, width);
+    const [newOffset] = scalePx(newZoom, offset);
+    setOffset(newOffset);
     setZoom(newZoom);
-    const newWidth = width * (1 + (1 - (scaleFactor)));
-    const intervalCount = Math.ceil(length / (scale * newZoom));
-    const maxWidth = (intervalCount + newZoom) * intervalCount;
-    setWidth(newWidth > maxWidth ? maxWidth : newWidth);
+    setWidth(newWidth > newMaxWidth ? newMaxWidth : newWidth);
   }
 
   const onZoomOut = () => {
-      const newZoom = Math.min(300, zoom + 10);
-      const scaleFactor = newZoom / zoom;
-      setZoom(newZoom);
-      const newWidth = width / scaleFactor;
-      setWidth(Math.max(50, newWidth > maxWidth ? maxWidth : newWidth));
+    const newZoom = Math.max(MIN_ZOOM, zoom - 10);
+    const [newWidth, newMaxWidth] = scalePx(newZoom, width);
+    const [newOffset] = scalePx(newZoom, offset);
+    setOffset(newOffset);
+    setZoom(newZoom);
+    setWidth(Math.max(50, newWidth > newMaxWidth ? newMaxWidth : newWidth));
   }
 
   const onTimeUpdate = () => {
     if (videoRef.current) {
-      setCurrentTime(msToPx(videoRef.current.currentTime * scale, maxWidth, length));
+      setCurrentTime(secToPx(videoRef.current.currentTime, maxWidth, length));
     }
   }
 
@@ -67,8 +78,8 @@ export const Editor = ({ videoSrc }: EditorProps) => {
   const fastForward = () => {
     const video = videoRef.current;
     if (video) {
-      if (video.currentTime + 15 >= length / scale) {
-        video.currentTime = length / scale;
+      if (video.currentTime + 15 >= length) {
+        video.currentTime = length;
       } else {
         video.currentTime += 15;
       }
@@ -83,7 +94,7 @@ export const Editor = ({ videoSrc }: EditorProps) => {
 
   const forwardToEnd = () => {
     if (videoRef.current) {
-      videoRef.current.currentTime = length / scale;
+      videoRef.current.currentTime = length;
     }
   }
 
@@ -98,16 +109,26 @@ export const Editor = ({ videoSrc }: EditorProps) => {
     }
   }
 
+  function invertZoom(num: number) {
+    if (num === MIN_ZOOM) {
+      return MAX_ZOOM;
+    } else if (num === MAX_ZOOM) {
+      return MIN_ZOOM - 40;
+    } else {
+      return MAX_ZOOM + 10 - num;
+    }
+  }
+
   const updateCurrentTime = (px: number) => {
     if (videoRef.current) {
       setCurrentTime(px);
-      videoRef.current.currentTime = pxToMs(px, maxWidth, length) / scale;
+      videoRef.current.currentTime = pxToSec(px, maxWidth, length);
     }
   }
 
   useVideoDuration({
     ref: videoRef,
-    setDuration: (num) => setLength(Math.ceil(num) * scale)
+    setDuration: (num) => setLength(Math.ceil(num))
   });
 
   return (  
@@ -163,6 +184,7 @@ export const Editor = ({ videoSrc }: EditorProps) => {
       
       <div className="mt-auto w-full overflow-x-auto">
         <Timeline
+        intervalWidth={intervalWidth}
         intervalCount={intervalCount}
         maxWidth={maxWidth}
         offset={offset}
@@ -184,6 +206,7 @@ export const Editor = ({ videoSrc }: EditorProps) => {
 
 
 export type TimelineProps = {
+  intervalWidth: number,
   length: number,
   position: number,
   width: number,
@@ -201,6 +224,7 @@ export type TimelineProps = {
 
 export const Timeline = ({
   maxWidth,
+  intervalWidth,
   zoom,
   intervalCount,
   setWidth,
@@ -228,9 +252,9 @@ export const Timeline = ({
     <div className={cn("bg-woodsmoke-600 select-none", className)}>
       <div className="grid grid-cols-3 border-y items-center justify-between text-star-dust-300 border-woodsmoke-200 px-2 py-0.5 text-sm">
         <p className="col-start-2 justify-self-center">
-          <span className="font-medium"> { msToLength(pxToMs(position, maxWidth, length)) } </span>
+          <span className="font-medium"> { secToLength(pxToSec(position, maxWidth, length)) } </span>
           <span className="text-star-dust-400 mx-1"> / </span>
-          <span className="text-star-dust-400"> { msToLength(length) } </span>
+          <span className="text-star-dust-400"> { secToLength(length) } </span>
         </p>
         <div className="flex items-center justify-end gap-2">
           <Button styleType="text" onClick={zoomOut}
@@ -255,15 +279,15 @@ export const Timeline = ({
         <div ref={timelineRef} className="flex text-star-dust-300 text-xs pb-3" onClick={onTimelineClick}>
           { Array.from({ length: intervalCount }).map((_, i) => {
             return (
-              <div key={i} style={{ minWidth: intervalCount + zoom }}
+              <div key={i} style={{ minWidth: intervalWidth }}
               className="relative flex justify-between">
                 <div className="flex items-end h-8 w-[1px] bg-star-dust-300 ml-[0.5px]">
-                  <span className="ml-2"> { msToLength(i * (length / intervalCount)) } </span>
+                  <span className="ml-2"> { secToLength(i * (length / intervalCount)) } </span>
                 </div>
                 <span className="absolute left-1/2 top-0 min-h-4 min-w-[1px] bg-star-dust-300"/>
                 { i + 1 === intervalCount &&
                   <div className="flex items-end h-8 w-[1px] bg-star-dust-300 ml-[0.5px]">
-                    <span className="ml-2 pr-3"> { msToLength((i + 1) * (length / intervalCount)) } </span>
+                    <span className="ml-2 pr-3"> { secToLength((i + 1) * (length / intervalCount)) } </span>
                   </div>
                 }
               </div>

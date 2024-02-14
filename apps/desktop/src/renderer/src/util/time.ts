@@ -54,12 +54,22 @@ export const length = (num: number) => {
   }
 
 export const msToLength = (milliseconds: number): string => {
-const totalSeconds = Math.floor(milliseconds / 1000);
-const minutes = Math.floor(totalSeconds / 60);
-const seconds = totalSeconds % 60;
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
 
-const formattedMinutes = String(minutes).padStart(2, '0');
-const formattedSeconds = String(seconds).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
 
-return `${formattedMinutes}:${formattedSeconds}`;
+    return `${formattedMinutes}:${formattedSeconds}`;
+}
+
+export const secToLength = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const totalSecs = Math.floor(seconds % 60);
+
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(totalSecs).padStart(2, '0');
+
+    return `${formattedMinutes}:${formattedSeconds}`;
 }
