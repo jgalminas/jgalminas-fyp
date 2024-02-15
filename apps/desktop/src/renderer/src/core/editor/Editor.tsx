@@ -1,6 +1,6 @@
 import { cn } from "@fyp/class-name-helper";
 import { secToLength } from "@renderer/util/time";
-import { Dispatch, DragEvent, MouseEvent, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, DragEvent, MouseEvent, SetStateAction, useRef, useState } from "react";
 import TimeCursorHead from '@assets/icons/TimeCursorHead.svg?react';
 import Button from "@renderer/core/Button";
 import ZoomIn from "@assets/icons/ZoomIn.svg?react";
@@ -39,6 +39,7 @@ export const Editor = ({ recording }: EditorProps) => {
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const [isCreating, setIsCreating] = useState<boolean>(false);
 
   const intervalCount = Math.ceil(length / invertZoom(zoom));
   const intervalWidth = intervalCount + invertZoom(zoom);  
@@ -47,9 +48,12 @@ export const Editor = ({ recording }: EditorProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const create = async() => {
+    setIsCreating(true);
+    setModalOpen(true);
     const start = pxToSec(offset, maxWidth, length) * 1000;
     const finish = start + pxToSec(width, maxWidth, length) * 1000;
-    return await window.api.file.createHighlight({
+  
+    await window.api.file.createHighlight({
       recording,
       timeframe: {
         frame: 0,
@@ -58,6 +62,8 @@ export const Editor = ({ recording }: EditorProps) => {
         tags: []
       }
     })
+
+    setIsCreating(false);
   };
 
   const scalePx = (zoom: number, value: number) => {
@@ -162,7 +168,7 @@ export const Editor = ({ recording }: EditorProps) => {
     <div className="w-full grid grid-rows-[auto,1fr,auto,auto]">
 
       <div className="flex justify-end p-5">
-        <Button onClick={() => setModalOpen(true)}>
+        <Button onClick={create}>
           Create Highlight
         </Button>
       </div>
@@ -229,7 +235,7 @@ export const Editor = ({ recording }: EditorProps) => {
 
       { isModalOpen &&
         <CreateHighlightModal
-        onCreate={create}
+        isLoading={isCreating}
         onClose={() => setModalOpen(false)}
         />
       }
@@ -240,22 +246,11 @@ export const Editor = ({ recording }: EditorProps) => {
 
 
 export type CreateHighlightModalProps = {
-  onClose: () => void,
-  onCreate: () => ReturnType<typeof window.api.file.createHighlight>
+  isLoading: boolean,
+  onClose: () => void
 }
 
-export const CreateHighlightModal = ({ onClose, onCreate }: CreateHighlightModalProps) => {
-
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [result, setResult] = useState<ReturnType<typeof onCreate> | undefined>(undefined);
-
-  useEffect(() => {
-    (async() => {
-      const result = await onCreate();
-      setIsLoading(false);
-    })();
-  }, [])
-
+export const CreateHighlightModal = ({ isLoading, onClose }: CreateHighlightModalProps) => {
   return (
     <Modal clickOutside={false}
     className="w-fit h-fit p-5 rounded-lg min-w-64 min-h-64 flex items-center justify-center flex-col">
