@@ -1,5 +1,5 @@
-import { apiEnvSchema } from '@fyp/env'; 
+import { serverEnvSchema } from '@fyp/env'; 
 
-const env = apiEnvSchema.parse(process.env);
+const env = serverEnvSchema.parse(process.env);
 
 export default env;
