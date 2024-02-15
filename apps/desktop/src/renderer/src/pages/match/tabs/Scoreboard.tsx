@@ -1,8 +1,6 @@
 import { useOutletContext } from "react-router";
 import ScoreboardTable from "../components/ScoreboardTable";
 import { IParticipant, Match } from "@fyp/types";
-import { getPlayer } from "@renderer/util/match";
-import { Session, useAuth } from "@renderer/auth/AuthContext";
 import BarChart from "../components/BarChart";
 import RoundImage from "@renderer/core/RoundImage";
 import { Asset } from "@renderer/util/asset";
@@ -11,9 +9,6 @@ import { cn } from "@fyp/class-name-helper";
 const ScoreBoard = () => {
 
   const { match } = useOutletContext<{ match: Match }>();
-  const { session } = useAuth();
-
-  const user = getPlayer(match, session as Session); // TODO: for champion bg
 
   const damage = match.participantStats.map((value) => {
     const participant = match.participants.find((p) => p.participantId === value.participantId) as IParticipant;

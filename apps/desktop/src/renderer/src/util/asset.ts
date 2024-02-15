@@ -1,4 +1,5 @@
 import { SummonerSpell } from "@fyp/types";
+import env from "@root/env";
 
 export const PATCH = '14.1.1';
 export const BASE_CDN = 'https://ddragon.leagueoflegends.com/cdn';
@@ -100,5 +101,6 @@ export const Asset = {
         return '';
     }
   },
-  profileIcon: (id: number) => `${BASE_CDN}/${PATCH}/img/profileicon/${id}.png`
+  profileIcon: (id: number) => `${BASE_CDN}/${PATCH}/img/profileicon/${id}.png`,
+  splash: (champion: string) => `${env.RENDERER_VITE_CDN_URL}/splash/${champion}.jpg`
 };

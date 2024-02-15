@@ -132,3 +132,10 @@
     max-height: 400px;
   }
 }
+
+.splash-mask {
+  mask-size: 100%;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  mask-image: url("../public/images/splash_mask.svg");
+}

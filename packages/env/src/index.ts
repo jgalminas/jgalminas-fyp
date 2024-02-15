@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const webEnvSchema = z.object({
   // URLS
+  RENDERER_VITE_CDN_URL: z.string(),
   RENDERER_VITE_PORT: z.string(),
   RENDERER_VITE_APP_URL: z.string(),
   RENDERER_VITE_API_URL: z.string(),
