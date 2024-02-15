@@ -1,4 +1,4 @@
-import { MatchWithGoldFrames, IEvent, IFrame, IMatch, IParticipant, IParticipantStats, Match as RMatch } from "@fyp/types";
+import { MatchWithGoldFrames, IEvent, IFrame, IMatch, IParticipant, IParticipantStats, Match as RMatch, AggregatedEvent } from "@fyp/types";
 import { Types } from 'mongoose';
 import { db } from "../db";
 import { Event } from "../schema/event";
@@ -376,5 +376,141 @@ export const getGoldFrames = async(id: string) => {
     return result[0];
   } else {
     return null;
+  }
+}
+
+export const getEvents = async(id: string, puuid: string) => {
+
+  const result = await Match.aggregate<{ _id: Types.ObjectId, events: AggregatedEvent[] }>([
+    {
+      $match: {
+        _id: new Types.ObjectId(id)
+      }
+    },
+    {
+      $lookup: {
+        from: 'participants',
+        foreignField: '_id',
+        localField: 'participants',
+        as: 'participants'
+      }
+    },
+    {
+      $unwind: '$participants'
+    },
+    {
+      $match: {
+        'participants.puuid': puuid
+      }
+    },
+    {
+      $lookup: {
+        from: 'frames',
+        foreignField: '_id',
+        localField: 'frames',
+        as: 'frames',
+        pipeline: [
+          {
+            $sort: {
+              timestamp: 1
+            }
+          },
+          {
+            $lookup: {
+              from: 'events',
+              foreignField: '_id',
+              localField: 'events',
+              as: 'events',
+              pipeline: [
+                {
+                  $sort: {
+                    timestamp: 1
+                  }
+                }
+              ]
+            }
+          },
+          {
+            $lookup: {
+              from: 'participantstats',
+              foreignField: '_id',
+              localField: 'participantStats',
+              as: 'participantStats'
+            }
+          }
+        ]
+      }
+    },
+    {
+      $project: {
+        participants: 1,
+        events: { $reduce: { input: '$frames.events', initialValue: [], in: { $concatArrays: ['$$value', '$$this'] } } }
+      }
+    },
+    {
+      $project: {
+        events: {
+          $filter: {
+            input: {
+              $map: {
+                input: '$events',
+                as: 'event',
+                in: {
+                  $cond: {
+                    if: {
+                      $and: [
+                        { $eq: ['$$event.type', 'CHAMPION_KILL'] },
+                        { $eq: ['$$event.killerId', '$participants.participantId'] }
+                      ]
+                    },
+                    then: {
+                      type: 'KILL',
+                      timestamp: '$$event.timestamp'
+                    },
+                    else: {
+                      $cond: {
+                        if: {
+                          $and: [
+                            { $eq: ['$$event.type', 'CHAMPION_KILL'] },
+                            { $eq: ['$$event.victimId', '$participants.participantId'] }
+                          ]
+                        },
+                        then: {
+                          type: 'DEATH',
+                          timestamp: '$$event.timestamp'
+                        },
+                        else: {
+                          $cond: {
+                            if: {
+                              $and: [
+                                { $eq: ['$$event.type', 'CHAMPION_KILL'] },
+                                { $in: ['$participants.participantId', '$$event.assistingParticipantIds'] }
+                              ]
+                            },
+                            then: {
+                              type: 'ASSIST',
+                              timestamp: '$$event.timestamp'
+                            },
+                            else: null
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            as: 'filteredEvent',
+            cond: { $ne: ['$$filteredEvent', null] }
+          }
+        }
+      }
+    },
+  ]);
+
+  if (result.length > 0) {
+    return result[0].events;
+  } else {
+    return [];
   }
 }

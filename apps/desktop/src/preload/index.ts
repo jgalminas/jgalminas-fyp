@@ -21,6 +21,13 @@ const api = {
         recording: IRecording
       }) => {
       return await ipcRenderer.invoke(FileIPC.CreateHighlights, data);
+    },
+    createHighlight: async(
+      data: {
+        timeframe: HighlightTimeframe,
+        recording: IRecording
+      }): Promise<{ status: "OK" | "ERROR", message: string }> => {
+      return await ipcRenderer.invoke(FileIPC.CreateHighlight, data);
     }
   },
   client: {

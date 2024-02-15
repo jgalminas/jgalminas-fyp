@@ -65,7 +65,7 @@ const RecordingCard = ({ data, position }: RecordingCardProps) => {
       <PrettyDate date={new Date(data.recording.createdAt)}/>
 
       <div className="flex gap-3">
-        <LinkButton to='/'> Create Highlight </LinkButton>
+        <LinkButton to={`/editor/${data.recording.match}/${data.recording._id}`}> Create Highlight </LinkButton>
         <LinkButton to={`/matches/${data.recording.match}`} type='text'> View Game </LinkButton>
       </div>
     </div>

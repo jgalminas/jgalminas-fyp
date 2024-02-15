@@ -98,7 +98,7 @@
 }
 
 ::-webkit-scrollbar {
-  @apply w-2;
+  @apply w-2 h-2;
 }
 
 /* Track */
@@ -125,4 +125,10 @@
 
 .scrollbar-rounded::-webkit-scrollbar-thumb {
   @apply rounded-md;
+}
+
+.editor-video {
+  @media (min-height: 600px) {
+    max-height: 400px;
+  }
 }

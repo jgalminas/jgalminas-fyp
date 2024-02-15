@@ -1,10 +1,9 @@
-import Page from "../core/page/Page";
 
 const Home = () => {
-
-  return ( 
-    <Page>  
-    </Page>
+  return (
+    <div>
+    Home
+  </div>
   )
 }
 

@@ -1,9 +1,9 @@
 import { cn } from "@fyp/class-name-helper";
-import { ButtonHTMLAttributes, ForwardedRef, forwardRef } from "react";
+import { ButtonHTMLAttributes, ForwardedRef, ReactNode, forwardRef } from "react";
 import Spinner from '../assets/icons/Spinner.svg?react';
 
 export type ButtonProps = {
-  children: string,
+  children: ReactNode,
   className?: string,
   isLoading?: boolean,
   styleType?: "regular" | "text"
@@ -14,7 +14,7 @@ const Button = forwardRef(({ children, className, isLoading, styleType = "regula
   const isDisabled = isLoading || rest.disabled;
   
   return (
-    <button disabled={isDisabled} ref={ref} value={children} {...rest}
+    <button disabled={isDisabled} ref={ref} {...rest}
     className={cn(
       "h-fit w-fit px-3.5 py-1.5 text-star-dust-200 rounded-sm2 text-sm font-medium transition-colors",
       "items-center flex gap-2.5",

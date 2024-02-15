@@ -20,6 +20,7 @@ import { HighlightVideoModal } from './core/HighlightVideoModal';
 import SummonerProvider from './SummonerContext';
 import { WebSocketClient } from './webSocketClient';
 import { WebSocketProvider } from './WebSocketContext';
+import { EditorPage } from './pages/Editor';
 
 export const wsClient = new WebSocketClient();
 export const queryClient = new QueryClient({
@@ -59,6 +60,7 @@ const App = () => {
                     <Route path=':id' element={<SecureRoute element={<RecordingVideoModal/>}/>}/>
                   </Route>
                   <Route path='settings' element={<SecureRoute element={<Settings/>}/>}/>
+                  <Route path='editor/:matchId/:recordingId' element={<SecureRoute element={<EditorPage/>}/>}/>
                 </Route>
                 
               </Routes>
