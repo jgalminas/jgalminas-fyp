@@ -18,6 +18,7 @@ import { videoUrl } from "@renderer/util/video";
 import Modal from "../video/Modal";
 import Loading from "../Loading";
 import CheckCircle from "@assets/icons/CheckCircle.svg?react";
+import { useCreateHighlight } from "./hooks/useCreateHighlight";
 
 
 const pxToSec = (px: number, maxWidth: number, length: number) => px * (length / maxWidth);
@@ -39,7 +40,6 @@ export const Editor = ({ recording }: EditorProps) => {
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
-  const [isCreating, setIsCreating] = useState<boolean>(false);
 
   const intervalCount = Math.ceil(length / invertZoom(zoom));
   const intervalWidth = intervalCount + invertZoom(zoom);  
@@ -47,24 +47,12 @@ export const Editor = ({ recording }: EditorProps) => {
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const create = async() => {
-    setIsCreating(true);
-    setModalOpen(true);
-    const start = pxToSec(offset, maxWidth, length) * 1000;
-    const finish = start + pxToSec(width, maxWidth, length) * 1000;
-  
-    await window.api.file.createHighlight({
-      recording,
-      timeframe: {
-        frame: 0,
-        start,
-        finish,
-        tags: []
-      }
-    })
-
-    setIsCreating(false);
-  };
+  const { create, isCreating } = useCreateHighlight({
+    recording,
+    start: pxToSec(offset, maxWidth, length) * 1000,
+    finish: (pxToSec(offset, maxWidth, length) * 1000) + (pxToSec(width, maxWidth, length) * 1000),
+    onCreate: () => setModalOpen(true)
+  });
 
   const scalePx = (zoom: number, value: number) => {
     const newIntervalCount = Math.ceil(length / invertZoom(zoom));
@@ -344,8 +332,8 @@ export const Timeline = ({
       <div className="overflow-x-auto flex flex-col relative px-5">
         <TimeCursor offset={timelineRef.current?.offsetLeft ?? 0} position={position}/>
 
-        <div className="py-5 text-star-dust-300 w-full" onClick={onTimelineClick}>
-          events will go here
+        <div className="py-5 text-star-dust-300 w-full">
+          {/* events will go here */}
         </div>
 
         <div ref={timelineRef} className="flex text-star-dust-300 text-xs pb-3" onClick={onTimelineClick}>
