@@ -172,4 +172,71 @@ export const getHighlightById = async(userId: string, id: string) => {
     return null;
   }
 
-};
+}
+
+export const deleteHighlight = async(id: string, userId: string) => {
+
+  const session = await (await db).startSession();
+  session.startTransaction();
+  
+  try {
+
+    const userObjectId = new Types.ObjectId(userId);
+
+    const result = await User.aggregate<IHighlight>([
+      {
+        $match: {
+          _id: userObjectId
+        }
+      },
+      {
+        $lookup: {
+          from: 'highlights',
+          localField: 'highlights',
+          foreignField: '_id',
+          as: 'highlight',
+          pipeline: [
+            {
+              $match: {
+                _id: new Types.ObjectId(id)
+              }
+            }
+          ]
+        }
+      },
+      {
+        $unwind: '$highlight'
+      },
+      {
+        $replaceRoot: {
+          newRoot: '$highlight'
+        }
+      }
+    ], { session });
+    
+    if (result.length > 0) {
+      
+      const highlight = result[0];
+
+      await Highlight.deleteOne(highlight, { session });
+      await User.updateOne(
+        { _id: userObjectId },
+        { $pull: { highlights: highlight._id } },
+        { session }
+      );
+
+      await session.commitTransaction();
+      session.endSession();
+    } else {
+      await session.abortTransaction();
+      session.endSession();
+    }
+
+  } catch (err) {
+    console.log(err);
+    
+    await session.abortTransaction();
+    session.endSession();
+    return err;
+  }
+}

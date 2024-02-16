@@ -51,4 +51,10 @@ router.get('/:id', requireAuth, async(req, res) => {
   res.status(200).json(recording);
 })
 
+router.delete('/:id', requireAuth, async(req, res) => {
+
+  await RecordingRepository.deleteRecording(req.params.id, req.user?._id.toString() as string);
+  res.status(200).send();
+})
+
 export default router;

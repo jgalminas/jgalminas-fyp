@@ -137,5 +137,5 @@
   mask-size: 100%;
   background-size: 100%;
   background-repeat: no-repeat;
-  mask-image: url("../public/images/splash_mask.svg");
+  mask-image: url("/images/splash_mask.svg");
 }

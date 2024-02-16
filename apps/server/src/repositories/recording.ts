@@ -215,3 +215,70 @@ export const findRecordingByMatchId = async(userId: string, id: string) => {
   }
 
 };
+
+export const deleteRecording = async(id: string, userId: string) => {
+
+  const session = await (await db).startSession();
+  session.startTransaction();
+  
+  try {
+
+    const userObjectId = new Types.ObjectId(userId);
+
+    const result = await User.aggregate<IRecording>([
+      {
+        $match: {
+          _id: userObjectId
+        }
+      },
+      {
+        $lookup: {
+          from: 'recordings',
+          localField: 'recordings',
+          foreignField: '_id',
+          as: 'recording',
+          pipeline: [
+            {
+              $match: {
+                _id: new Types.ObjectId(id)
+              }
+            }
+          ]
+        }
+      },
+      {
+        $unwind: '$recording'
+      },
+      {
+        $replaceRoot: {
+          newRoot: '$recording'
+        }
+      }
+    ], { session });
+    
+    if (result.length > 0) {
+      
+      const recording = result[0];
+
+      await Recording.deleteOne(recording, { session });
+      await User.updateOne(
+        { _id: userObjectId },
+        { $pull: { recordings: recording._id } },
+        { session }
+      );
+
+      await session.commitTransaction();
+      session.endSession();
+    } else {
+      await session.abortTransaction();
+      session.endSession();
+    }
+
+  } catch (err) {
+    console.log(err);
+    
+    await session.abortTransaction();
+    session.endSession();
+    return err;
+  }
+}

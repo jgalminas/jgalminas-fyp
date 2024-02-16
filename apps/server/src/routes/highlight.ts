@@ -46,10 +46,16 @@ router.get('/:id', requireAuth, async(req, res) => {
   const highlight = await HighlightRepository.getHighlightById(req.user?._id.toString() as string, req.params.id);
   
   if (!highlight) {
-    res.status(404);
+    res.status(404).send();
   }
   
   res.status(200).json(highlight);
+})
+
+router.delete('/:id', requireAuth, async(req, res) => {
+
+  await HighlightRepository.deleteHighlight(req.params.id, req.user?._id.toString() as string);
+  res.status(200).send();
 })
 
 export default router;
