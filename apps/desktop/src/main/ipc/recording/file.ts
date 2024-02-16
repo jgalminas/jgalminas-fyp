@@ -253,7 +253,10 @@ export default () => {
   })
 
   ipcMain.handle(FileIPC.Delete, async(_, { id, fileName, type }: { id: string, fileName: string, type: 'recording' | 'highlight' }) => {
-    const filePath = path.join(app.getPath('videos'), VIDEO_DIRECTORY, type === 'highlight' ? type + 's' : '', `${fileName}.${VIDEO_FORMAT}`);
+    const videoDir = path.join(app.getPath('videos'), VIDEO_DIRECTORY, type === 'highlight' ? type + 's' : '');
+
+    const filePath = path.join(videoDir, `${fileName}.${VIDEO_FORMAT}`);
+    const thumbnailPath = path.join(videoDir, `${fileName}.${THUMBNAIL_FORMAT}`);
 
     const res = await new MainRequestBuilder()
     .route(`/v1/${type}/${id}`)
@@ -264,7 +267,13 @@ export default () => {
     .fetch();
 
     if (res.ok) {
-      await unlink(filePath);
+      try {
+        await unlink(filePath);
+        await unlink(thumbnailPath);
+      } catch (err) {
+        console.log(err);
+        
+      }
     }
 
   })

@@ -12,6 +12,7 @@ import Dropdown, { DropdownOption } from "@renderer/core/Dropdown";
 import Ellipsis from '@assets/icons/Ellipsis.svg?react';
 import Info from '@assets/icons/Info.svg?react';
 import { HighlightTag } from "./HighlightTag";
+import { queryClient } from "@renderer/App";
 
 export type HighlightCardProps = {
   data: {
@@ -32,7 +33,15 @@ const HighlightCard = ({ data, position, playPath, linkToGame = false }: Highlig
     {
       id: 'delete',
       value: 'Delete',
-      onClick: () => {}
+      onClick: () => {
+        console.log(queryClient.getQueryData(["highlights"]));
+        
+        // window.api.file.deleteRecording({
+        //   id: data.highlight._id.toString(),
+        //   fileName: data.highlight.fileId,
+        //   type: "highlight"
+        // })
+      }
     }
   ]
   
