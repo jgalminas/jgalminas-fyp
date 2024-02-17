@@ -48,8 +48,10 @@ const Highlights = () => {
 
   }
 
+  const queryKey = ['highlights', queueFilter.id, dateFilter.id, championFilter.id, roleFilter];
+
   const { isLoading, data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ['highlights', queueFilter.id, dateFilter.id, championFilter.id, roleFilter],
+    queryKey: queryKey,
     initialPageParam: 0,
     queryFn: ({ pageParam }) => {
       currentOffset.current += pageParam;
@@ -119,7 +121,13 @@ const Highlights = () => {
             <ViewportList items={highlights} overscan={6} withCache>
               { (hl, key) => {
                 return (
-                  <HighlightCard linkToGame data={hl} key={key} position={key + 1} playPath={`/highlights/${hl.highlight._id}`}/>
+                  <HighlightCard
+                  key={key}
+                  linkToGame
+                  data={hl}
+                  position={key}
+                  queryKey={queryKey}
+                  playPath={`/highlights/${hl.highlight._id}`}/>
                 )
               }}
             </ViewportList>

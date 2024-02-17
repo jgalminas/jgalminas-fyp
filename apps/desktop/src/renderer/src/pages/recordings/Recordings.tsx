@@ -56,8 +56,10 @@ const Recordings = () => {
 
   }
 
+  const queryKey = ['recordings', queueFilter.id, dateFilter.id, championFilter.id, roleFilter];
+
   const { isLoading, data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ['recordings', queueFilter.id, dateFilter.id, championFilter.id, roleFilter],
+    queryKey: queryKey,
     initialPageParam: 0,
     queryFn: ({ pageParam }) => {
       currentOffset.current += pageParam;
@@ -122,7 +124,7 @@ const Recordings = () => {
             <ViewportList items={recordings} overscan={6} withCache>
               { (rec, key) => {
                 return (
-                  <RecordingCard data={rec} key={key} position={key + 1}/>
+                  <RecordingCard queryKey={queryKey} data={rec} key={key} position={key + 1}/>
                 )
               }}
             </ViewportList>
