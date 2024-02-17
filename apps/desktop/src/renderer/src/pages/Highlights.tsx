@@ -87,7 +87,7 @@ const Highlights = () => {
             highlight,
             ...items.pages[0]
           ],
-          ...items.pages
+          ...items.pages.slice(1)
         ]
       }
       
