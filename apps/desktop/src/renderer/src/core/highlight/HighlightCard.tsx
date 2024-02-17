@@ -14,7 +14,6 @@ import Info from '@assets/icons/Info.svg?react';
 import { HighlightTag } from "./HighlightTag";
 import { queryClient } from "@renderer/App";
 import { useState } from "react";
-import Modal from "../video/Modal";
 import { DeleteModal } from "../DeleteModal";
 
 export type HighlightCardProps = {
