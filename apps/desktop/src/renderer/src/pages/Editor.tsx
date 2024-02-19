@@ -1,3 +1,4 @@
+import { getMatchEvents } from "@renderer/api/match";
 import { getRecording } from "@renderer/api/recording";
 import Loading from "@renderer/core/Loading";
 import { Editor } from "@renderer/core/editor/Editor";
@@ -16,13 +17,22 @@ export const EditorPage = () => {
     enabled: recordingId !== undefined
   });
 
+  const { data: events, isLoading: isEventsLoading } = useQuery({
+    queryKey: ['events', matchId],
+    queryFn: () => getMatchEvents(matchId as string),
+    enabled: matchId !== undefined
+  });
+
+  const isLoading = isEventsLoading || isRecordingLoading;
+  const isData = events && recording;
+
   return (
     <div className="h-screen grid grid-rows-[auto,1fr] overflow-hidden">
       <DefaultHeader/>
-      { !isRecordingLoading
+      { !isLoading
         ?
-        recording ?
-        <Editor recording={recording}/>
+        isData ?
+        <Editor events={events} recording={recording}/>
         :
         <InfoMessage>
           Recording Not Found

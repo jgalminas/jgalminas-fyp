@@ -1,7 +1,7 @@
 import { cn } from "@fyp/class-name-helper";
 import SidebarLink from "./SidebarLink";
 import Home from '@assets/icons/Home.svg?react';
-import Matches from '@assets/icons/Matches.svg?react';
+import Swords from '@assets/icons/Swords.svg?react';
 import Highlights from '@assets/icons/Highlights.svg?react';
 import Recordings from '@assets/icons/Recordings.svg?react';
 import Settings from '@assets/icons/Settings.svg?react';
@@ -20,7 +20,7 @@ const Sidebar = ({ className }: SidebarProps) => {
         Home
       </SidebarLink>
 
-      <SidebarLink to="/matches" icon={Matches}>
+      <SidebarLink to="/matches" icon={Swords}>
         Matches
       </SidebarLink>
 

@@ -13,22 +13,26 @@ import Rewind from "@assets/icons/Rewind.svg?react";
 import RewindToStart from "@assets/icons/RewindToStart.svg?react";
 import ForwardToEnd from "@assets/icons/ForwardToEnd.svg?react";
 import { useKeyPress } from "./hooks/useKeyPress";
-import { IRecording } from "@fyp/types";
+import { AggregatedEvents, IRecording } from "@fyp/types";
 import { videoUrl } from "@renderer/util/video";
 import Modal from "../video/Modal";
 import Loading from "../Loading";
 import CheckCircle from "@assets/icons/CheckCircle.svg?react";
 import { useCreateHighlight } from "./hooks/useCreateHighlight";
+import Skull from "@assets/icons/Skull.svg?react";
+import Swords from "@assets/icons/Swords.svg?react";
+import Handshake from "@assets/icons/Handshake.svg?react";
 
 
 const pxToSec = (px: number, maxWidth: number, length: number) => px * (length / maxWidth);
 const secToPx = (sec: number, maxWidth: number, length: number) => Math.round(sec * (maxWidth / length));
 
 export type EditorProps = {
-  recording: IRecording & { match: string }
+  recording: IRecording & { match: string },
+  events: AggregatedEvents
 }
 
-export const Editor = ({ recording }: EditorProps) => {
+export const Editor = ({ events, recording }: EditorProps) => {
 
   const MAX_ZOOM = 200;
   const MIN_ZOOM = 50;
@@ -44,6 +48,7 @@ export const Editor = ({ recording }: EditorProps) => {
   const intervalCount = Math.ceil(length / invertZoom(zoom));
   const intervalWidth = intervalCount + invertZoom(zoom);  
   const maxWidth = intervalWidth * intervalCount;
+  const videoOffset = recording.length - (events.duration / 1000);
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -205,6 +210,8 @@ export const Editor = ({ recording }: EditorProps) => {
       
       <div className="mt-auto w-full overflow-x-auto">
         <Timeline
+        videoOffset={videoOffset}
+        events={events}
         intervalWidth={intervalWidth}
         intervalCount={intervalCount}
         maxWidth={maxWidth}
@@ -266,6 +273,8 @@ export const CreateHighlightModal = ({ isLoading, onClose }: CreateHighlightModa
 }
 
 export type TimelineProps = {
+  videoOffset: number,
+  events: AggregatedEvents,
   intervalWidth: number,
   length: number,
   position: number,
@@ -283,6 +292,8 @@ export type TimelineProps = {
 }
 
 export const Timeline = ({
+  videoOffset,
+  events,
   maxWidth,
   intervalWidth,
   zoom,
@@ -305,6 +316,17 @@ export const Timeline = ({
     const timeline = timelineRef.current;
     if (timeline) {
       updateCurrentTime(e.clientX - timeline.getBoundingClientRect().left);
+    }
+  }
+
+  const eventToIcon = (type: typeof events.events[number]["type"]) => {
+    switch(type) {
+      case "KILL":
+        return <Swords className="fill-woodsmoke-600 w-6 h-6 text-star-dust-400"/>
+      case "ASSIST":
+        return <Handshake className="w-6 h-6"/>
+      case "DEATH":
+        return <Skull className="w-6 h-6"/>
     }
   }
 
@@ -332,8 +354,16 @@ export const Timeline = ({
       <div className="overflow-x-auto flex flex-col relative px-5">
         <TimeCursor offset={timelineRef.current?.offsetLeft ?? 0} position={position}/>
 
-        <div className="py-5 text-star-dust-300 w-full">
-          {/* events will go here */}
+        <div onClick={onTimelineClick} style={{ width: maxWidth ?? 0 }}
+        className="py-6 text-star-dust-300 w-full relative">
+          { events.events.map((e, key) => {
+            return (
+              <div key={key} style={{ left: secToPx((e.timestamp / 1000) + videoOffset, maxWidth, length) }}
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2">
+                { eventToIcon(e.type) }
+              </div>
+            )
+          }) }
         </div>
 
         <div ref={timelineRef} className="flex text-star-dust-300 text-xs pb-3" onClick={onTimelineClick}>
@@ -465,7 +495,7 @@ export type TimeCursorProps = {
 export const TimeCursor = ({ position, offset }: TimeCursorProps) => {
   return (
     <div className="bg-science-blue-600 w-[2px] h-full absolute flex flex-col items-center z-50" style={{ left: position + offset }}>
-      <TimeCursorHead className="w-6 h-6"/>
+      <TimeCursorHead className="w-5 h-5"/>
     </div>
   )
 }

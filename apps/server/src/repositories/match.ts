@@ -1,4 +1,4 @@
-import { MatchWithGoldFrames, IEvent, IFrame, IMatch, IParticipant, IParticipantStats, Match as RMatch, AggregatedEvent } from "@fyp/types";
+import { MatchWithGoldFrames, IEvent, IFrame, IMatch, IParticipant, IParticipantStats, Match as RMatch, AggregatedEvents } from "@fyp/types";
 import { Types } from 'mongoose';
 import { db } from "../db/db";
 import { Event } from "../schema/event";
@@ -381,7 +381,7 @@ export const getGoldFrames = async(id: string) => {
 
 export const getEvents = async(id: string, puuid: string) => {
 
-  const result = await Match.aggregate<{ _id: Types.ObjectId, events: AggregatedEvent[] }>([
+  const result = await Match.aggregate<AggregatedEvents>([
     {
       $match: {
         _id: new Types.ObjectId(id)
@@ -443,12 +443,17 @@ export const getEvents = async(id: string, puuid: string) => {
     },
     {
       $project: {
+        start: 1,
+        finish: 1,
         participants: 1,
         events: { $reduce: { input: '$frames.events', initialValue: [], in: { $concatArrays: ['$$value', '$$this'] } } }
       }
     },
     {
       $project: {
+        duration: {
+          $subtract: ['$finish', '$start']
+        },
         events: {
           $filter: {
             input: {
@@ -509,7 +514,7 @@ export const getEvents = async(id: string, puuid: string) => {
   ]);
 
   if (result.length > 0) {
-    return result[0].events;
+    return result[0];
   } else {
     return [];
   }
