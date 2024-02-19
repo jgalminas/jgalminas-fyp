@@ -354,11 +354,11 @@ export const Timeline = ({
       <div className="overflow-x-auto flex flex-col relative px-5">
         <TimeCursor offset={timelineRef.current?.offsetLeft ?? 0} position={position}/>
 
-        <div onClick={onTimelineClick} style={{ width: maxWidth ?? 0 }}
+        <div onClick={onTimelineClick} style={{ width: maxWidth }}
         className="py-6 text-star-dust-300 w-full relative">
           { events.events.map((e, key) => {
             return (
-              <div key={key} style={{ left: secToPx((e.timestamp / 1000) + videoOffset, maxWidth, length) }}
+              <div key={key} style={{ left: secToPx((e.timestamp / 1000) + videoOffset, maxWidth, length) ?? 0 }}
               className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2">
                 { eventToIcon(e.type) }
               </div>

@@ -99,8 +99,6 @@ export const getMatchById = async(id: string) => {
   }
 }
 
-
-
 export const getUserMatches = async(
   puuid: string,
   filters?: {
