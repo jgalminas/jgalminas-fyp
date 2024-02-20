@@ -1,7 +1,8 @@
+import { AverageStats, ChampionStats } from "@fyp/types";
 import { Match } from "../schema"
 
 export const getAverageStats = async(puuid: string) => {
-  return await Match.aggregate([
+  const result = await Match.aggregate<AverageStats>([
     {
       $lookup: {
         from: 'participants',
@@ -53,10 +54,16 @@ export const getAverageStats = async(puuid: string) => {
       }
     }
   ])
+
+  if (result.length <= 0) {
+    return null;
+  }
+
+  return result[0];
 }
 
 export const getChampionStats = async(puuid: string) => {
-  return await Match.aggregate([
+  return await Match.aggregate<ChampionStats>([
     {
       $lookup: {
         from: 'participants',
