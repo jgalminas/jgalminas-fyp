@@ -35,7 +35,7 @@ const ScoreBoard = () => {
   }).sort((a, b) => a.value > b.value ? -1 : 1);
 
   return (
-    <div className="grid grid-cols-2 gap-6 grid-rows-2">
+    <div className="grid grid-cols-2 gap-6 grid-rows-[auto,auto]">
       <ScoreboardTable className="col-span-full" match={match}/>
       <BarChart className="h-fit" height={200} data={damage} label="Damage Distribution"/>
       <BarChart className="h-fit" height={200} data={income} label="Income"/>

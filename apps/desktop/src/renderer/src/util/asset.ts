@@ -5,8 +5,6 @@ export const PATCH = '14.1.1';
 export const BASE_CDN = 'https://ddragon.leagueoflegends.com/cdn';
 export const BASE_RUNE_CDN = 'https://ddragon.canisback.com/img/perk-images/Styles/';
 
-//https://ddragon.leagueoflegends.com/cdn/13.23.1/img/champion/Belveth.png
-
 export const Asset = {
   champion: (champion: string) => {
     if (champion) {
