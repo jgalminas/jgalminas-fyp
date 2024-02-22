@@ -1,5 +1,6 @@
 import Card from "@renderer/core/Card";
 import { Asset } from "@renderer/util/asset";
+import { getChampionNameById } from "@root/constants";
 import { ResponsiveContainer, BarChart as ReBarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar, Cell } from "recharts";
 
 
@@ -44,6 +45,7 @@ export const BarChart = ({ data, height, label }: BarChartProps) => {
           <XAxis dataKey="label" tickLine={false} tick={CustomTick} interval={0} axisLine={false}/>
           <YAxis interval={0} tickLine={false} axisLine={false} tick={{ fill: '#999999', fontSize: 14 }} tickFormatter={tickFormatter}/>
           <Tooltip
+          labelFormatter={(value) => getChampionNameById(value)}
           cursor={{ fill: '#1D2024' }}
           itemStyle={{
             color: "#D1D1D1",
