@@ -121,8 +121,12 @@ export const getChampionStats = async(puuid: string) => {
     },
     {
       $sort: {
-        totalMatches: -1
+        totalMatches: -1,
+        champion: -1
       }
+    },
+    {
+      $limit: 5
     }
   ]);
 }

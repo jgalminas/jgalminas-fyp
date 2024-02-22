@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import Page from "../../core/page/Page";
 import MatchCard from "./MatchCard";
 import PageInnerHeader from "@renderer/core/page/PageInnerHeader";
@@ -21,6 +21,7 @@ import { ViewportList } from 'react-viewport-list';
 import Loading from "@renderer/core/Loading";
 import InfoMessage from "@renderer/core/message/InfoMessage";
 import { StatSummary } from "./StatSummary";
+import { ChampionStats } from "./ChampionStats";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -90,8 +91,9 @@ const Matches = () => {
         </div>
       </PageInnerHeader>
       <PageBody>
+        <div className="grid grid-cols-[minmax(0,60rem),minmax(0,20rem)] gap-8">
         { !isLoading ?
-            <div className="grid grid-cols-[minmax(0,60rem),minmax(0,20rem)] gap-8">
+            <div>
               <div className="flex flex-col gap-5">
                 <ViewportList items={matches} overscan={6} withCache>
                   { (match, key) => {
@@ -104,22 +106,23 @@ const Matches = () => {
                   <div className="mb-0.5" ref={ref}/>
                 }
               </div>
-              <div className="mt-5">
-                <div className="sticky top-32 flex flex-col gap-6">
-                  <StatSummary/>
-                </div>
-              </div>
+              { isFetchingNextPage &&
+                <Loading className="w-full mb-5"/>
+              }
+              { matches && matches.length === 0
+                ? <InfoMessage className="bg-woodsmoke-800 rounded-lg px-5 py-10"> No results found </InfoMessage>
+                : null
+              }
             </div>
-
           : <Loading className="w-full my-24"/>
         }
-        { isFetchingNextPage &&
-          <Loading className="w-full mb-5"/>
-        }
-        { matches && matches.length === 0
-          ? <InfoMessage className="bg-woodsmoke-800 rounded-lg px-5 py-10"> No results found </InfoMessage>
-          : null
-        }
+          <div className="mt-5">
+            <div className="sticky top-32 flex flex-col gap-6">
+              <StatSummary/>
+              <ChampionStats/>
+            </div>
+          </div>
+        </div>
       </PageBody>
     </Page>
   )

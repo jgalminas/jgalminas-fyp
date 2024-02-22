@@ -42,7 +42,7 @@ export const BarChart = ({ data, height, label }: BarChartProps) => {
         <ReBarChart data={data} margin={{ bottom: 32, top: 16, right: 8 }} maxBarSize={16}>
           <CartesianGrid vertical={false} stroke="#202328"/>
           <XAxis dataKey="label" tickLine={false} tick={CustomTick} interval={0} axisLine={false}/>
-          <YAxis interval={0} tickLine={false} axisLine={false} tick={{ fill: '#999999' }} tickFormatter={tickFormatter}/>
+          <YAxis interval={0} tickLine={false} axisLine={false} tick={{ fill: '#999999', fontSize: 14 }} tickFormatter={tickFormatter}/>
           <Tooltip
           cursor={{ fill: '#1D2024' }}
           itemStyle={{

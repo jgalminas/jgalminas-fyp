@@ -62,7 +62,7 @@ export const StatSummary = ({ className }: StatSummaryProps) => {
           <Stat value={summary.kda.toFixed(2)} type="KDA"/>
           <KDA className="text-star-dust-400" stats={{
             kills: summary.avgKills.toFixed(2),
-            deaths: summary.avgAssists.toFixed(2),
+            deaths: summary.avgDeaths.toFixed(2),
             assists: summary.avgAssists.toFixed(2)
           }}/>
         </div>
