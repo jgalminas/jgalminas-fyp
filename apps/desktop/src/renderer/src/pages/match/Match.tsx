@@ -10,10 +10,9 @@ import { Outlet, useParams } from "react-router";
 import Tabs, { Tab } from "./Tabs";
 import Divider from "@renderer/core/page/Divider";
 import { DefaultHeader } from "@renderer/navigation/DefaultHeader";
-import env from "@root/env";
 import { getPlayer } from "@renderer/util/match";
 import { useSummoner } from "@renderer/SummonerContext";
-import { Asset } from "@renderer/util/asset";
+import { BackgroundImage } from "./BackgroundImage";
 
 const Match = () => {
   
@@ -39,8 +38,7 @@ const Match = () => {
     <Page header={<DefaultHeader back="/matches"/>}
     pageClass="max-w-[80rem]" contentClass="gap-0" className="z-10">
         
-      <img src={Asset.splash(player.champion)}
-      className="absolute w-[85%] left-1/2 -translate-x-1/2 splash-mask object-cover opacity-15 pointer-events-none"/>
+      <BackgroundImage champion={player.champion}/>
 
       <PageInnerHeader className="gap-0 z-10">
         <PageTitle> Match Details </PageTitle>

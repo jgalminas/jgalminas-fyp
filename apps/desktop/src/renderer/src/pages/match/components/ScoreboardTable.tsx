@@ -61,7 +61,7 @@ const ScoreboardTable = ({ className, match }: ScoreboardTableProps) => {
               <Fragment key={i}>
                 <Player player={blueTeam[i]} start={match.start} finish={match.finish} teamKills={aggregateTeamKills(match.participants, 'BLUE')}/>
                 { //@ts-expect-error 
-                  pos && <Position className="mx-5"/>
+                  pos && <Position className="mx-1 2xl:mx-5"/>
                 }
                 <Player inverse player={redTeam[i]} start={match.start} finish={match.finish} teamKills={aggregateTeamKills(match.participants, 'RED')}/>
               </Fragment>
@@ -84,10 +84,15 @@ type PlayerProps = {
 const Player = ({ player, inverse = false, teamKills, start, finish }: PlayerProps) => {
 
   const trinket = player.items[player.items.length - 1];
-
   return (
-    <div className={cn("grid grid-cols-[2.1fr,2.5fr,auto] gap-x-5", inverse && "grid-cols-[auto,2.5fr,2.1fr]")}>
-      <div className={cn("grid grid-cols-[3rem,1fr] grid-rows-2 gap-x-3 items-center text-sm", inverse && "grid-cols-[1fr,3rem] order-3")}>
+    <div className={cn(
+      "grid grid-cols-[2.1fr,2.5fr] 2xl:grid-cols-[2.1fr,2.5fr,auto] gap-x-5",
+      inverse && "grid-cols-[2.5fr,2.1fr] 2xl:grid-cols-[auto,2.5fr,2.1fr]"
+    )}>
+      <div className={cn(
+        "grid grid-cols-[3rem,1fr] grid-rows-2 gap-x-3 items-center text-sm",
+        inverse && "grid-cols-[1fr,3rem] order-3"
+      )}>
         <RoundImage className={cn("row-span-2 w-full h-full", inverse && "col-start-2 row-start-1",
         player.team === "BLUE" ? "border-accent-blue" : "border-accent-red")}
         src={Asset.champion(player.champion)}/>
@@ -102,14 +107,17 @@ const Player = ({ player, inverse = false, teamKills, start, finish }: PlayerPro
         <Stat value={calcKP(player.kills, player.assists, teamKills)} type='KP'/>
       </div>
 
-      <div className={cn("flex gap-3 items-center", inverse && "flex-row-reverse")}>
-        <div className="grid grid-cols-2 grid-rows-2 gap-1.5">
+      <div className={cn(
+        "col-span-full 2xl:col-start-3 flex gap-3 items-center mt-4 2xl:mt-0",
+        inverse && "flex-row-reverse 2xl:col-start-1 2xl:col-end-2 order-3 2xl:order-1"
+      )}>
+        <div className="flex 2xl:grid 2xl:grid-cols-2 2xl:grid-rows-2 gap-1.5">
           <SquareImage src={Asset.primaryRune(player.primaryRune)}/>
           <SquareImage className="p-0.5" src={Asset.secondaryRune(player.secondaryRune)}/>
           <SquareImage src={Asset.summonerSpell(player.summonerOne)}/>
           <SquareImage src={Asset.summonerSpell(player.summonerTwo)}/>
         </div>
-        <div className="grid grid-cols-3 gap-1.5">
+        <div className="flex 2xl:grid 2xl:grid-cols-3 gap-1.5">
           { player.items.slice(0, player.items.length - 1).map((i) => {
             return (
               i._id !== 0
