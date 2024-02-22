@@ -1,18 +1,15 @@
 import { getChampionStats } from "@renderer/api/stats";
 import Card from "@renderer/core/Card"
+import Loading from "@renderer/core/Loading";
 import SquareImage from "@renderer/core/SquareImage";
-import KDA from "@renderer/core/match/KDA";
 import Stat from "@renderer/core/match/Stat";
 import Divider from "@renderer/core/page/Divider";
 import { Asset } from "@renderer/util/asset";
 import { getChampionNameById } from "@root/constants";
 import { useQuery } from "@tanstack/react-query";
 
-export type ChampionStatsProps = {
-  
-}
 
-export const ChampionStats = ({  }: ChampionStatsProps) => {
+export const ChampionStats = () => {
 
   const { data, isLoading } = useQuery({
     queryKey: ['champion-stats'],
@@ -22,32 +19,36 @@ export const ChampionStats = ({  }: ChampionStatsProps) => {
   return (
     <Card>
       <p className="mb-4 text-star-dust-300 uppercase font-medium text-xs">
-        TOP 5 CHAMPION SUMMARY
+        MOST PLAYED CHAMPIONS
       </p>
 
       <Divider/>
 
-      <ul className="flex flex-col gap-3 mt-4">
-        { data?.map((it, key) => {
-          return (
-            <li key={key} className="flex items-center gap-3">
-              <div className="w-12 h-12 overflow-hidden border-2 border-woodsmoke-100 rounded-md">
-                <SquareImage className="scale-[115%] w-full h-full" src={Asset.champion(it.champion)}/>
-              </div>
+      { !isLoading ?
+        <ul className="flex flex-col gap-3 mt-4">
+          { data?.map((it, key) => {
+            return (
+              <li key={key} className="flex items-center gap-3">
+                <div className="w-12 h-12 overflow-hidden border-2 border-woodsmoke-100 rounded-md">
+                  <SquareImage className="scale-[115%] w-full h-full" src={Asset.champion(it.champion)}/>
+                </div>
 
-              <div>
-                <p className="text-star-dust-200 font-medium text-sm"> { getChampionNameById(it.champion) } </p>
-                <p className="text-sm text-star-dust-400"> { it.totalMatches } {`Game${ it.totalMatches > 1 ? 's' : '' }`} </p>
-              </div>
+                <div>
+                  <p className="text-star-dust-200 font-medium text-sm"> { getChampionNameById(it.champion) } </p>
+                  <p className="text-sm text-star-dust-400"> { it.totalMatches } {`Game${ it.totalMatches > 1 ? 's' : '' }`} </p>
+                </div>
 
-              <div className="ml-auto">
-                <Stat value={it.kda.toFixed(2)} type="KDA"/>
-                <Stat  value={(it.winRate * 100).toFixed(2) + '%'} type="WR"/>
-              </div>
-            </li>
-          )
-        }) }
-      </ul>
+                <div className="ml-auto">
+                  <Stat value={it.kda.toFixed(2)} type="KDA"/>
+                  <Stat  value={(it.winRate * 100).toFixed(2) + '%'} type="WR"/>
+                </div>
+              </li>
+            )
+          }) }
+        </ul>
+        : <Loading className="mt-11 mb-8"/>
+      }
+
     </Card>
   )
 }
