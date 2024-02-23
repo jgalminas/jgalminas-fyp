@@ -1,10 +1,11 @@
 import { cn } from "@fyp/class-name-helper";
-import { useState } from "react";
+import { MouseEvent, useState } from "react";
 import Divider from "./page/Divider";
 import ChevronDown from '@assets/icons/ChevronDown.svg?react';
 import Search from '@assets/icons/Search.svg?react';
 import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import { ViewportList } from "react-viewport-list";
+import X from "@assets/icons/X.svg?react";
 
 export type SearchSelectOption = {
   id: string,
@@ -36,14 +37,29 @@ const SearchSelect = ({ value, className, options }: SearchSelectProps) => {
     setSearch("");
   }
 
+  const clear = (e: MouseEvent) => {
+    e.stopPropagation();
+    options[0].onClick(options[0]);
+    setOpen(false);
+    setSearch("");
+  }
+
   const filteredOptions = options.filter(opt => opt.value.toLowerCase().includes(search.toLowerCase()));
+  const isFirst = options.findIndex(i => i.id === value.id) === 0;
 
   return (
     <Popover onOpenChange={onOpenChange} open={isOpen}>
       <PopoverTrigger className={cn("bg-woodsmoke-400 text-star-dust-300 border-woodsmoke-50 border flex items-center",
       "focus:outline-none text-sm px-3 py-2 min-w-[12rem] w-fit gap-6 rounded-md", className)}>
         { value.value }
-        <ChevronDown className={cn("text-star-dust-400 w-5 h-5 ml-auto transition-all", isOpen && "rotate-180")}/>
+        <div className="ml-auto flex items-center gap-1.5">
+          { !isFirst &&
+            <button onClick={clear} className="p-0.5 hover:bg-woodsmoke-600 rounded-full">
+              <X className="w-3.5 h-3.5"/>
+            </button>
+          }
+          <ChevronDown className={cn("text-star-dust-400 w-5 h-5 transition-all", isOpen && "rotate-180")}/>
+        </div>
       </PopoverTrigger>
 
       <PopoverContent className={cn("bg-woodsmoke-400 border-woodsmoke-50 text-sm text-star-dust-300 w-full mt-1 min-w-[12rem] z-50 rounded-md",
