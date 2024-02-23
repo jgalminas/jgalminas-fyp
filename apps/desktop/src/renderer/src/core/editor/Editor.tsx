@@ -83,8 +83,10 @@ export const Editor = ({ events, recording }: EditorProps) => {
     const newZoom = Math.min(MAX_ZOOM, zoom + 10);
     const [newWidth, newMaxWidth] = scalePx(newZoom, width);
     const [newOffset] = scalePx(newZoom, offset);
+    const [newTime] = scalePx(newZoom, currentTime);
     setOffset(newOffset);
     setZoom(newZoom);
+    setCurrentTime(newTime);
     setWidth(newWidth > newMaxWidth ? newMaxWidth : newWidth);
   }
 
@@ -92,8 +94,10 @@ export const Editor = ({ events, recording }: EditorProps) => {
     const newZoom = Math.max(MIN_ZOOM, zoom - 10);
     const [newWidth, newMaxWidth] = scalePx(newZoom, width);
     const [newOffset] = scalePx(newZoom, offset);
+    const [newTime] = scalePx(newZoom, currentTime);
     setOffset(newOffset);
     setZoom(newZoom);
+    setCurrentTime(newTime);
     setWidth(Math.max(50, newWidth > newMaxWidth ? newMaxWidth : newWidth));
   }
 
