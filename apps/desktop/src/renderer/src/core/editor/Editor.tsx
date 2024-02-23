@@ -390,7 +390,6 @@ export const Timeline = ({
         setOffset={setOffset}
         width={width}
         setWidth={setWidth}
-        onTimelineClick={onTimelineClick}
         />
       </div>
     </div>
@@ -403,11 +402,10 @@ type SliderProps = {
   width: number,
   setWidth: Dispatch<SetStateAction<number>>,
   offset: number,
-  setOffset: Dispatch<SetStateAction<number>>,
-  onTimelineClick: (e: MouseEvent<HTMLDivElement>) => void
+  setOffset: Dispatch<SetStateAction<number>>
 }
 
-const Slider = ({ maxWidth, width, setWidth, offset, setOffset, onTimelineClick, minRange = 50 }: SliderProps) => {
+const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }: SliderProps) => {
 
   // TODO:
   // account for scroll position in move
@@ -458,8 +456,20 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, onTimelineClick,
     prevOffsetX.current = e.clientX;
   }
 
+  const onClick = (e: MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const position = e.clientX - rect.left;
+
+    if (position < offset) {
+      setOffset(position);
+      setWidth(prev => prev + (offset - position));
+    } else if (position > (offset + width)) {
+      setWidth(position - offset);
+    }
+  }
+
   return (
-    <div className="w-full bg-woodsmoke-800 rounded-lg mb-2 select-none" style={{ width: maxWidth }} onClick={onTimelineClick}>
+    <div className="w-full bg-woodsmoke-800 rounded-lg mb-2 select-none" style={{ width: maxWidth }} onClick={onClick}>
       <div style={{ width: width, marginLeft: offset, maxWidth: maxWidth - offset }}
       className="flex h-12 bg-science-blue-600 bg-opacity-15 border-2 rounded-lg border-science-blue-600">
         <div
