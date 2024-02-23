@@ -1,4 +1,5 @@
 import { SearchSelectOption } from "@renderer/core/SearchSelect";
+import { Asset } from "@renderer/util/asset";
 import { CHAMPIONS } from "@root/constants";
 import { useState } from "react";
 
@@ -25,6 +26,7 @@ export const useChampionFilter = (props?: useChampionFilterProps) => {
       return {
         id: ch.id,
         value: ch.name,
+        imageUrl: Asset.champion(ch.id),
         onClick: handleClick
       }
     })

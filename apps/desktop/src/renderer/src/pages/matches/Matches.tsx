@@ -90,7 +90,7 @@ const Matches = () => {
         <div className="flex items-center gap-3">
           <Select value={queueFilter} options={queueOptions}/>
           <Select value={dateFilter} options={dateOptions}/>
-          <SearchSelect value={championFilter} options={championOptions}/>
+          <SearchSelect value={championFilter} options={championOptions} withIcons/>
           <RoleSelector onChange={(r) => { setRoleFilter(r); currentOffset.current = 0; }} role={roleFilter}/>
         </div>
       </PageInnerHeader>
