@@ -7,10 +7,12 @@ import { useEffect, useRef } from "react";
  */
 export const useClickOutside = <T extends HTMLElement>({
     callback,
+    exclude = [],
     enabled = true
 }: {
     callback: (() => void) | undefined,
     enabled?: boolean
+    exclude?: string[]
 }) => {
 
     const nodeRef = useRef<T>(null);
@@ -18,8 +20,11 @@ export const useClickOutside = <T extends HTMLElement>({
     useEffect(() => {
         
         function handleClick(e: MouseEvent) {
-            const target = e.target as HTMLElement;            
-            if (enabled && !nodeRef.current?.contains(target)) {    
+            const target = e.target as HTMLElement;
+            
+            const isExcluded = exclude.some(id => target.id === id || target.closest(`#${id}`));
+
+            if (enabled && !isExcluded && nodeRef.current && !nodeRef.current.contains(target)) {    
                 callback && callback();                
             }
         }
