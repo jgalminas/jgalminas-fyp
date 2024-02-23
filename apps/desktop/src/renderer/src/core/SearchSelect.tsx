@@ -54,9 +54,9 @@ const SearchSelect = ({ value, className, options }: SearchSelectProps) => {
         { value.value }
         <div className="ml-auto flex items-center gap-1.5">
           { !isFirst &&
-            <button onClick={clear} className="p-0.5 hover:bg-woodsmoke-600 rounded-full">
+            <span role="button" aria-label="clear" onClick={clear} className="p-0.5 hover:bg-woodsmoke-600 rounded-full">
               <X className="w-3.5 h-3.5"/>
-            </button>
+            </span>
           }
           <ChevronDown className={cn("text-star-dust-400 w-5 h-5 transition-all", isOpen && "rotate-180")}/>
         </div>
