@@ -1,3 +1,4 @@
+import { round } from "./number";
 
 export const  fileSize = (size: number): string[] => {
   const kilobyte = 1024;
@@ -7,10 +8,10 @@ export const  fileSize = (size: number): string[] => {
   if (size < kilobyte) {
       return [size.toString(), 'B'];
   } else if (size < megabyte) {
-      return [(size / kilobyte).toFixed(2), 'Kb'];
+      return [round(size / kilobyte), 'Kb'];
   } else if (size < gigabyte) {
-      return [(size / megabyte).toFixed(2), 'Mb'];
+      return [round(size / megabyte), 'Mb'];
   } else {
-      return [(size / gigabyte).toFixed(2), 'Gb'];
+      return [round(size / gigabyte), 'Gb'];
   }
 }

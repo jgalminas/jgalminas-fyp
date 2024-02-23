@@ -5,6 +5,7 @@ import SquareImage from "@renderer/core/SquareImage";
 import Stat from "@renderer/core/match/Stat";
 import Divider from "@renderer/core/page/Divider";
 import { Asset } from "@renderer/util/asset";
+import { round } from "@renderer/util/number";
 import { getChampionNameById } from "@root/constants";
 import { useQuery } from "@tanstack/react-query";
 
@@ -39,8 +40,8 @@ export const ChampionStats = () => {
                 </div>
 
                 <div className="ml-auto">
-                  <Stat value={it.kda.toFixed(2)} type="KDA"/>
-                  <Stat  value={(it.winRate * 100).toFixed(2) + '%'} type="WR"/>
+                  <Stat value={round(it.kda)} type="KDA"/>
+                  <Stat  value={round(it.winRate * 100) + '%'} type="WR"/>
                 </div>
               </li>
             )

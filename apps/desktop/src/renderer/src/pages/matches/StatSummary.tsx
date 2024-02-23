@@ -5,6 +5,7 @@ import Loading from "@renderer/core/Loading";
 import KDA from "@renderer/core/match/KDA";
 import Stat from "@renderer/core/match/Stat";
 import Divider from "@renderer/core/page/Divider";
+import { round } from "@renderer/util/number";
 import { useQuery } from "@tanstack/react-query";
 import { Cell, PieChart, Pie } from "recharts";
 
@@ -56,16 +57,16 @@ export const StatSummary = ({ className }: StatSummaryProps) => {
               </PieChart>
               
               <div className="mr-5">
-                <Stat  value={(winRate * 100).toFixed(2) + '%'} type="WR"/>
+                <Stat  value={round(winRate * 100) + '%'} type="WR"/>
                 <p className="text-sm text-star-dust-400"> { summary.totalMatches } Games </p>
               </div>
       
               <div>
-                <Stat value={summary.kda.toFixed(2)} type="KDA"/>
+                <Stat value={round(summary.kda)} type="KDA"/>
                 <KDA className="text-star-dust-400" stats={{
-                  kills: summary.avgKills.toFixed(2),
-                  deaths: summary.avgDeaths.toFixed(2),
-                  assists: summary.avgAssists.toFixed(2)
+                  kills: round(summary.avgKills),
+                  deaths: round(summary.avgDeaths),
+                  assists: round(summary.avgAssists)
                 }}/>
               </div>
       
