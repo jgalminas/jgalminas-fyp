@@ -1,6 +1,6 @@
 import { cn } from "@fyp/class-name-helper";
 import { secToLength } from "@renderer/util/time";
-import { Dispatch, DragEvent, MouseEvent, SetStateAction, useRef, useState } from "react";
+import { Dispatch, DragEvent, MouseEvent, SetStateAction, WheelEvent, useRef, useState } from "react";
 import TimeCursorHead from '@assets/icons/TimeCursorHead.svg?react';
 import Button from "@renderer/core/Button";
 import ZoomIn from "@assets/icons/ZoomIn.svg?react";
@@ -57,6 +57,17 @@ export const Editor = ({ events, recording }: EditorProps) => {
     start: pxToSec(offset, maxWidth, length) * 1000,
     finish: (pxToSec(offset, maxWidth, length) * 1000) + (pxToSec(width, maxWidth, length) * 1000),
     onCreate: () => setModalOpen(true)
+  });
+
+  useVideoDuration({
+    ref: videoRef,
+    setDuration: (num) => setLength(Math.ceil(num))
+  });
+
+  useKeyPress({
+    key: "space",
+    callback: () => isPlaying ? pause() : play(),
+    deps: [isPlaying]
   });
 
   const scalePx = (zoom: number, value: number) => {
@@ -146,19 +157,18 @@ export const Editor = ({ events, recording }: EditorProps) => {
     }
   }
 
-  useVideoDuration({
-    ref: videoRef,
-    setDuration: (num) => setLength(Math.ceil(num))
-  });
+  const onScroll = (e: WheelEvent) => {
+    if (!e.ctrlKey) return;
 
-  useKeyPress({
-    key: "space",
-    callback: () => isPlaying ? pause() : play(),
-    deps: [isPlaying]
-  });
+    if (e.deltaY === -100) {
+      onZoomIn();
+    } else if (e.deltaY === 100) {
+      onZoomOut();
+    }
+  }
 
   return (  
-    <div className="w-full grid grid-rows-[auto,1fr,auto,auto]">
+    <div className="w-full grid grid-rows-[auto,1fr,auto,auto]" onWheel={onScroll}>
 
       <div className="flex justify-end p-5">
         <Button onClick={create}>
