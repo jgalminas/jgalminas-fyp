@@ -1,6 +1,6 @@
 import { cn } from "@fyp/class-name-helper";
 import { secToLength } from "@renderer/util/time";
-import { Dispatch, DragEvent, MouseEvent, SetStateAction, WheelEvent, useRef, useState } from "react";
+import { Dispatch, DragEvent, MouseEvent, SetStateAction, WheelEvent, useEffect, useRef, useState } from "react";
 import TimeCursorHead from '@assets/icons/TimeCursorHead.svg?react';
 import Button from "@renderer/core/Button";
 import ZoomIn from "@assets/icons/ZoomIn.svg?react";
@@ -22,6 +22,7 @@ import { useCreateHighlight } from "./hooks/useCreateHighlight";
 import Skull from "@assets/icons/Skull.svg?react";
 import Swords from "@assets/icons/Swords.svg?react";
 import Handshake from "@assets/icons/Handshake.svg?react";
+import { log } from "console";
 
 
 const pxToSec = (px: number, maxWidth: number, length: number) => px * (length / maxWidth);
@@ -366,7 +367,11 @@ export const Timeline = ({
       </div>
 
       <div className="overflow-x-auto flex flex-col relative px-5">
-        <TimeCursor offset={timelineRef.current?.offsetLeft ?? 0} position={position}/>
+        <TimeCursor
+        maxWidth={maxWidth}
+        offset={timelineRef.current?.offsetLeft ?? 0}
+        setPosition={updateCurrentTime}
+        position={position}/>
 
         <div onClick={onTimelineClick} style={{ width: maxWidth }}
         className="py-6 text-star-dust-300 w-full relative">
@@ -512,13 +517,46 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }:
 };
 
 export type TimeCursorProps = {
+  maxWidth: number,
   position: number,
+  setPosition: (px: number) => void,
   offset: number
 }
 
-export const TimeCursor = ({ position, offset }: TimeCursorProps) => {
+export const TimeCursor = ({ position, setPosition, offset, maxWidth }: TimeCursorProps) => {
+
+  const offsetLeft = useRef<number>(0);
+  const elementRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    if (elementRef.current) {
+      offsetLeft.current = elementRef.current.getBoundingClientRect().left
+    }
+  }, [elementRef.current])
+
+  const onDrag = (e: DragEvent<HTMLDivElement>) => {
+    const parentElement = e.currentTarget.parentElement;
+    if (!parentElement) return;
+
+    const scrollLeft = parentElement.scrollLeft;
+    const newPosition = (e.clientX + scrollLeft) - offsetLeft.current;
+    if (e.clientX !== 0 && newPosition > 0 && newPosition <= maxWidth - + e.currentTarget.getBoundingClientRect().width) {
+      setPosition(newPosition);
+    }
+  }
+
+  const onDragStart = (e: DragEvent<HTMLDivElement>) => {
+    e.dataTransfer.setDragImage(new Image(), 0, 0);
+  }
+
   return (
-    <div className="bg-science-blue-600 w-[2px] h-full absolute flex flex-col items-center z-50" style={{ left: position + offset }}>
+    <div
+    ref={elementRef}
+    draggable
+    onDragStart={onDragStart}
+    onDrag={onDrag}
+    style={{ left: position + offset }}
+    className="bg-science-blue-600 w-[2px] h-full absolute flex flex-col items-center z-50">
       <TimeCursorHead className="w-5 h-5"/>
     </div>
   )
