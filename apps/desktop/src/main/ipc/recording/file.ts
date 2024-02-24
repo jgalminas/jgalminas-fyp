@@ -241,12 +241,12 @@ export default () => {
 
       return {
         status: "OK",
-        message: "Success!"
+        id: highlight._id
       }
     } else {
       return {
         status: "Error",
-        message: "Failed to create."
+        message: "Failed to create highlight. Please try again."
       }
     }
 

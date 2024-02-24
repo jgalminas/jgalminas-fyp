@@ -26,7 +26,7 @@ const api = {
       data: {
         timeframe: HighlightTimeframe,
         recording: IRecording
-      }): Promise<{ status: "OK" | "ERROR", message: string }> => {
+      }): Promise<{ status: "ERROR", message: string } | { status: "OK", id: string  }> => {
       return await ipcRenderer.invoke(FileIPC.CreateHighlight, data);
     },
     deleteRecording: async(args: { id: string, fileName: string, type: 'recording' | 'highlight' }) => await ipcRenderer.invoke(FileIPC.Delete, args)

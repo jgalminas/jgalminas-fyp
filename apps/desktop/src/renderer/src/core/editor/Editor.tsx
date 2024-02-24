@@ -1,6 +1,6 @@
 import { cn } from "@fyp/class-name-helper";
 import { secToLength } from "@renderer/util/time";
-import { Dispatch, DragEvent, MouseEvent, SetStateAction, WheelEvent, useEffect, useRef, useState } from "react";
+import { Dispatch, DragEvent, Fragment, MouseEvent, SetStateAction, WheelEvent, useEffect, useRef, useState } from "react";
 import TimeCursorHead from '@assets/icons/TimeCursorHead.svg?react';
 import Button from "@renderer/core/Button";
 import ZoomIn from "@assets/icons/ZoomIn.svg?react";
@@ -22,8 +22,8 @@ import { useCreateHighlight } from "./hooks/useCreateHighlight";
 import Skull from "@assets/icons/Skull.svg?react";
 import Swords from "@assets/icons/Swords.svg?react";
 import Handshake from "@assets/icons/Handshake.svg?react";
-import { log } from "console";
-
+import X from "@assets/icons/X.svg?react";
+import LinkButton from "../LinkButton";
 
 const pxToSec = (px: number, maxWidth: number, length: number) => px * (length / maxWidth);
 const secToPx = (sec: number, maxWidth: number, length: number) => Math.round(sec * (maxWidth / length));
@@ -31,6 +31,13 @@ const secToPx = (sec: number, maxWidth: number, length: number) => Math.round(se
 export type EditorProps = {
   recording: IRecording & { match: string },
   events: AggregatedEvents
+}
+
+type ModalState = {
+  state: "OK" | "ERROR",
+  data: string
+} | {
+  state: "LOADING" | "HIDDEN"
 }
 
 export const Editor = ({ events, recording }: EditorProps) => {
@@ -44,7 +51,8 @@ export const Editor = ({ events, recording }: EditorProps) => {
   const [offset, setOffset] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+
+  const [modalState, setModalState] = useState<ModalState>({ state: "HIDDEN" });
 
   const intervalCount = Math.ceil(length / invertZoom(zoom));
   const intervalWidth = intervalCount + invertZoom(zoom);  
@@ -53,11 +61,13 @@ export const Editor = ({ events, recording }: EditorProps) => {
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const { create, isCreating } = useCreateHighlight({
+  const { create } = useCreateHighlight({
     recording,
     start: pxToSec(offset, maxWidth, length) * 1000,
     finish: (pxToSec(offset, maxWidth, length) * 1000) + (pxToSec(width, maxWidth, length) * 1000),
-    onCreate: () => setModalOpen(true)
+    onCreate: () => setModalState({ state: "LOADING" }),
+    onSuccess: (id: string) => setModalState({ state: "OK", data: id }),
+    onFailure: (message: string) => setModalState({ state: "ERROR", data: message })
   });
 
   useVideoDuration({
@@ -172,6 +182,8 @@ export const Editor = ({ events, recording }: EditorProps) => {
     }
   }
 
+  const closeModal = () => setModalState({ state: "HIDDEN" });
+
   return (  
     <div className="w-full grid grid-rows-[auto,1fr,auto,auto]" onWheel={onScroll}>
 
@@ -243,10 +255,11 @@ export const Editor = ({ events, recording }: EditorProps) => {
         />
       </div>
 
-      { isModalOpen &&
+      { modalState.state !== "HIDDEN" &&
         <CreateHighlightModal
-        isLoading={isCreating}
-        onClose={() => setModalOpen(false)}
+        retry={create}
+        state={modalState}
+        onClose={closeModal}
         />
       }
 
@@ -256,16 +269,24 @@ export const Editor = ({ events, recording }: EditorProps) => {
 
 
 export type CreateHighlightModalProps = {
-  isLoading: boolean,
+  retry: () => void,
+  state: ModalState
   onClose: () => void
 }
 
-export const CreateHighlightModal = ({ isLoading, onClose }: CreateHighlightModalProps) => {
+export const CreateHighlightModal = ({ state, onClose, retry }: CreateHighlightModalProps) => {
+
+  const CloseButton = (
+    <Button styleType="text" onClick={onClose}>
+      Close
+    </Button>
+  )
+
   return (
     <Modal clickOutside={false}
     className="w-fit h-fit p-5 rounded-lg min-w-64 min-h-64 flex items-center justify-center flex-col">
       {
-        isLoading
+        state.state === "LOADING"
         ?
         <div className="flex flex-col items-center mt-4">
           <Loading/>
@@ -273,15 +294,35 @@ export const CreateHighlightModal = ({ isLoading, onClose }: CreateHighlightModa
           <p className="text-star-dust-300 text-sm mb-4 max-w-48 text-center"> This should only take a few seconds </p>
         </div>
         :
-        <div className="flex flex-col items-center gap-3">
-          <div className="bg-green-500 rounded-lg bg-opacity-15 text-green-600 p-2">
-            <CheckCircle className="w-14 h-14"/>
-          </div>
-          <p className="text-star-dust-200 mb-2"> Success! </p>
-          <Button styleType="text" onClick={onClose}>
-              Close
-          </Button>
-        </div>
+        <Fragment>
+          { state.state === "OK" &&
+            <div className="flex flex-col items-center gap-3">
+              <div className="bg-green-500 rounded-lg bg-opacity-15 text-green-600 p-2">
+                <CheckCircle className="w-14 h-14"/>
+              </div>
+              <p className="text-star-dust-200 mb-2"> Success! </p>
+                <LinkButton to={`/highlights/${state.data}`}>
+                  View Highlight
+                </LinkButton>
+                { CloseButton }
+            </div>
+          }
+          { state.state === "ERROR" &&
+            <div className="flex flex-col items-center gap-3">
+              <div className="bg-red-500 rounded-lg bg-opacity-15 text-red-600 p-2">
+                <X className="w-14 h-14"/>
+              </div>
+              <p className="text-star-dust-200"> Something went wrong.. </p>
+              <p className="text-star-dust-300 mb-2 text-sm"> { state.data } </p>
+              <div className="flex gap-5">
+                <Button styleType="text" onClick={retry}>
+                  Retry
+                </Button>
+                { CloseButton }
+              </div>
+            </div>
+          }
+        </Fragment>
       }
     </Modal>
   )
