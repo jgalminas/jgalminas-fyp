@@ -11,6 +11,7 @@ import { MainRequestBuilder } from "./util/request";
 import { getApiCookieString } from "./util/cookie";
 import { mainWindow } from ".";
 import { RecordingIPC } from "../shared/ipc";
+import { QUEUE } from "@fyp/types";
 
 export enum GameEvent {
   START = "GameStart",
@@ -81,13 +82,15 @@ export class MatchObserver {
             teamTwo: data.teamTwo
           };
 
-          this.matchRecorderIPC.startRecording(this.gameData);
+          if (this.gameData.queue.id in QUEUE) {
+            this.matchRecorderIPC.startRecording(this.gameData);
+          }
 
         } catch (err) {
           console.log(err);
         }
         
-      } else if (data === GameEvent.FINISH) {
+      } else if (data === GameEvent.FINISH && this.gameData && this.gameData.queue.id in QUEUE) {
 
         const matchId = new ObjectId().toString();
 

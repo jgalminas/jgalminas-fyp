@@ -1,16 +1,18 @@
+import { cn } from "@fyp/class-name-helper"
 
 export type KDAProps = {
+  className?: string,
   stats: {
-    kills: number,
-    deaths: number,
-    assists: number
+    kills: number | string,
+    deaths: number | string,
+    assists: number | string
   }
 }
 
-const KDA = ({ stats }: KDAProps) => {
+const KDA = ({ stats, className }: KDAProps) => {
 
   return (
-    <p className="text-sm text-star-dust-300 flex items-center gap-1">
+    <p className={cn("text-sm text-star-dust-300 flex items-center gap-1", className)}>
       { stats.kills }
       <span className="text-star-dust-500 text-xs"> / </span>
       { stats.deaths }

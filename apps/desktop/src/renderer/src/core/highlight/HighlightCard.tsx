@@ -12,8 +12,12 @@ import Dropdown, { DropdownOption } from "@renderer/core/Dropdown";
 import Ellipsis from '@assets/icons/Ellipsis.svg?react';
 import Info from '@assets/icons/Info.svg?react';
 import { HighlightTag } from "./HighlightTag";
+import { queryClient } from "@renderer/App";
+import { useState } from "react";
+import { DeleteModal } from "../DeleteModal";
 
 export type HighlightCardProps = {
+  queryKey: (string | number)[],
   data: {
     highlight: IHighlight & { match: string },
     thumbnail: { message: 'OK', path: string } | {  message: 'VIDEO_NOT_FOUND' }
@@ -23,16 +27,50 @@ export type HighlightCardProps = {
   playPath: string
 }
 
-const HighlightCard = ({ data, position, playPath, linkToGame = false }: HighlightCardProps) => {
+const HighlightCard = ({ queryKey, data, position, playPath, linkToGame = false }: HighlightCardProps) => {
 
   const Role = data.highlight.position && RoleIcons[data.highlight.position];
   const size = fileSize(data.highlight.size);
+
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+
+  const confirmDelete = () => {
+    queryClient.setQueryData(queryKey, (
+      prev: {
+        pageParams: number[],
+        pages: {
+          highlight: IHighlight,
+          thumbnail: Awaited<ReturnType<typeof window.api.file.getThumbnail>>
+        }[][]
+      }
+    ) => {
+
+      const items = {
+        pageParams: prev.pageParams,
+        pages: [
+          ...prev.pages
+        ]
+      }
+
+      for (let i = 0; i < items.pages.length; i++) {
+        items.pages[i] = items.pages[i].filter(i => i.highlight._id.toString() !== data.highlight._id.toString());
+      }
+
+      return items;
+    });
+
+    window.api.file.deleteRecording({
+      id: data.highlight._id.toString(),
+      fileName: data.highlight.fileId,
+      type: "highlight"
+    })
+  }
 
   const options: DropdownOption[] = [
     {
       id: 'delete',
       value: 'Delete',
-      onClick: () => {}
+      onClick: () => setModalOpen(true)
     }
   ]
   
@@ -51,7 +89,7 @@ const HighlightCard = ({ data, position, playPath, linkToGame = false }: Highlig
       <div className="flex flex-col pl-5 py-5 justify-between">
         <div className="flex items-center gap-4">
           <RoundImage className="w-10 h-10" src={Asset.champion(data.highlight.champion)}/>
-          <h2 className="text-star-dust-200 font-semibold"> Highlight #{ position } </h2>
+          <h2 className="text-star-dust-200 font-semibold"> Highlight #{ position + 1 } </h2>
           <div className="flex items-center gap-6 ml-2 text-star-dust-300 text-sm">
             <p> { length(data.highlight.length) } </p>
             <div className="flex gap-3 items-center">
@@ -90,6 +128,8 @@ const HighlightCard = ({ data, position, playPath, linkToGame = false }: Highlig
         )}
       </Dropdown>
     </div>
+
+    { isModalOpen && <DeleteModal onConfirm={confirmDelete} onClose={() => setModalOpen(false)}/> }
   </Card>
   )
 }

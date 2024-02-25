@@ -12,8 +12,12 @@ import { fileSize } from "@renderer/util/file";
 import Dropdown, { DropdownOption } from "@renderer/core/Dropdown";
 import Ellipsis from '@assets/icons/Ellipsis.svg?react';
 import Info from '@assets/icons/Info.svg?react';
+import { DeleteModal } from "@renderer/core/DeleteModal";
+import { queryClient } from "@renderer/App";
+import { useState } from "react";
 
 export type RecordingCardProps = {
+  queryKey: (string | number)[],
   data: {
     recording: IRecording & { match: string },
     thumbnail: { message: 'OK', path: string } | {  message: 'VIDEO_NOT_FOUND' }
@@ -21,16 +25,50 @@ export type RecordingCardProps = {
   position: number
 }
 
-const RecordingCard = ({ data, position }: RecordingCardProps) => {
+const RecordingCard = ({ queryKey, data, position }: RecordingCardProps) => {
 
   const Role = data.recording.position && RoleIcons[data.recording.position];
   const size = fileSize(data.recording.size);
+
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+
+  const confirmDelete = () => {
+    queryClient.setQueryData(queryKey, (
+      prev: {
+        pageParams: number[],
+        pages: {
+          recording: IRecording,
+          thumbnail: Awaited<ReturnType<typeof window.api.file.getThumbnail>>
+        }[][]
+      }
+    ) => {
+
+      const items = {
+        pageParams: prev.pageParams,
+        pages: [
+          ...prev.pages
+        ]
+      }
+
+      for (let i = 0; i < items.pages.length; i++) {
+        items.pages[i] = items.pages[i].filter(i => i.recording._id.toString() !== data.recording._id.toString());
+      }
+
+      return items;
+    });
+
+    window.api.file.deleteRecording({
+      id: data.recording._id.toString(),
+      fileName: data.recording.gameId,
+      type: "recording"
+    })
+  }
 
   const options: DropdownOption[] = [
     {
       id: 'delete',
       value: 'Delete',
-      onClick: () => {}
+      onClick: () => setModalOpen(true)
     }
   ]
 
@@ -81,6 +119,8 @@ const RecordingCard = ({ data, position }: RecordingCardProps) => {
         )}
       </Dropdown>
     </div>
+
+    { isModalOpen && <DeleteModal onConfirm={confirmDelete} onClose={() => setModalOpen(false)}/> }
   </Card>
   )
 }

@@ -1,29 +1,18 @@
 import { useOutletContext } from "react-router";
 import ScoreboardTable from "../components/ScoreboardTable";
 import { IParticipant, Match } from "@fyp/types";
-import { getPlayer } from "@renderer/util/match";
-import { Session, useAuth } from "@renderer/auth/AuthContext";
-import BarChart from "../components/BarChart";
-import RoundImage from "@renderer/core/RoundImage";
-import { Asset } from "@renderer/util/asset";
-import { cn } from "@fyp/class-name-helper";
+import { BarChart } from "../components/BarChart";
 
 const ScoreBoard = () => {
 
   const { match } = useOutletContext<{ match: Match }>();
-  const { session } = useAuth();
-
-  const user = getPlayer(match, session as Session); // TODO: for champion bg
 
   const damage = match.participantStats.map((value) => {
     const participant = match.participants.find((p) => p.participantId === value.participantId) as IParticipant;
     return {
       value: value.physicalDamageToChampions + value.magicDamageToChampions + value.trueDamageToChampions,
-      label: (
-        <RoundImage src={Asset.champion(participant.champion)}
-        className={cn("mt-4 h-10 w-10", participant.team === 'BLUE' ? "border-accent-blue" : "border-accent-red")}/>
-      ),
-      color: participant.team === 'BLUE' ? 'bg-accent-blue' : 'bg-accent-red'
+      label: participant.champion,
+      color: participant.team === 'BLUE' ? '#0068CA' : '#FF3B3A'
     }
   }).sort((a, b) => a.value > b.value ? -1 : 1);
 
@@ -31,19 +20,16 @@ const ScoreBoard = () => {
     const participant = match.participants.find((p) => p.participantId === value.participantId) as IParticipant;
     return {
       value: value.totalGold,
-      label: (
-        <RoundImage src={Asset.champion(participant.champion)}
-        className={cn("mt-4 h-10 w-10", participant.team === 'BLUE' ? "border-accent-blue" : "border-accent-red")}/>
-      ),
-      color: participant.team === 'BLUE' ? 'bg-accent-blue' : 'bg-accent-red'
+      label: participant.champion,
+      color: participant.team === 'BLUE' ? '#0068CA' : '#FF3B3A'
     }
   }).sort((a, b) => a.value > b.value ? -1 : 1);
 
   return (
-    <div className="grid grid-cols-2 gap-6 grid-rows-2">
+    <div className="grid grid-cols-2 gap-6 grid-rows-[auto,auto]">
       <ScoreboardTable className="col-span-full" match={match}/>
-      <BarChart className="h-fit" height={200} data={damage} label="Damage Distribution"/>
-      <BarChart className="h-fit" height={200} data={income} label="Income"/>
+      <BarChart height={280} data={damage} label="Damage Distribution"/>
+      <BarChart height={280} data={income} label="Income"/>
     </div>
   )
 }

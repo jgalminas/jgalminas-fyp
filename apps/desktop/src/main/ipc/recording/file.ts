@@ -5,7 +5,7 @@ import { HIGHLIGHTS_SUBDIRECTORY, THUMBNAIL_FORMAT, VIDEO_DIRECTORY, VIDEO_FORMA
 import { fileExists } from '../../util/file';
 import { captureThumbnail } from '../../../shared/util/recording';
 import { FileIPC, HighlightIPC } from '../../../shared/ipc';
-import { mkdir, readFile } from 'fs/promises';
+import { mkdir, readFile, unlink } from 'fs/promises';
 import { ObjectId } from 'bson';
 import { ffmpegPath, ffprobePath } from 'ffmpeg-ffprobe-static';
 import { HighlightTimeframe, IRecording } from '@fyp/types';
@@ -241,12 +241,38 @@ export default () => {
 
       return {
         status: "OK",
-        message: "Success!"
+        id: highlight._id
       }
     } else {
       return {
         status: "Error",
-        message: "Failed to create."
+        message: "Failed to create highlight. Please try again."
+      }
+    }
+
+  })
+
+  ipcMain.handle(FileIPC.Delete, async(_, { id, fileName, type }: { id: string, fileName: string, type: 'recording' | 'highlight' }) => {
+    const videoDir = path.join(app.getPath('videos'), VIDEO_DIRECTORY, type === 'highlight' ? type + 's' : '');
+
+    const filePath = path.join(videoDir, `${fileName}.${VIDEO_FORMAT}`);
+    const thumbnailPath = path.join(videoDir, `${fileName}.${THUMBNAIL_FORMAT}`);
+
+    const res = await new MainRequestBuilder()
+    .route(`/v1/${type}/${id}`)
+    .method('DELETE')
+    .headers({
+      Cookie: await getApiCookieString()
+    })
+    .fetch();
+
+    if (res.ok) {
+      try {
+        await unlink(filePath);
+        await unlink(thumbnailPath);
+      } catch (err) {
+        console.log(err);
+        
       }
     }
 

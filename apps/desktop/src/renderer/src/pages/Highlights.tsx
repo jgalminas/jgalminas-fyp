@@ -48,8 +48,10 @@ const Highlights = () => {
 
   }
 
+  const queryKey = ['highlights', queueFilter.id, dateFilter.id, championFilter.id, roleFilter];
+
   const { isLoading, data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ['highlights', queueFilter.id, dateFilter.id, championFilter.id, roleFilter],
+    queryKey: queryKey,
     initialPageParam: 0,
     queryFn: ({ pageParam }) => {
       currentOffset.current += pageParam;
@@ -85,7 +87,7 @@ const Highlights = () => {
             highlight,
             ...items.pages[0]
           ],
-          ...items.pages
+          ...items.pages.slice(1)
         ]
       }
       
@@ -108,7 +110,7 @@ const Highlights = () => {
         <div className="flex items-center gap-3">
           <Select value={queueFilter} options={queueOptions}/>
           <Select value={dateFilter} options={dateOptions}/>
-          <SearchSelect value={championFilter} options={championOptions}/>
+          <SearchSelect value={championFilter} options={championOptions} withIcons/>
           <RoleSelector onChange={(r) => { setRoleFilter(r); currentOffset.current = 0; }} role={roleFilter}/>
         </div>
       </PageInnerHeader>
@@ -119,7 +121,13 @@ const Highlights = () => {
             <ViewportList items={highlights} overscan={6} withCache>
               { (hl, key) => {
                 return (
-                  <HighlightCard linkToGame data={hl} key={key} position={key + 1} playPath={`/highlights/${hl.highlight._id}`}/>
+                  <HighlightCard
+                  key={key}
+                  linkToGame
+                  data={hl}
+                  position={key}
+                  queryKey={queryKey}
+                  playPath={`/highlights/${hl.highlight._id}`}/>
                 )
               }}
             </ViewportList>

@@ -7,6 +7,7 @@
 
 * {
   font-family: 'Inter', sans-serif;
+  
 }
 
 .shimmer {
@@ -131,4 +132,11 @@
   @media (min-height: 600px) {
     max-height: 400px;
   }
+}
+
+.splash-mask {
+  mask-size: 100%;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  mask-image: url("/images/splash_mask.svg");
 }

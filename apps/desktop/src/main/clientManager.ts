@@ -1,14 +1,11 @@
 import { Credentials, authenticate, LeagueClient, createHttp1Request } from "league-connect";
-import { lolApi } from "./index";
-import { Regions } from "twisted/dist/constants";
+import { MainRequestBuilder } from "./util/request";
+import { getApiCookieString } from "./util/cookie";
 
 export type Player = {
   username: string,
-  profileIconId: number,
   tag: string,
-  accountId: string,
   puuid: string,
-  id: string,
   region: string
 }
 
@@ -54,16 +51,30 @@ export class ClientManager {
 
     const region = authReq.json()['currentPlatformId'] as string;
 
-    const { response } = await lolApi.Summoner.getByName(summonerData.internalName, region as Regions);
+    try {
+      const response = await new MainRequestBuilder()
+      .route('/v1/summoner/')
+      .method('POST')
+      .headers({
+          Cookie: await getApiCookieString()
+      })
+      .body({
+        username: summonerData.internalName,
+        tag: summonerData.tagLine,
+        region: region
+      })
+      .fetch();
 
-    this.player = {
-      id: response.id,
-      accountId: response.accountId,
-      puuid: response.puuid,
-      profileIconId: response.profileIconId,
-      region: region,
-      tag: summonerData.tagLine,
-      username: summonerData.internalName
+      const data: { puuid: string, gameName: string, tagLine: string } = await response.json();
+
+      this.player = {
+        puuid: data.puuid,
+        region: region,
+        tag: summonerData.tagLine,
+        username: summonerData.internalName
+      }
+    } catch (err) {
+      console.log(err);
     }
 
   }

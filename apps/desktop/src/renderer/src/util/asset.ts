@@ -1,10 +1,9 @@
 import { SummonerSpell } from "@fyp/types";
+import env from "@root/env";
 
 export const PATCH = '14.1.1';
 export const BASE_CDN = 'https://ddragon.leagueoflegends.com/cdn';
 export const BASE_RUNE_CDN = 'https://ddragon.canisback.com/img/perk-images/Styles/';
-
-//https://ddragon.leagueoflegends.com/cdn/13.23.1/img/champion/Belveth.png
 
 export const Asset = {
   champion: (champion: string) => {
@@ -100,5 +99,6 @@ export const Asset = {
         return '';
     }
   },
-  profileIcon: (id: number) => `${BASE_CDN}/${PATCH}/img/profileicon/${id}.png`
+  profileIcon: (id: number) => `${BASE_CDN}/${PATCH}/img/profileicon/${id}.png`,
+  splash: (champion: string) => `${env.RENDERER_VITE_CDN_URL}/splash/${champion}.jpg`
 };

@@ -1,21 +1,19 @@
 import { IRecording } from "@fyp/types";
-import { useState } from "react";
 
 export type useCreateHighlightProps = {
   recording: IRecording & { match: string }
   start: number,
   finish: number,
-  onCreate: () => void
+  onCreate: () => void,
+  onSuccess: (id: string) => void,
+  onFailure: (message: string) => void
 }
 
-export const useCreateHighlight = ({ recording, start, finish, onCreate }: useCreateHighlightProps) => {
-
-  const [isCreating, setIsCreating] = useState<boolean>(false);
+export const useCreateHighlight = ({ recording, start, finish, onCreate, onSuccess, onFailure }: useCreateHighlightProps) => {
 
   const create = async() => {
-    setIsCreating(true);
     onCreate();  
-    await window.api.file.createHighlight({
+    const result = await window.api.file.createHighlight({
       recording,
       timeframe: {
         frame: 0,
@@ -24,8 +22,14 @@ export const useCreateHighlight = ({ recording, start, finish, onCreate }: useCr
         tags: []
       }
     })
-    setIsCreating(false);
+
+    if (result.status === "OK") {
+      onSuccess(result.id);
+    } else {
+      onFailure(result.message);
+    }
+
   };
 
-  return { create, isCreating }
+  return { create }
 }

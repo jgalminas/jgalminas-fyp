@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const webEnvSchema = z.object({
   // URLS
+  RENDERER_VITE_CDN_URL: z.string(),
   RENDERER_VITE_PORT: z.string(),
   RENDERER_VITE_APP_URL: z.string(),
   RENDERER_VITE_API_URL: z.string(),
@@ -10,7 +11,7 @@ export const webEnvSchema = z.object({
   RENDERER_VITE_SOCKET_URL: z.string()
 });
 
-export const apiEnvSchema = z.object({
+export const serverEnvSchema = z.object({
   SECRET: z.string(),
 
   WEB_URL: z.string(),
@@ -18,8 +19,6 @@ export const apiEnvSchema = z.object({
   RIOT_KEY: z.string(),
 
   MODE: z.string(),
-
-  JWT_SECRET_TOKEN: z.string(),
 
   // DATABASE
   MONGODB_USER: z.string(),

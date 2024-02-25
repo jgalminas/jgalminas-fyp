@@ -1,4 +1,4 @@
-import { Match } from "@fyp/types";
+import { AggregatedEvents, Match } from "@fyp/types";
 import { ClientRequestBuilder } from "@renderer/util/request";
 
 export const getMatchById = async (id: string): Promise<Match> => {
@@ -21,6 +21,14 @@ export const getMatches = async (
   const res = await new ClientRequestBuilder()
   .route('/v1/match/all')
   .query(filters)
+  .fetch();
+
+  return res.json();
+}
+
+export const getMatchEvents = async (id: string): Promise<AggregatedEvents> => {
+  const res = await new ClientRequestBuilder()
+  .route(`/v1/match/${id}/events`)
   .fetch();
 
   return res.json();

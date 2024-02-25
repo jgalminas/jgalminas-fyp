@@ -21,7 +21,8 @@ const Modal = ({ className, children, onClose, backdropClass, clickOutside = tru
 
   const { nodeRef }  = useClickOutside<HTMLDivElement>({
     callback: onClose,
-    enabled: clickOutside
+    enabled: clickOutside,
+    exclude: ["sidebar"]
   });
 
   if (target) {

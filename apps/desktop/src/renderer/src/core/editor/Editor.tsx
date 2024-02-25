@@ -1,6 +1,6 @@
 import { cn } from "@fyp/class-name-helper";
 import { secToLength } from "@renderer/util/time";
-import { Dispatch, DragEvent, MouseEvent, SetStateAction, useRef, useState } from "react";
+import { Dispatch, DragEvent, Fragment, MouseEvent, SetStateAction, WheelEvent, useEffect, useRef, useState } from "react";
 import TimeCursorHead from '@assets/icons/TimeCursorHead.svg?react';
 import Button from "@renderer/core/Button";
 import ZoomIn from "@assets/icons/ZoomIn.svg?react";
@@ -13,22 +13,34 @@ import Rewind from "@assets/icons/Rewind.svg?react";
 import RewindToStart from "@assets/icons/RewindToStart.svg?react";
 import ForwardToEnd from "@assets/icons/ForwardToEnd.svg?react";
 import { useKeyPress } from "./hooks/useKeyPress";
-import { IRecording } from "@fyp/types";
+import { AggregatedEvents, IRecording } from "@fyp/types";
 import { videoUrl } from "@renderer/util/video";
 import Modal from "../video/Modal";
 import Loading from "../Loading";
 import CheckCircle from "@assets/icons/CheckCircle.svg?react";
 import { useCreateHighlight } from "./hooks/useCreateHighlight";
-
+import Skull from "@assets/icons/Skull.svg?react";
+import Swords from "@assets/icons/Swords.svg?react";
+import Handshake from "@assets/icons/Handshake.svg?react";
+import X from "@assets/icons/X.svg?react";
+import LinkButton from "../LinkButton";
 
 const pxToSec = (px: number, maxWidth: number, length: number) => px * (length / maxWidth);
 const secToPx = (sec: number, maxWidth: number, length: number) => Math.round(sec * (maxWidth / length));
 
 export type EditorProps = {
-  recording: IRecording & { match: string }
+  recording: IRecording & { match: string },
+  events: AggregatedEvents
 }
 
-export const Editor = ({ recording }: EditorProps) => {
+type ModalState = {
+  state: "OK" | "ERROR",
+  data: string
+} | {
+  state: "LOADING" | "HIDDEN"
+}
+
+export const Editor = ({ events, recording }: EditorProps) => {
 
   const MAX_ZOOM = 200;
   const MIN_ZOOM = 50;
@@ -39,19 +51,34 @@ export const Editor = ({ recording }: EditorProps) => {
   const [offset, setOffset] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+
+  const [modalState, setModalState] = useState<ModalState>({ state: "HIDDEN" });
 
   const intervalCount = Math.ceil(length / invertZoom(zoom));
   const intervalWidth = intervalCount + invertZoom(zoom);  
   const maxWidth = intervalWidth * intervalCount;
+  const videoOffset = recording.length - (events.duration / 1000);
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const { create, isCreating } = useCreateHighlight({
+  const { create } = useCreateHighlight({
     recording,
     start: pxToSec(offset, maxWidth, length) * 1000,
     finish: (pxToSec(offset, maxWidth, length) * 1000) + (pxToSec(width, maxWidth, length) * 1000),
-    onCreate: () => setModalOpen(true)
+    onCreate: () => setModalState({ state: "LOADING" }),
+    onSuccess: (id: string) => setModalState({ state: "OK", data: id }),
+    onFailure: (message: string) => setModalState({ state: "ERROR", data: message })
+  });
+
+  useVideoDuration({
+    ref: videoRef,
+    setDuration: (num) => setLength(Math.ceil(num))
+  });
+
+  useKeyPress({
+    key: "space",
+    callback: () => isPlaying ? pause() : play(),
+    deps: [isPlaying]
   });
 
   const scalePx = (zoom: number, value: number) => {
@@ -67,8 +94,10 @@ export const Editor = ({ recording }: EditorProps) => {
     const newZoom = Math.min(MAX_ZOOM, zoom + 10);
     const [newWidth, newMaxWidth] = scalePx(newZoom, width);
     const [newOffset] = scalePx(newZoom, offset);
+    const [newTime] = scalePx(newZoom, currentTime);
     setOffset(newOffset);
     setZoom(newZoom);
+    setCurrentTime(newTime);
     setWidth(newWidth > newMaxWidth ? newMaxWidth : newWidth);
   }
 
@@ -76,8 +105,10 @@ export const Editor = ({ recording }: EditorProps) => {
     const newZoom = Math.max(MIN_ZOOM, zoom - 10);
     const [newWidth, newMaxWidth] = scalePx(newZoom, width);
     const [newOffset] = scalePx(newZoom, offset);
+    const [newTime] = scalePx(newZoom, currentTime);
     setOffset(newOffset);
     setZoom(newZoom);
+    setCurrentTime(newTime);
     setWidth(Math.max(50, newWidth > newMaxWidth ? newMaxWidth : newWidth));
   }
 
@@ -141,19 +172,20 @@ export const Editor = ({ recording }: EditorProps) => {
     }
   }
 
-  useVideoDuration({
-    ref: videoRef,
-    setDuration: (num) => setLength(Math.ceil(num))
-  });
+  const onScroll = (e: WheelEvent) => {
+    if (!e.ctrlKey) return;
 
-  useKeyPress({
-    key: "space",
-    callback: () => isPlaying ? pause() : play(),
-    deps: [isPlaying]
-  });
+    if (e.deltaY === -100) {
+      onZoomIn();
+    } else if (e.deltaY === 100) {
+      onZoomOut();
+    }
+  }
+
+  const closeModal = () => setModalState({ state: "HIDDEN" });
 
   return (  
-    <div className="w-full grid grid-rows-[auto,1fr,auto,auto]">
+    <div className="w-full grid grid-rows-[auto,1fr,auto,auto]" onWheel={onScroll}>
 
       <div className="flex justify-end p-5">
         <Button onClick={create}>
@@ -205,6 +237,8 @@ export const Editor = ({ recording }: EditorProps) => {
       
       <div className="mt-auto w-full overflow-x-auto">
         <Timeline
+        videoOffset={videoOffset}
+        events={events}
         intervalWidth={intervalWidth}
         intervalCount={intervalCount}
         maxWidth={maxWidth}
@@ -221,10 +255,11 @@ export const Editor = ({ recording }: EditorProps) => {
         />
       </div>
 
-      { isModalOpen &&
+      { modalState.state !== "HIDDEN" &&
         <CreateHighlightModal
-        isLoading={isCreating}
-        onClose={() => setModalOpen(false)}
+        retry={create}
+        state={modalState}
+        onClose={closeModal}
         />
       }
 
@@ -234,16 +269,24 @@ export const Editor = ({ recording }: EditorProps) => {
 
 
 export type CreateHighlightModalProps = {
-  isLoading: boolean,
+  retry: () => void,
+  state: ModalState
   onClose: () => void
 }
 
-export const CreateHighlightModal = ({ isLoading, onClose }: CreateHighlightModalProps) => {
+export const CreateHighlightModal = ({ state, onClose, retry }: CreateHighlightModalProps) => {
+
+  const CloseButton = (
+    <Button styleType="text" onClick={onClose}>
+      Close
+    </Button>
+  )
+
   return (
     <Modal clickOutside={false}
     className="w-fit h-fit p-5 rounded-lg min-w-64 min-h-64 flex items-center justify-center flex-col">
       {
-        isLoading
+        state.state === "LOADING"
         ?
         <div className="flex flex-col items-center mt-4">
           <Loading/>
@@ -251,21 +294,43 @@ export const CreateHighlightModal = ({ isLoading, onClose }: CreateHighlightModa
           <p className="text-star-dust-300 text-sm mb-4 max-w-48 text-center"> This should only take a few seconds </p>
         </div>
         :
-        <div className="flex flex-col items-center gap-3">
-          <div className="bg-green-500 rounded-lg bg-opacity-15 text-green-600 p-2">
-            <CheckCircle className="w-14 h-14"/>
-          </div>
-          <p className="text-star-dust-200 mb-2"> Success! </p>
-          <Button styleType="text" onClick={onClose}>
-              Close
-          </Button>
-        </div>
+        <Fragment>
+          { state.state === "OK" &&
+            <div className="flex flex-col items-center gap-3">
+              <div className="bg-green-500 rounded-lg bg-opacity-15 text-green-600 p-2">
+                <CheckCircle className="w-14 h-14"/>
+              </div>
+              <p className="text-star-dust-200 mb-2"> Success! </p>
+                <LinkButton to={`/highlights/${state.data}`}>
+                  View Highlight
+                </LinkButton>
+                { CloseButton }
+            </div>
+          }
+          { state.state === "ERROR" &&
+            <div className="flex flex-col items-center gap-3">
+              <div className="bg-red-500 rounded-lg bg-opacity-15 text-red-600 p-2">
+                <X className="w-14 h-14"/>
+              </div>
+              <p className="text-star-dust-200"> Something went wrong.. </p>
+              <p className="text-star-dust-300 mb-2 text-sm"> { state.data } </p>
+              <div className="flex gap-5">
+                <Button styleType="text" onClick={retry}>
+                  Retry
+                </Button>
+                { CloseButton }
+              </div>
+            </div>
+          }
+        </Fragment>
       }
     </Modal>
   )
 }
 
 export type TimelineProps = {
+  videoOffset: number,
+  events: AggregatedEvents,
   intervalWidth: number,
   length: number,
   position: number,
@@ -283,6 +348,8 @@ export type TimelineProps = {
 }
 
 export const Timeline = ({
+  videoOffset,
+  events,
   maxWidth,
   intervalWidth,
   zoom,
@@ -303,8 +370,21 @@ export const Timeline = ({
 
   const onTimelineClick = (e: MouseEvent<HTMLDivElement>) => {
     const timeline = timelineRef.current;
-    if (timeline) {
-      updateCurrentTime(e.clientX - timeline.getBoundingClientRect().left);
+    if (!timeline) return;
+    const newPosition = e.clientX - timeline.getBoundingClientRect().left;
+    if (newPosition > 0 && newPosition < maxWidth) {
+      updateCurrentTime(newPosition);
+    }
+  }
+
+  const eventToIcon = (type: typeof events.events[number]["type"]) => {
+    switch(type) {
+      case "KILL":
+        return <Swords className="fill-woodsmoke-600 w-6 h-6 text-star-dust-400"/>
+      case "ASSIST":
+        return <Handshake className="w-6 h-6"/>
+      case "DEATH":
+        return <Skull className="w-6 h-6"/>
     }
   }
 
@@ -330,10 +410,22 @@ export const Timeline = ({
       </div>
 
       <div className="overflow-x-auto flex flex-col relative px-5">
-        <TimeCursor offset={timelineRef.current?.offsetLeft ?? 0} position={position}/>
+        <TimeCursor
+        maxWidth={maxWidth}
+        offset={timelineRef.current?.offsetLeft ?? 0}
+        setPosition={updateCurrentTime}
+        position={position}/>
 
-        <div className="py-5 text-star-dust-300 w-full">
-          {/* events will go here */}
+        <div onClick={onTimelineClick} style={{ width: maxWidth }}
+        className="py-6 text-star-dust-300 w-full relative">
+          { events.events.map((e, key) => {
+            return (
+              <div key={key} style={{ left: secToPx((e.timestamp / 1000) + videoOffset, maxWidth, length) ?? 0 }}
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2">
+                { eventToIcon(e.type) }
+              </div>
+            )
+          }) }
         </div>
 
         <div ref={timelineRef} className="flex text-star-dust-300 text-xs pb-3" onClick={onTimelineClick}>
@@ -360,7 +452,6 @@ export const Timeline = ({
         setOffset={setOffset}
         width={width}
         setWidth={setWidth}
-        onTimelineClick={onTimelineClick}
         />
       </div>
     </div>
@@ -373,11 +464,10 @@ type SliderProps = {
   width: number,
   setWidth: Dispatch<SetStateAction<number>>,
   offset: number,
-  setOffset: Dispatch<SetStateAction<number>>,
-  onTimelineClick: (e: MouseEvent<HTMLDivElement>) => void
+  setOffset: Dispatch<SetStateAction<number>>
 }
 
-const Slider = ({ maxWidth, width, setWidth, offset, setOffset, onTimelineClick, minRange = 50 }: SliderProps) => {
+const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }: SliderProps) => {
 
   // TODO:
   // account for scroll position in move
@@ -405,7 +495,7 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, onTimelineClick,
       
       if (diff !== 0) {
         if (side === "left") {
-          if (offset + diff >= 0 && width - diff >= minRange) {
+          if (offset + diff > 0 && width - diff > minRange) {
             setOffset(prev => prev + diff); 
             setWidth(width => width - diff);
           }
@@ -428,8 +518,20 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, onTimelineClick,
     prevOffsetX.current = e.clientX;
   }
 
+  const onClick = (e: MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const position = e.clientX - rect.left;
+
+    if (position < offset) {
+      setOffset(position);
+      setWidth(prev => prev + (offset - position));
+    } else if (position > (offset + width)) {
+      setWidth(position - offset);
+    }
+  }
+
   return (
-    <div className="w-full bg-woodsmoke-800 rounded-lg mb-2 select-none" style={{ width: maxWidth }} onClick={onTimelineClick}>
+    <div className="w-full bg-woodsmoke-800 rounded-lg mb-2 select-none" style={{ width: maxWidth }} onClick={onClick}>
       <div style={{ width: width, marginLeft: offset, maxWidth: maxWidth - offset }}
       className="flex h-12 bg-science-blue-600 bg-opacity-15 border-2 rounded-lg border-science-blue-600">
         <div
@@ -458,14 +560,47 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, onTimelineClick,
 };
 
 export type TimeCursorProps = {
+  maxWidth: number,
   position: number,
+  setPosition: (px: number) => void,
   offset: number
 }
 
-export const TimeCursor = ({ position, offset }: TimeCursorProps) => {
+export const TimeCursor = ({ position, setPosition, offset, maxWidth }: TimeCursorProps) => {
+
+  const offsetLeft = useRef<number>(0);
+  const elementRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    if (elementRef.current) {
+      offsetLeft.current = elementRef.current.getBoundingClientRect().left
+    }
+  }, [elementRef.current])
+
+  const onDrag = (e: DragEvent<HTMLDivElement>) => {
+    const parentElement = e.currentTarget.parentElement;
+    if (!parentElement) return;
+
+    const scrollLeft = parentElement.scrollLeft;
+    const newPosition = (e.clientX + scrollLeft) - offsetLeft.current;
+    if (e.clientX !== 0 && newPosition > 0 && newPosition <= maxWidth - + e.currentTarget.getBoundingClientRect().width) {
+      setPosition(newPosition);
+    }
+  }
+
+  const onDragStart = (e: DragEvent<HTMLDivElement>) => {
+    e.dataTransfer.setDragImage(new Image(), 0, 0);
+  }
+
   return (
-    <div className="bg-science-blue-600 w-[2px] h-full absolute flex flex-col items-center z-50" style={{ left: position + offset }}>
-      <TimeCursorHead className="w-6 h-6"/>
+    <div
+    ref={elementRef}
+    draggable
+    onDragStart={onDragStart}
+    onDrag={onDrag}
+    style={{ left: (position + offset) ?? 0 }}
+    className="bg-science-blue-600 w-[2px] h-full absolute flex flex-col items-center z-50">
+      <TimeCursorHead className="w-5 h-5"/>
     </div>
   )
 }

@@ -20,6 +20,10 @@ import { useInView } from 'react-intersection-observer';
 import { ViewportList } from 'react-viewport-list';
 import Loading from "@renderer/core/Loading";
 import InfoMessage from "@renderer/core/message/InfoMessage";
+import { StatSummary } from "./StatSummary";
+import { ChampionStats } from "./ChampionStats";
+import { useSummoner } from "@renderer/SummonerContext";
+import { cn } from "@fyp/class-name-helper";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -75,42 +79,56 @@ const Matches = () => {
     }
   }, [inView])
 
+  const { summoner } = useSummoner();
+
   const matches = data?.pages.flat();
 
   return ( 
-    <Page header={<DefaultHeader/>} contentClass="gap-0">
+    <Page header={<DefaultHeader/>} pageClass={ summoner ? "max-w-[80rem]" : "max-w-[60rem]"} contentClass="gap-0">
       <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-50 pb-3">
         <PageTitle> Played Matches </PageTitle>
         <div className="flex items-center gap-3">
           <Select value={queueFilter} options={queueOptions}/>
           <Select value={dateFilter} options={dateOptions}/>
-          <SearchSelect value={championFilter} options={championOptions}/>
+          <SearchSelect value={championFilter} options={championOptions} withIcons/>
           <RoleSelector onChange={(r) => { setRoleFilter(r); currentOffset.current = 0; }} role={roleFilter}/>
         </div>
       </PageInnerHeader>
       <PageBody>
-        { !isLoading ?
-          <div className="flex flex-col gap-5">
-            <ViewportList items={matches} overscan={6} withCache>
-              { (match, key) => {
-                return (
-                  <MatchCard match={match} key={key}/>
-                )
-              }}
-            </ViewportList>
-            { hasNextPage &&
-              <div className="mb-0.5" ref={ref}/>
-            }
-          </div>
-          : <Loading className="w-full my-24"/>
-        }
-        { isFetchingNextPage &&
-          <Loading className="w-full mb-5"/>
-        }
-        { matches && matches.length === 0
-          ? <InfoMessage className="bg-woodsmoke-800 rounded-lg px-5 py-10"> No results found </InfoMessage>
-          : null
-        }
+        <div className={cn("grid gap-8", summoner ? "grid-cols-[minmax(0,60rem),minmax(0,20rem)]" : "grid-cols-1")}>
+          { !isLoading ?
+              <div>
+                <div className="flex flex-col gap-5">
+                  <ViewportList items={matches} overscan={6} withCache>
+                    { (match, key) => {
+                      return (
+                        <MatchCard match={match} key={key}/>
+                      )
+                    }}
+                  </ViewportList>
+                  { hasNextPage &&
+                    <div className="mb-0.5" ref={ref}/>
+                  }
+                </div>
+                { isFetchingNextPage &&
+                  <Loading className="w-full mb-5"/>
+                }
+                { matches && matches.length === 0
+                  ? <InfoMessage className="bg-woodsmoke-800 rounded-lg px-5 py-10"> No results found </InfoMessage>
+                  : null
+                }
+              </div>
+            : <Loading className="w-full my-24"/>
+          }
+          { summoner &&
+            <div className="mt-5">
+              <div className="sticky top-32 flex flex-col gap-6">
+                <StatSummary/>
+                <ChampionStats/>
+              </div>
+            </div>
+          }
+        </div>
       </PageBody>
     </Page>
   )

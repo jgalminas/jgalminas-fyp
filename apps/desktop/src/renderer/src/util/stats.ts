@@ -1,4 +1,5 @@
 import { IMatch } from "@fyp/types"
+import { round } from "./number"
 
 export type Stats = {
   kills: number,
@@ -7,7 +8,7 @@ export type Stats = {
 }
 
 export const calcKDA = (stats: Stats) => {
-  return stats.deaths === 0 ? (stats.kills + stats.assists).toFixed(2) : ((stats.kills + stats.assists) / stats.deaths).toFixed(2)
+  return stats.deaths === 0 ? round(stats.kills + stats.assists) : round((stats.kills + stats.assists) / stats.deaths)
 }
 
 export const aggregateTeamKills = (participants: IMatch['participants'], team: IMatch['participants'][number]['team']) => {
@@ -16,6 +17,6 @@ export const aggregateTeamKills = (participants: IMatch['participants'], team: I
   return kills;
 }
 
-export const calcKP = (pKills: number, pAssists: number, tKills: number) => ((((pKills + pAssists) / tKills) * 100)).toFixed(2) + '%';
+export const calcKP = (pKills: number, pAssists: number, tKills: number) => round((((pKills + pAssists) / tKills) * 100)) + '%';
 
-export const calcCSPM = (cs: number, gameDuration: number) => (cs / gameDuration).toFixed(2);
+export const calcCSPM = (cs: number, gameDuration: number) => round(cs / gameDuration);

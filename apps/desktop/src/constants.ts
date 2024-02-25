@@ -672,4 +672,4 @@ export const CHAMPIONS = {
 } as const;
 
 export const getChampionIdByKey = (key: number) => CHAMPIONS[key]?.id;
-export const getChampionNameById = (id: string) => CHAMPIONS[id]?.name;
+export const getChampionNameById = (id: string) => Object.values(CHAMPIONS).find(c => c.id === id)?.name;

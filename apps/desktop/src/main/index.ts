@@ -4,7 +4,6 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import { registerChannels } from './ipc/index';
 import { ClientManager } from './clientManager';
-import { LolApi } from 'twisted';
 import { MatchObserver } from './matchObserver';
 import { MatchRecorderIPC } from './matchRecorderIPC';
 import env from '../env';
@@ -15,7 +14,6 @@ registerChannels();
 
 export let mainWindow: BrowserWindow | undefined;
 
-export const lolApi = new LolApi(process.env.MAIN_VITE_RIOT_KEY as string);
 export const clientManager = new ClientManager();
 export const matchObserver = new MatchObserver(
   clientManager,
@@ -29,6 +27,7 @@ function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
+    minWidth: 1024,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),

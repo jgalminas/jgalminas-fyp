@@ -56,8 +56,10 @@ const Recordings = () => {
 
   }
 
+  const queryKey = ['recordings', queueFilter.id, dateFilter.id, championFilter.id, roleFilter];
+
   const { isLoading, data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ['recordings', queueFilter.id, dateFilter.id, championFilter.id, roleFilter],
+    queryKey: queryKey,
     initialPageParam: 0,
     queryFn: ({ pageParam }) => {
       currentOffset.current += pageParam;
@@ -89,7 +91,7 @@ const Recordings = () => {
               },
               ...items.pages[0]
             ],
-            ...items.pages
+            ...items.pages.slice(1)
           ]
         }
         
@@ -112,7 +114,7 @@ const Recordings = () => {
         <div className="flex items-center gap-3">
           <Select value={queueFilter} options={queueOptions}/>
           <Select value={dateFilter} options={dateOptions}/>
-          <SearchSelect value={championFilter} options={championOptions}/>
+          <SearchSelect value={championFilter} options={championOptions} withIcons/>
           <RoleSelector onChange={(r) => { setRoleFilter(r); currentOffset.current = 0; }} role={roleFilter}/>
         </div>
       </PageInnerHeader>
@@ -122,7 +124,7 @@ const Recordings = () => {
             <ViewportList items={recordings} overscan={6} withCache>
               { (rec, key) => {
                 return (
-                  <RecordingCard data={rec} key={key} position={key + 1}/>
+                  <RecordingCard queryKey={queryKey} data={rec} key={key} position={key + 1}/>
                 )
               }}
             </ViewportList>
