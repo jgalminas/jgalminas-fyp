@@ -370,8 +370,10 @@ export const Timeline = ({
 
   const onTimelineClick = (e: MouseEvent<HTMLDivElement>) => {
     const timeline = timelineRef.current;
-    if (timeline) {
-      updateCurrentTime(e.clientX - timeline.getBoundingClientRect().left);
+    if (!timeline) return;
+    const newPosition = e.clientX - timeline.getBoundingClientRect().left;
+    if (newPosition > 0 && newPosition < maxWidth) {
+      updateCurrentTime(newPosition);
     }
   }
 
@@ -493,7 +495,7 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }:
       
       if (diff !== 0) {
         if (side === "left") {
-          if (offset + diff >= 0 && width - diff >= minRange) {
+          if (offset + diff > 0 && width - diff > minRange) {
             setOffset(prev => prev + diff); 
             setWidth(width => width - diff);
           }
@@ -596,7 +598,7 @@ export const TimeCursor = ({ position, setPosition, offset, maxWidth }: TimeCurs
     draggable
     onDragStart={onDragStart}
     onDrag={onDrag}
-    style={{ left: position + offset }}
+    style={{ left: (position + offset) ?? 0 }}
     className="bg-science-blue-600 w-[2px] h-full absolute flex flex-col items-center z-50">
       <TimeCursorHead className="w-5 h-5"/>
     </div>

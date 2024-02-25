@@ -62,7 +62,7 @@ const Highlights = () => {
                   data={hl}
                   position={key}
                   queryKey={queryKey}
-                  playPath={`/highlights/${hl.highlight._id}`}/>
+                  playPath={`/matches/${matchId}/highlights/${hl.highlight._id}`}/>
                 )
               }}
             </ViewportList>
