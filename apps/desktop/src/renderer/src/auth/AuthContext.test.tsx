@@ -1,7 +1,7 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { describe, it } from 'vitest';
 
-import App from '../../src/App';
+import App from '../App';
 
 describe("App tests", () => {
 

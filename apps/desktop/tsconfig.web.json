@@ -8,10 +8,11 @@
     "src/constants.ts",
     "src/env.ts",
     "src/shared/*",
-],
+  ],
   "compilerOptions": {
     "types": [
-      "vite-plugin-svgr/client"
+      "vite-plugin-svgr/client",
+      "vitest/globals"
     ],
     "composite": true,
     "jsx": "react-jsx",

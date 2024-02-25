@@ -113,7 +113,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     } catch {
       setSession({ ...session, loading: false });
       return {
-        message: "TODO - Couldn't sign up."
+        message: "Server Error: Couldn't log in."
       };
     }
 
@@ -152,7 +152,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     } catch {
       setSession({ ...session, loading: false });
       return {
-        message: "TODO - Couldn't log in."
+        message: "Server Error: Couldn't log in."
       };
     }
 
