@@ -15,6 +15,7 @@ import { getPlayer } from "@renderer/util/match";
 import { Summoner, useSummoner } from "@renderer/SummonerContext";
 import { WithTooltip } from "@renderer/core/WithTooltip";
 import { UsernameTooltip } from "@renderer/core/tooltips/UsernameTooltip";
+import { round } from "@renderer/util/number";
 
 
 export type MatchCardProps = {
@@ -65,7 +66,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
           </p>
         </div>
         <KDA stats={{ kills: user.kills, assists: user.assists, deaths: user.deaths }}/>
-        <Stat value={calcKDA({ kills: user.kills, assists: user.assists, deaths: user.deaths })} type='KDA'/>
+        <Stat value={round(calcKDA({ kills: user.kills, assists: user.assists, deaths: user.deaths }))} type='KDA'/>
         <Stat value={calcKP(user.kills, user.assists, aggregateTeamKills(match.participants, user.team))} type='KP'/>
         <Stat value={`${user.cs} (${calcCSPM(user.cs, timestampToMinutes(match.finish - match.start))})`} type='CS'/>
       </div>

@@ -11,6 +11,7 @@ import { timestampToMinutes } from "@renderer/util/time";
 import { Fragment } from "react";
 import BannedChampion from "./BannedChampion";
 import { getChampionIdByKey } from "@root/constants";
+import { round } from "@renderer/util/number";
 
 export type ScoreboardTableProps = {
   className?: string,
@@ -101,7 +102,7 @@ const Player = ({ player, inverse = false, teamKills, start, finish }: PlayerPro
       </div>
 
       <div className={cn("grid grid-cols-2 gap-x-4", inverse && "order-2 justify-items-end")}>
-        <Stat value={calcKDA({ kills: player.kills, assists: player.assists, deaths: player.deaths })} type='KDA'/>
+        <Stat value={round(calcKDA({ kills: player.kills, assists: player.assists, deaths: player.deaths }))} type='KDA'/>
         <KDA stats={{ kills: player.kills, assists: player.assists, deaths: player.deaths }}/>
         <Stat value={`${player.cs} (${calcCSPM(player.cs, timestampToMinutes(finish - start))})`} type='CS'/>
         <Stat value={calcKP(player.kills, player.assists, teamKills)} type='KP'/>
