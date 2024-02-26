@@ -13,15 +13,17 @@ import { SETTINGS_PATH } from './constants';
 
 registerChannels();
 
-export let mainWindow: BrowserWindow | undefined;
+export let mainWindow: BrowserWindow;
+export let clientManager: ClientManager;
+export let matchObserver: MatchObserver;
+export let settingsManager: SettingsManager;
 
-export const clientManager = new ClientManager();
-export const matchObserver = new MatchObserver(
-  clientManager,
-  new MatchRecorderIPC()
-);
-export const settingsManager = new SettingsManager(SETTINGS_PATH);
-settingsManager.loadSettings();
+export function initializeComponents() {
+  clientManager = new ClientManager();
+  matchObserver = new MatchObserver(clientManager, new MatchRecorderIPC());
+  settingsManager = new SettingsManager(SETTINGS_PATH);
+  settingsManager.loadSettings();
+}
 
 function createWindow(): void {
   // Create the browser window.
@@ -62,6 +64,7 @@ function createWindow(): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async() => {
+  initializeComponents();
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 

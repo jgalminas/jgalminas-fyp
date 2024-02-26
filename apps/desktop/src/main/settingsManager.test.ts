@@ -1,7 +1,7 @@
-import { SettingsManager } from "../settingsManager";
+import { SettingsManager } from "./settingsManager";
 import { join } from "path";
 import { writeFile, unlink, readFile } from "fs/promises"; 
-import { defaultSettings } from "../../shared/settings";
+import { defaultSettings } from "../shared/settings";
 import { existsSync } from "fs";
 
 describe("Settings Manager Tests", () => {

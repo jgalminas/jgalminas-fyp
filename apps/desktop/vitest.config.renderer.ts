@@ -9,7 +9,10 @@ expand(env);
 
 export default ({ mode }) => defineConfig({
   test: {
-    include: ['src/renderer/__tests__/**/*.test.{ts,tsx}'],
+    include: [
+      'src/renderer/**/*.test.{ts,tsx}',
+      'src/preload/**/*.test.{ts,tsx}'
+    ],
     exclude: ['*', 'src/renderer/__tests__/__e2e__/**/*.test.{ts,tsx}'],
     globals: true,
     setupFiles: ['jest-dom.config.ts'],
@@ -26,7 +29,7 @@ export default ({ mode }) => defineConfig({
   define: defineEnv(mode, 'RENDERER_VITE_')
 })
 
-export const defineEnv = (mode: string, prefix: string | string[]) => {
+const defineEnv = (mode: string, prefix: string | string[]) => {
   const vars = loadEnv(mode, join(__dirname, '..', '..'), prefix);
   return {
     'process.env': Object.entries(vars).reduce(

@@ -3,8 +3,8 @@ import { Settings, defaultSettings, settingsSchema } from "../shared/settings";
 
 export class SettingsManager {
 
-  settings: Settings | undefined;
-  path: string;
+  private settings: Settings | undefined;
+  private path: string;
 
   constructor(path: string) {
     this.path = path;
