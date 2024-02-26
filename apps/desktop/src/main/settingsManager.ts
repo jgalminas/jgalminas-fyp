@@ -1,18 +1,18 @@
 import { readFile, writeFile } from "fs/promises";
-import { app } from "electron";
-import path from "path";
 import { Settings, defaultSettings, settingsSchema } from "../shared/settings";
-
-
-const SETTINGS_PATH = path.join(app.getAppPath(), 'settings.json');
 
 export class SettingsManager {
 
   settings: Settings | undefined;
+  path: string;
+
+  constructor(path: string) {
+    this.path = path;
+  }
 
   public async loadSettings() {
     try {
-      const file = await readFile(SETTINGS_PATH, 'utf-8');
+      const file = await readFile(this.path, 'utf-8');
       const parsed = await settingsSchema.safeParseAsync(JSON.parse(file));
 
       if (parsed.success) {
@@ -28,7 +28,7 @@ export class SettingsManager {
 
   public async setSettings(settings: Settings) {
     this.settings = settings;
-    await writeFile(SETTINGS_PATH, JSON.stringify(settings));    
+    await writeFile(this.path, JSON.stringify(settings));    
   }
 
   public getSettings() {

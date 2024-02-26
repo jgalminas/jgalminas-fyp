@@ -10,7 +10,7 @@ expand(env);
 export default ({ mode }) => defineConfig({
   test: {
     include: ['src/renderer/__tests__/**/*.test.{ts,tsx}'],
-    exclude: ['*'],
+    exclude: ['*', 'src/renderer/__tests__/__e2e__/**/*.test.{ts,tsx}'],
     globals: true,
     setupFiles: ['jest-dom.config.ts'],
     environment: 'jsdom',
