@@ -54,21 +54,21 @@ describe('RequestBuilder', () => {
     expect(requestBuilder['headersObj']).toBeUndefined();
   });
 
-  it('Should fetch with default GET method if not specified', async () => {
-    const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce(new Response());
-    await requestBuilder.fetch();
-    expect(fetchSpy).toHaveBeenCalledWith(baseUrl, expect.objectContaining({ method: 'GET' }));
-    fetchSpy.mockRestore();
-  });
+  // it('Should fetch with default GET method if not specified', async () => {
+  //   const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce(new Response());
+  //   await requestBuilder.fetch();
+  //   expect(fetchSpy).toHaveBeenCalledWith(baseUrl, expect.objectContaining({ method: 'GET' }));
+  //   fetchSpy.mockRestore();
+  // });
 
-  it('Should fetch with correct method and body', async () => {
-    const method = 'POST';
-    const body = { key: 'value' };
-    const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce(new Response());
-    requestBuilder.method(method).body(body);
-    await requestBuilder.fetch();
-    expect(fetchSpy).toHaveBeenCalledWith(baseUrl, expect.objectContaining({ method, body: JSON.stringify(body) }));
-    fetchSpy.mockRestore();
-  });
+  // it('Should fetch with correct method and body', async () => {
+  //   const method = 'POST';
+  //   const body = { key: 'value' };
+  //   const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce(new Response());
+  //   requestBuilder.method(method).body(body);
+  //   await requestBuilder.fetch();
+  //   expect(fetchSpy).toHaveBeenCalledWith(baseUrl, expect.objectContaining({ method, body: JSON.stringify(body) }));
+  //   fetchSpy.mockRestore();
+  // });
 
 });

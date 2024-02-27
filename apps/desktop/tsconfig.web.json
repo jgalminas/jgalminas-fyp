@@ -13,7 +13,7 @@
   "compilerOptions": {
     "types": [
       "vite-plugin-svgr/client",
-      "vitest/globals"
+      "@types/jest"
     ],
     "composite": true,
     "jsx": "react-jsx",
