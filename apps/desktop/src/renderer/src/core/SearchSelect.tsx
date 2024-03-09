@@ -11,7 +11,7 @@ import RoundImage from "./RoundImage";
 export type SearchSelectOption = {
   id: string,
   value: string,
-  imageUrl?: string,  
+  imageUrl?: string,
   onClick: (value: SearchSelectOption) => void
 }
 
@@ -52,7 +52,7 @@ const SearchSelect = ({ value, className, options, withIcons = false }: SearchSe
 
   return (
     <Popover onOpenChange={onOpenChange} open={isOpen}>
-      <PopoverTrigger className={cn("bg-woodsmoke-400 text-star-dust-300 border-woodsmoke-50 border flex items-center",
+      <PopoverTrigger data-testid="search-select" className={cn("bg-woodsmoke-400 text-star-dust-300 border-woodsmoke-50 border flex items-center",
       "focus:outline-none text-sm min-h-[38px] px-3 min-w-[12rem] w-fit gap-6 rounded-md", className)}>
         <div className="flex items-center gap-3">
           { withIcons && value.imageUrl && <RoundImage className="h-6 w-6 border-none" src={value.imageUrl}/> }
@@ -70,7 +70,7 @@ const SearchSelect = ({ value, className, options, withIcons = false }: SearchSe
         </div>
       </PopoverTrigger>
 
-      <PopoverContent className={cn("bg-woodsmoke-400 border-woodsmoke-50 text-sm text-star-dust-300 w-full mt-1 min-w-[12rem] z-50 rounded-md",
+      <PopoverContent data-testid="search-select-content" className={cn("bg-woodsmoke-400 border-woodsmoke-50 text-sm text-star-dust-300 w-full mt-1 min-w-[12rem] z-50 rounded-md",
       "py-1.5 border ")}>
         <div className="w-[188px] mx-[1px] hover:bg-woodsmoke-500 relative">
           <input autoFocus placeholder="Search" onChange={(e) => setSearch(e.target.value)}
