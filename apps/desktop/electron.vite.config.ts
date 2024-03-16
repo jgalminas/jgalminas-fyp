@@ -1,5 +1,5 @@
 import path, { resolve } from 'path'
-import { defineConfig, externalizeDepsPlugin, loadEnv } from 'electron-vite'
+import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr';
 import htmlEnv from 'vite-plugin-html-env';
@@ -12,11 +12,12 @@ expand(env);
 /**
 * @type {import('electron-vite').UserConfig}
 */
-export default ({ mode }) => {
+export default () => {
 
   return defineConfig({
     main: {
       plugins: [externalizeDepsPlugin()],
+      envPrefix: 'RENDERER_VITE_'
     },
     preload: {
       plugins: [externalizeDepsPlugin()],
@@ -38,22 +39,6 @@ export default ({ mode }) => {
         svgr(),
         react()
       ],
-      define: defineEnv(mode, 'RENDERER_VITE_')
     }
   });
 }
-
-export const defineEnv = (mode: string, prefix: string | string[]) => {
-  const vars = loadEnv(mode, path.join(__dirname, '..', '..'), prefix);
-  return {
-    'process.env': Object.entries(vars).reduce(
-      (prev, [key, val]) => {
-        return {
-          ...prev,
-          [key]: val,
-        }
-      },
-      {},
-    )
-  }
-};

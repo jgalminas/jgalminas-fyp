@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, protocol, net } from 'electron';
+import { app, shell, BrowserWindow, protocol, net, session } from 'electron';
 import path from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
@@ -99,6 +99,37 @@ app.on('window-all-closed', () => {
 
 app.whenReady().then(async() => {
   protocol.handle('local', (req) => net.fetch(req.url.replace('local:\\', 'file:\\')));
+
+  const filter = {
+    urls: [
+      env.RENDERER_VITE_API_URL + '/*',
+      env.RENDERER_VITE_SOCKET_URL + '/*'
+    ]
+  }
+
+  session.defaultSession.webRequest.onCompleted(filter, async(details) => {
+    if (details.responseHeaders && details.responseHeaders['Set-Cookie']) {
+      for (const cookieString of details.responseHeaders['Set-Cookie']) {
+        const splitCookie = cookieString.split(';');
+        const [name, value] = splitCookie[0].split('=');
+        const expiration = splitCookie[2].split('=')[1];
+        await session.defaultSession.cookies.set({ name: name, value: value, url: env.RENDERER_VITE_APP_URL, expirationDate: Date.parse(expiration) });
+      }
+    }
+  })
+
+  session.defaultSession.webRequest.onBeforeSendHeaders(filter, async(details, callback) => {
+    const cookies =  await session.defaultSession.cookies.get({ url: env.RENDERER_VITE_APP_URL });
+    for (const cookie of cookies) {
+      if (details.requestHeaders['Cookie']) {
+        details.requestHeaders['Cookie'] += `${cookie.name}=${cookie.value};`;
+      } else {
+        details.requestHeaders['Cookie'] = `${cookie.name}=${cookie.value};`;
+      }
+    }
+    callback({ requestHeaders: details.requestHeaders })
+  })
+
 });
 
 videoServer.listen(env.RENDERER_VITE_VIDEO_SERVER_PORT, () => {

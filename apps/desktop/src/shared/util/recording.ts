@@ -1,7 +1,7 @@
 import ffmpeg from 'fluent-ffmpeg';
-import ffmpegStatic from 'ffmpeg-static';
+import { ffmpegPath } from 'ffmpeg-ffprobe-static';
 import { THUMBNAIL_FORMAT, VIDEO_FORMAT } from '../../constants';
-ffmpeg.setFfmpegPath(ffmpegStatic as string);
+ffmpeg.setFfmpegPath(ffmpegPath as string);
 
 export const captureThumbnail = async(filePath: string): Promise<string> => {
   const thumbnailPath = filePath.replace(VIDEO_FORMAT, THUMBNAIL_FORMAT);

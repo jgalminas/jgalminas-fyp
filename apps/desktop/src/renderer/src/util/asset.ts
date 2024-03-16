@@ -1,5 +1,6 @@
 import { SummonerSpell } from "@fyp/types";
 import env from "@root/env";
+import no_champion_img from '@assets/images/no_champion.png';
 
 export const PATCH = '14.1.1';
 export const BASE_CDN = 'https://ddragon.leagueoflegends.com/cdn';
@@ -14,7 +15,7 @@ export const Asset = {
         return `${BASE_CDN}/${PATCH}/img/champion/${champion}.png`;
       }
     } else {
-      return '/images/no_champion.png';
+      return no_champion_img;
     }
   },
   summonerSpell: (spell: SummonerSpell) => {

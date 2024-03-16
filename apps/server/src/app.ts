@@ -43,7 +43,8 @@ const sessionParser = session({
   saveUninitialized: false,
   rolling: true,
   cookie: {
-    maxAge: 604_800_000 // 1 week
+    maxAge: 604_800_000, // 1 week,
+    sameSite: 'strict'
   },
   store: MongoStore.create({
     mongoUrl: env.MONGODB_CONNECTION_STRING,

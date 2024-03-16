@@ -14,7 +14,8 @@
     "composite": true,
     "types": [
       "electron-vite/node",
-      "@types/jest"
+      "@types/jest",
+      "./src/vite-env.d.ts"
     ]
   }
 }

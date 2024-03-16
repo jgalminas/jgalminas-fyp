@@ -20,7 +20,6 @@ export type IParticipant = {
   primaryRune: number,
   secondaryRune: number,
   items: IParticipantItem[],
-  // bannedChampion: string
   kills: number,
   assists: number,
   deaths: number,

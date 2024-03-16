@@ -60,7 +60,6 @@ export class RequestBuilder {
 
     const options: RequestInit = {
       method: this.request.method,
-      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
         ...(this.headersObj && this.headersObj)

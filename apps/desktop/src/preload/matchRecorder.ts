@@ -1,26 +1,25 @@
 import { ipcRenderer } from "electron";
 import { GAME_CLIENT_NAME, VIDEO_DIRECTORY, VIDEO_FORMAT } from "../constants";
 import ffmpeg from 'fluent-ffmpeg';
-import ffmpegStatic from 'ffmpeg-static';
 import { Readable } from "stream";
 import path from "path";
 import { captureThumbnail } from "../shared/util/recording";
 import { PathIPC, RecorderIPC, SettingsIPC } from "../shared/ipc";
 import { Settings } from "../shared/settings";
-
-ffmpeg.setFfmpegPath(ffmpegStatic as string);
+import { ffmpegPath } from 'ffmpeg-ffprobe-static';
+ffmpeg.setFfmpegPath(ffmpegPath as string);
 
 export class MatchRecorder {
-  
+
   private readable: Readable | undefined;
   private recorder: MediaRecorder | undefined;
   private running: boolean = false;
   private videosPath = path.join(ipcRenderer.sendSync(PathIPC.Get, 'videos'), VIDEO_DIRECTORY);
-  private gameId: string | undefined; 
+  private gameId: string | undefined;
 
   public init = async() => {
     ipcRenderer.on(RecorderIPC.Start, async(_, game) => {
-      const client = await this.getGameClient(); 
+      const client = await this.getGameClient();
       this.gameId = game.gameId.toString();
       await this.start(client, this.gameId as string);
     });
@@ -95,7 +94,7 @@ export class MatchRecorder {
       this.readable?.destroy();
     })
     .run();
-    
+
   }
 
   private stop = () => {
@@ -109,14 +108,14 @@ export class MatchRecorder {
       const interval = setInterval(async() => {
         const sources: Electron.DesktopCapturerSource[] = await ipcRenderer.invoke("recording:sources");
         const client = sources.find((x) => x.name === GAME_CLIENT_NAME);
-        
+
         if (client) {
           clearTimeout(interval);
           resolve(client);
         };
 
       }, 1000);
-  
+
     });
   }
 

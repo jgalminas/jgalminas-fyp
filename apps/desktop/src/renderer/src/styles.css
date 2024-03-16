@@ -7,7 +7,7 @@
 
 * {
   font-family: 'Inter', sans-serif;
-  
+
 }
 
 .shimmer {
@@ -94,7 +94,7 @@
   }
 }
 
-.scrollbar-stable { 
+.scrollbar-stable {
   scrollbar-gutter: stable both-edges;
 }
 
@@ -138,5 +138,5 @@
   mask-size: 100%;
   background-size: 100%;
   background-repeat: no-repeat;
-  mask-image: url("/images/splash_mask.svg");
+  mask-image: url("./assets/images/splash_mask.svg");
 }
