@@ -36,7 +36,7 @@ export let clientManager: ClientManager;
 export let matchObserver: MatchObserver;
 export let settingsManager: SettingsManager;
 
-export function initializeComponents() {
+export function initialiseServices() {
   clientManager = new ClientManager();
   matchObserver = new MatchObserver(clientManager, new MatchRecorderIPC());
   settingsManager = new SettingsManager(SETTINGS_PATH);
@@ -58,7 +58,9 @@ function createWindow(): void {
     }
   })
 
-  mainWindow.webContents.openDevTools();
+  if (!app.isPackaged) {
+    mainWindow.webContents.openDevTools();
+  }
 
   mainWindow.on('ready-to-show', () => {
     mainWindow?.show()
@@ -82,7 +84,7 @@ function createWindow(): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async() => {
-  initializeComponents();
+  initialiseServices();
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
@@ -118,6 +120,8 @@ app.on('window-all-closed', () => {
 app.whenReady().then(async() => {
   protocol.handle('local', (req) => net.fetch(req.url.replace('local:\\', 'file:\\')));
 
+
+  // Handle auth cookies for incoming and outgoing requests
   const filter = {
     urls: [
       env.RENDERER_VITE_API_URL + '/*',

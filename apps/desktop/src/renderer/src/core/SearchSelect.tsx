@@ -53,7 +53,7 @@ const SearchSelect = ({ value, className, options, withIcons = false }: SearchSe
   return (
     <Popover onOpenChange={onOpenChange} open={isOpen}>
       <PopoverTrigger data-testid="search-select" className={cn("bg-woodsmoke-400 text-star-dust-300 border-woodsmoke-50 border flex items-center",
-      "focus:outline-none text-sm min-h-[38px] px-3 min-w-[12rem] w-fit gap-6 rounded-md", className)}>
+      "text-sm min-h-[38px] px-3 min-w-[12rem] w-fit gap-6 rounded-md", className)}>
         <div className="flex items-center gap-3">
           { withIcons && value.imageUrl && <RoundImage className="h-6 w-6 border-none" src={value.imageUrl}/> }
           <span className="truncate text-ellipsis max-w-24">

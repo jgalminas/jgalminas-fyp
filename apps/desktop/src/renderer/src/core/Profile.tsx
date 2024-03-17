@@ -16,7 +16,7 @@ export const Profile = ({ className }: ProfileProps) => {
 
   const { summoner } = useSummoner();
   const { signOut } = useAuth();
-  
+
   const options: DropdownOption[] = [
     {
       id: 0,
@@ -53,3 +53,4 @@ export const Profile = ({ className }: ProfileProps) => {
     </div>
   )
 }
+

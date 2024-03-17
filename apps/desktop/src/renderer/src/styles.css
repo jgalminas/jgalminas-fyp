@@ -10,6 +10,11 @@
 
 }
 
+button, input, a {
+  @apply focus:outline-none;
+}
+
+
 .shimmer {
   background: linear-gradient(120deg, transparent 25%, theme('colors.woodsmoke.600') 50%, transparent 75%);
   background-size: 200% 100%;

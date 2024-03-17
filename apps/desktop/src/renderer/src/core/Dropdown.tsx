@@ -1,4 +1,4 @@
-import { DropdownMenu, DropdownMenuContent, DropdownMenuContentProps, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuContentProps, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuPortal } from "@radix-ui/react-dropdown-menu";
 import { cn } from "@fyp/class-name-helper";
 import { ReactNode, useState } from "react";
 
@@ -20,23 +20,25 @@ const Dropdown = ({ children, className, options, align = "center" }: DropdownPr
   const [isOpen, setOpen] = useState<boolean>(false);
 
   return (
-    <DropdownMenu onOpenChange={(v) => setOpen(v)}>      
-      <DropdownMenuTrigger className={cn("hover:bg-woodsmoke-500 focus:outline-none", className)}>
+    <DropdownMenu onOpenChange={(v) => setOpen(v)}>
+      <DropdownMenuTrigger className={cn("hover:bg-woodsmoke-500", className)}>
         { children(isOpen) }
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={align} sideOffset={4}
-      className={cn(
-        "bg-woodsmoke-400 border-woodsmoke-50 text-sm text-star-dust-300 w-full min-w-[12rem]",
-        "py-1.5 border z-[999] rounded-lg")
-      }>
-        { options.map((opt) => {
-          return (
-            <DropdownMenuItem key={opt.id} className="hover:bg-woodsmoke-500 px-3 py-2 cursor-pointer focus:outline-none" onClick={opt.onClick}>
-              { opt.value }
-            </DropdownMenuItem>
-          )
-        }) }
-      </DropdownMenuContent>
+      <DropdownMenuPortal>
+        <DropdownMenuContent align={align} sideOffset={4}
+        className={cn(
+          "bg-woodsmoke-400 border-woodsmoke-50 text-sm text-star-dust-300 w-full min-w-[12rem]",
+          "py-1.5 border z-[999] rounded-lg")
+        }>
+          { options.map((opt) => {
+            return (
+              <DropdownMenuItem key={opt.id} className="hover:bg-woodsmoke-500 px-3 py-2 cursor-pointer focus:outline-none" onClick={opt.onClick}>
+                { opt.value }
+              </DropdownMenuItem>
+            )
+          }) }
+        </DropdownMenuContent>
+      </DropdownMenuPortal>
     </DropdownMenu>
   )
 }

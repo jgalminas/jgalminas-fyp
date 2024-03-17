@@ -19,7 +19,7 @@ const RoleSelector = ({ className, onChange, role }: RoleSelectorProps) => {
       { ROLE.map((r) => {
         const Icon = RoleIcons[r];
         return (
-          <button key={r} onClick={() => onChange(r)} className={cn("p-1.5 bg-woodsmoke-400", role === r && "bg-woodsmoke-50")}>
+          <button key={r} onClick={() => onChange(r)} className={cn("p-1.5 bg-woodsmoke-400 focus:outline-none focus:bg-woodsmoke-600", role === r && "bg-woodsmoke-50")}>
             <Icon/>
           </button>
         )

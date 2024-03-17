@@ -40,7 +40,7 @@ export const KeySelector = ({ className, value, onChange }: KeySelectorProps) =>
   return (
     <button onClick={onEdit} className={cn(
       "bg-woodsmoke-400 text-star-dust-300 border-woodsmoke-50 border flex items-center",
-      "focus:outline-none text-sm pl-3 pr-1 py-1 min-w-[8rem] w-fit gap-6 rounded-lg",
+      "text-sm pl-3 pr-1 py-1 min-w-[8rem] w-fit gap-6 rounded-lg",
       className
     )}>
       { inEdit
@@ -49,11 +49,11 @@ export const KeySelector = ({ className, value, onChange }: KeySelectorProps) =>
           Press a key
           <span className="text-xs ml-auto p-1.5 hover:bg-woodsmoke-600 rounded-md" onClick={() => setInEdit(false)}> Cancel </span>
         </Fragment>
-        : 
+        :
         <Fragment>
           { parsed() }
           <span className="text-xs ml-auto p-1.5 hover:bg-woodsmoke-600 rounded-md"> Edit </span>
-        </Fragment> 
+        </Fragment>
       }
     </button>
   )
