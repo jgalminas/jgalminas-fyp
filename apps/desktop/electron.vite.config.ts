@@ -1,5 +1,5 @@
 import path, { resolve } from 'path'
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import { defineConfig, externalizeDepsPlugin, splitVendorChunkPlugin } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr';
 import htmlEnv from 'vite-plugin-html-env';
@@ -16,11 +16,11 @@ export default () => {
 
   return defineConfig({
     main: {
-      plugins: [externalizeDepsPlugin()],
+      plugins: [externalizeDepsPlugin(), splitVendorChunkPlugin()],
       envPrefix: 'RENDERER_VITE_'
     },
     preload: {
-      plugins: [externalizeDepsPlugin()],
+      plugins: [externalizeDepsPlugin(), splitVendorChunkPlugin()],
     },
     renderer: {
       resolve: {
@@ -37,7 +37,8 @@ export default () => {
           envPrefixes: 'RENDERER_VITE_'
         }),
         svgr(),
-        react()
+        react(),
+        splitVendorChunkPlugin()
       ],
     }
   });

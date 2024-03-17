@@ -1,6 +1,6 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuContentProps, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuPortal } from "@radix-ui/react-dropdown-menu";
 import { cn } from "@fyp/class-name-helper";
-import { ReactNode, useState } from "react";
+import { AriaAttributes, ReactNode, useState } from "react";
 
 export type DropdownOption = {
   id: string | number,
@@ -13,15 +13,15 @@ export type DropdownProps = {
   children: (isOpen: boolean) => ReactNode,
   className?: string,
   options: DropdownOption[]
-}
+} & AriaAttributes
 
-const Dropdown = ({ children, className, options, align = "center" }: DropdownProps) => {
+const Dropdown = ({ children, className, options, align = "center", ...rest }: DropdownProps) => {
 
   const [isOpen, setOpen] = useState<boolean>(false);
 
   return (
     <DropdownMenu onOpenChange={(v) => setOpen(v)}>
-      <DropdownMenuTrigger className={cn("hover:bg-woodsmoke-500", className)}>
+      <DropdownMenuTrigger aria-label={rest["aria-label"]} className={cn("hover:bg-woodsmoke-500", className)}>
         { children(isOpen) }
       </DropdownMenuTrigger>
       <DropdownMenuPortal>

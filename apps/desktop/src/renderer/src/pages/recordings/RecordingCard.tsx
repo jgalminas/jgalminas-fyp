@@ -72,7 +72,7 @@ const RecordingCard = ({ queryKey, data, position }: RecordingCardProps) => {
     }
   ]
 
-  
+
   return (
     <Card className="flex p-0">
       { data.thumbnail.message !== 'OK'
@@ -87,7 +87,7 @@ const RecordingCard = ({ queryKey, data, position }: RecordingCardProps) => {
 
       <div className="flex flex-col pl-5 py-5 justify-between">
         <div className="flex items-center gap-4">
-          <RoundImage className="w-10 h-10" src={Asset.champion(data.recording.champion)}/>
+          <RoundImage alt={`image of ${data.recording.champion}`} className="w-10 h-10" src={Asset.champion(data.recording.champion)}/>
           <h2 className="text-star-dust-200 font-semibold"> Game #{ position } </h2>
           <div className="flex items-center gap-6 ml-2 text-star-dust-300 text-sm">
             <p> { length(data.recording.length) } </p>
@@ -113,7 +113,7 @@ const RecordingCard = ({ queryKey, data, position }: RecordingCardProps) => {
         { size[0] }
         <span className="text-xs font-normal text-star-dust-400"> { size[1] } </span>
       </p>
-      <Dropdown options={options} align="end" className="p-1 rounded-md h-fit w-fit">
+      <Dropdown aria-label="Recording Options" options={options} align="end" className="p-1 rounded-md h-fit w-fit">
         { () => (
           <Ellipsis className="h-6 w-6"/>
         )}

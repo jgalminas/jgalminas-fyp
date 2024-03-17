@@ -34,7 +34,7 @@ export const Profile = ({ className }: ProfileProps) => {
       { summoner
         ?
         <Fragment>
-          <RoundImage className="border-none outline outline-woodsmoke-50" src={Asset.profileIcon(summoner.profileIconId)}/>
+          <RoundImage alt="profile icon" className="border-none outline outline-woodsmoke-50" src={Asset.profileIcon(summoner.profileIconId)}/>
           <div className="mr-6 ml-1.5 flex items-center gap-1">
             <div className="truncate max-w-24">
               <span className="text-star-dust-300 font-medium "> { summoner.name } </span>
@@ -44,7 +44,10 @@ export const Profile = ({ className }: ProfileProps) => {
         </Fragment>
         : <Link to='/settings' className="mr-6 px-2 rounded-md py-2 hover:bg-woodsmoke-600"> Set profile </Link>
       }
-      <Dropdown options={options} align="end"
+      <Dropdown
+      aria-label="Options"
+      options={options}
+      align="end"
       className="hover:bg-woodsmoke-50 rounded-md p-1">
         { (isOpen) => (
           <ChevronDown className={cn("transition-all h-5 w-5", isOpen && "rotate-180")}/>

@@ -1,5 +1,6 @@
 import { cn } from '@fyp/class-name-helper';
 import { Root, Thumb } from '@radix-ui/react-switch';
+import { AriaAttributes } from 'react';
 
 
 export type SwitchProps = {
@@ -7,12 +8,12 @@ export type SwitchProps = {
   thumbClass?: string,
   value: boolean,
   onChange: (value: boolean) => void
-}
+} & AriaAttributes
 
-export const Switch = ({ thumbClass, rootClass, value, onChange }: SwitchProps) => {
+export const Switch = ({ thumbClass, rootClass, value, onChange, ...rest }: SwitchProps) => {
 
   return (
-    <Root checked={value} onCheckedChange={onChange} className={cn(
+    <Root aria-label={rest['aria-label']} checked={value} onCheckedChange={onChange} className={cn(
       "w-[42px] h-[25px] bg-blackA6 rounded-full relative data-[state=checked]:bg-star-dust-200 bg-woodsmoke-400 cursor-pointer",
       rootClass
     )}>

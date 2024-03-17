@@ -27,13 +27,13 @@ const RecordingVideoModal = () => {
   return (
     <Modal className="h-fit flex flex-col rounded-lg drop-shadow-2xl" onClose={navigateBack}>
       <div className="flex p-1.5">
-        <button className="ml-auto p-1.5 rounded-md hover:bg-woodsmoke-200" onClick={navigateBack}>
+        <button aria-label="Close" className="ml-auto p-1.5 rounded-md hover:bg-woodsmoke-200" onClick={navigateBack}>
           <X className="text-star-dust-300 h-5 w-5"/>
         </button>
       </div>
       <video controls src={videoUrl(data.gameId, 'recording')}/>
       <div className="p-3 flex gap-3 items-center">
-        <RoundImage src={Asset.champion(data.champion)}/>
+        <RoundImage alt={`image of ${data.champion}`} src={Asset.champion(data.champion)}/>
         <div className="flex flex-col text-sm">
           <p className="text-star-dust-300 font-medium"> { queue(data.queueId) } </p>
           <p className="text-star-dust-400"> { length(data.length) } </p>

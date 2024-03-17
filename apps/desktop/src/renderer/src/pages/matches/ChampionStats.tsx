@@ -31,7 +31,7 @@ export const ChampionStats = () => {
             return (
               <li key={key} className="flex items-center gap-3">
                 <div className="w-12 h-12 overflow-hidden border-2 border-woodsmoke-100 rounded-md">
-                  <SquareImage className="scale-[115%] w-full h-full" src={Asset.champion(it.champion)}/>
+                  <SquareImage alt={it.champion} className="scale-[115%] w-full h-full" src={Asset.champion(it.champion)}/>
                 </div>
 
                 <div>

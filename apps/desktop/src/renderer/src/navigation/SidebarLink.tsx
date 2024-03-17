@@ -15,8 +15,8 @@ const SidebarLink = ({ children, to, icon: Icon, className }: SidebarLinkProps) 
     <NavLink className="" to={to}>
       {({ isActive }) => (
         <div className={cn('flex flex-col items-center py-3 gap-1 font-medium text-xs text-star-dust-300', className,
-        isActive && 'text-science-blue-600 bg-blue-600 bg-opacity-[0.15] border-r border-blue-600')}>
-          <Icon className={cn('text-star-dust-300', isActive && 'text-science-blue-600')}/>
+        isActive && 'text-science-blue-500 bg-blue-600 bg-opacity-[0.06] border-r border-blue-500')}>
+          <Icon className={cn('text-star-dust-300', isActive && 'text-science-blue-500')}/>
           { children }
         </div>
       )}

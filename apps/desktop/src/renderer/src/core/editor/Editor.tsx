@@ -55,7 +55,7 @@ export const Editor = ({ events, recording }: EditorProps) => {
   const [modalState, setModalState] = useState<ModalState>({ state: "HIDDEN" });
 
   const intervalCount = Math.ceil(length / invertZoom(zoom));
-  const intervalWidth = intervalCount + invertZoom(zoom);  
+  const intervalWidth = intervalCount + invertZoom(zoom);
   const maxWidth = intervalWidth * intervalCount;
   const videoOffset = recording.length - (events.duration / 1000);
 
@@ -184,7 +184,7 @@ export const Editor = ({ events, recording }: EditorProps) => {
 
   const closeModal = () => setModalState({ state: "HIDDEN" });
 
-  return (  
+  return (
     <div className="w-full grid grid-rows-[auto,1fr,auto,auto]" onWheel={onScroll}>
 
       <div className="flex justify-end p-5">
@@ -192,7 +192,7 @@ export const Editor = ({ events, recording }: EditorProps) => {
           Create Highlight
         </Button>
       </div>
-      
+
       <div className="relative w-full">
         <video
         onPlay={() => setIsPlaying(true)}
@@ -203,38 +203,38 @@ export const Editor = ({ events, recording }: EditorProps) => {
       </div>
 
       <div className="flex items-center gap-1 justify-center p-5">
-        <Button styleType="text" onClick={rewindToEnd}
+        <Button aria-label="Rewind To Start" styleType="text" onClick={rewindToEnd}
         className="p-1.5 hover:bg-woodsmoke-300">
           <RewindToStart className="w-5 h-5"/>
         </Button>
-        <Button styleType="text" onClick={rewind}
+        <Button aria-label="Rewind" styleType="text" onClick={rewind}
         className="p-1.5 hover:bg-woodsmoke-300">
           <Rewind className="w-5 h-5"/>
         </Button>
 
         { !isPlaying
           ?
-          <Button styleType="text" onClick={play}
+          <Button aria-label="Play" styleType="text" onClick={play}
           className="p-2 hover:bg-woodsmoke-300">
             <Play className="w-4 h-4"/>
           </Button>
           :
-          <Button styleType="text" onClick={pause}
+          <Button aria-label="Pause" styleType="text" onClick={pause}
           className="p-1.5 hover:bg-woodsmoke-300">
             <Pause className="w-5 h-5"/>
           </Button>
         }
 
-        <Button styleType="text" onClick={fastForward}
+        <Button aria-label="Fast Forward" styleType="text" onClick={fastForward}
         className="p-1.5 hover:bg-woodsmoke-300">
           <FastForward className="w-5 h-5"/>
         </Button>
-        <Button styleType="text" onClick={forwardToEnd}
+        <Button aria-label="Skip To End" styleType="text" onClick={forwardToEnd}
         className="p-1.5 hover:bg-woodsmoke-300">
           <ForwardToEnd className="w-5 h-5"/>
         </Button>
       </div>
-      
+
       <div className="mt-auto w-full overflow-x-auto">
         <Timeline
         videoOffset={videoOffset}
@@ -397,12 +397,12 @@ export const Timeline = ({
           <span className="text-star-dust-400"> { secToLength(length) } </span>
         </p>
         <div className="flex items-center justify-end gap-2">
-          <Button styleType="text" onClick={zoomOut}
+          <Button aria-label="Zoom Out" styleType="text" onClick={zoomOut}
           className="p-1.5 hover:bg-woodsmoke-300">
             <ZoomOut className="w-5 h-5"/>
           </Button>
           <p> { zoom }% </p>
-          <Button styleType="text" onClick={zoomIn}
+          <Button aria-label="Zoom In" styleType="text" onClick={zoomIn}
           className="p-1.5 hover:bg-woodsmoke-300">
             <ZoomIn className="w-5 h-5"/>
           </Button>
@@ -481,22 +481,22 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }:
     const mainElement = e.currentTarget.parentElement?.parentElement;
     const parentRect = e.currentTarget.parentElement?.getBoundingClientRect();
     const mainRect = mainElement?.getBoundingClientRect();
-  
+
     if (e.clientX && mainElement && parentRect && mainRect) {
 
       // Get the parent container's left padding
-      const parentPaddingLeft = parseFloat(getComputedStyle(mainElement).paddingLeft); 
-      
+      const parentPaddingLeft = parseFloat(getComputedStyle(mainElement).paddingLeft);
+
       // Calculate starting position
       const startX = e.clientX - mainRect.left - parentPaddingLeft;
-      
+
       // Calculate difference between previous offsetX and current offsetX
       const diff = startX - (prevOffsetX.current - mainRect?.left - parentPaddingLeft);
-      
+
       if (diff !== 0) {
         if (side === "left") {
           if (offset + diff > 0 && width - diff > minRange) {
-            setOffset(prev => prev + diff); 
+            setOffset(prev => prev + diff);
             setWidth(width => width - diff);
           }
         } else {
@@ -510,7 +510,7 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }:
       }
 
     }
-    
+
   }
 
   const onDragStart = (e: DragEvent<HTMLDivElement>) => {
@@ -570,7 +570,7 @@ export const TimeCursor = ({ position, setPosition, offset, maxWidth }: TimeCurs
 
   const offsetLeft = useRef<number>(0);
   const elementRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     if (elementRef.current) {
       offsetLeft.current = elementRef.current.getBoundingClientRect().left

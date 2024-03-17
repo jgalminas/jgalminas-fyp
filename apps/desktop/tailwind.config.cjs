@@ -50,7 +50,7 @@ module.exports = {
           '950': '#262626'
         },
         'accent': {
-          'red': '#FF3B3A',
+          'red': '#FF4A4A',
           'blue': '#0068CA',
           'green': '#01A86C'
         },
