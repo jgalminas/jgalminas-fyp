@@ -9,7 +9,7 @@ export class MatchRecorderIPC {
     mainWindow?.webContents.send(RecorderIPC.Start, data);
   }
 
-  public async stopRecording(): Promise<void> {    
+  public async stopRecording(): Promise<void> {
     mainWindow?.webContents.send(RecorderIPC.Finish);
 
     return new Promise((resolve) => {

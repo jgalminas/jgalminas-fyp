@@ -25,7 +25,7 @@ import Loading from "@renderer/core/Loading";
 export type VideoData = {
   name: string,
   path: string,
-  size: number, 
+  size: number,
   created: Date
   length?: number
 }
@@ -45,7 +45,7 @@ const Recordings = () => {
   const getData = async(pageParam: number) => {
     const recordings = await getRecordings({ champion: championFilter.id, role: roleFilter, date: dateFilter.id, queue: queueFilter.id, start: pageParam });
     const promises = recordings.map((rec) => window.api.file.getThumbnail(rec.gameId, "recordings"));
-    const results = await Promise.all(promises);    
+    const results = await Promise.all(promises);
 
     return recordings.map((rec, i) => {
       return {
@@ -68,8 +68,10 @@ const Recordings = () => {
     getNextPageParam: (prevPage) => prevPage.length === ITEMS_PER_PAGE ? prevPage.length : undefined
   })
 
-  useIPCSubscription<IRecording>(RecordingIPC.Created, async(_, recording) => {
-    const thumbnail = await window.api.file.getThumbnail(recording._id.toString(), "recordings");
+  useIPCSubscription<{
+    recording: IRecording,
+    thumbnail: Awaited<ReturnType<typeof window.api.file.getThumbnail>>
+  }>(RecordingIPC.Created, async(_, { recording, thumbnail }) => {
 
     queryClient.setQueryData(['recordings', 0, 'latest', 'all', 'FILL'], (
       prev: {
@@ -94,7 +96,7 @@ const Recordings = () => {
             ...items.pages.slice(1)
           ]
         }
-        
+
         return items;
     })
   }, [])
@@ -107,7 +109,7 @@ const Recordings = () => {
 
   const recordings = data?.pages.flat();
 
-  return ( 
+  return (
     <Page  contentClass="gap-0">
       <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-10 pb-3">
         <PageTitle> Game Recordings </PageTitle>

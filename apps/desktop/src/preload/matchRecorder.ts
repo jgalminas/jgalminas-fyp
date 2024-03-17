@@ -1,13 +1,10 @@
 import { ipcRenderer } from "electron";
-import { GAME_CLIENT_NAME, VIDEO_DIRECTORY, VIDEO_FORMAT } from "../constants";
-import ffmpeg from 'fluent-ffmpeg';
+import { GAME_CLIENT_NAME, THUMBNAIL_FORMAT, VIDEO_DIRECTORY, VIDEO_FORMAT } from "../constants";
 import { Readable } from "stream";
 import path from "path";
-import { captureThumbnail } from "../shared/util/recording";
 import { PathIPC, RecorderIPC, SettingsIPC } from "../shared/ipc";
 import { Settings } from "../shared/settings";
-import { ffmpegPath } from 'ffmpeg-ffprobe-static';
-ffmpeg.setFfmpegPath(ffmpegPath as string);
+import { ffmpeg } from ".";
 
 export class MatchRecorder {
 
@@ -59,6 +56,10 @@ export class MatchRecorder {
       }
     });
 
+    // Stop recording if window closes prematurely
+    const track = stream.getVideoTracks()[0];
+    track.addEventListener('ended', () => this.stop());
+
     this.recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=h264' });
     this.readable = new Readable({
       read() {},
@@ -89,7 +90,7 @@ export class MatchRecorder {
     .videoBitrate(settings.resolution)
     .output(videoPath)
     .on('end', async() => {
-      await captureThumbnail(videoPath);
+      await this.captureThumbnail(videoPath);
       ipcRenderer.send(RecorderIPC.Response);
       this.readable?.destroy();
     })
@@ -117,6 +118,25 @@ export class MatchRecorder {
       }, 1000);
 
     });
+  }
+
+  private captureThumbnail = async(filePath: string): Promise<string> => {
+    const thumbnailPath = filePath.replace(VIDEO_FORMAT, THUMBNAIL_FORMAT);
+    return new Promise((resolve, reject) => {
+      try {
+        ffmpeg()
+        .input(filePath)
+        .inputFormat('mp4')
+        .videoCodec('mjpeg')
+        .frames(1)
+        .output(thumbnailPath)
+        .on('end', () => resolve(thumbnailPath))
+        .on('error', () => reject())
+        .run()
+      } catch (err) {
+        reject(err);
+      }
+    })
   }
 
 }

@@ -13,8 +13,8 @@ import SquareImage from "@renderer/core/SquareImage";
 import { queue } from "@renderer/util/queue";
 import { getPlayer } from "@renderer/util/match";
 import { Summoner, useSummoner } from "@renderer/SummonerContext";
-import { WithTooltip } from "@renderer/core/WithTooltip";
-import { UsernameTooltip } from "@renderer/core/tooltips/UsernameTooltip";
+// import { WithTooltip } from "@renderer/core/WithTooltip";
+// import { UsernameTooltip } from "@renderer/core/tooltips/UsernameTooltip";
 import { round } from "@renderer/util/number";
 
 
@@ -41,7 +41,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
         "w-2 mr-5 2lg:mr-0 min-w-[0.5rem] min-h-full rounded-l-lg row-span-3",
         match.winningTeam === user.team ? 'bg-accent-blue' : 'bg-accent-red'
       )}/>
-      
+
       <div className="pt-5 2lg:pt-2.5">
         { // @ts-expect-error
           user.position && <Role/>

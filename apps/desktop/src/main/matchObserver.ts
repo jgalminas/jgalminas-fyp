@@ -1,6 +1,6 @@
 import { createHttp1Request, createWebSocketConnection, authenticate } from "league-connect";
 import { ObjectId } from 'bson';
-import { getMetadata } from "./ipc/recording/file";
+import { getMetadata, getThumbnail } from "./ipc/recording/file";
 import path from "path";
 import { app } from "electron";
 import { VIDEO_DIRECTORY, VIDEO_FORMAT } from "../constants";
@@ -53,7 +53,7 @@ export class MatchObserver {
   }
 
   public observe = async() => {
-    
+
     const ws = await createWebSocketConnection();
 
     ws.subscribe('/lol-gameflow/v1/gameflow-phase', async(data) => {
@@ -82,15 +82,15 @@ export class MatchObserver {
             teamTwo: data.teamTwo
           };
 
-          if (this.gameData.queue.id in QUEUE) {
+          if (QUEUE.includes(this.gameData.queue.id as typeof QUEUE[number])) {
             this.matchRecorderIPC.startRecording(this.gameData);
           }
 
         } catch (err) {
           console.log(err);
         }
-        
-      } else if (data === GameEvent.FINISH && this.gameData && this.gameData.queue.id in QUEUE) {
+
+      } else if (data === GameEvent.FINISH && this.gameData && QUEUE.includes(this.gameData.queue.id as typeof QUEUE[number])) {
 
         const matchId = new ObjectId().toString();
 
@@ -112,16 +112,16 @@ export class MatchObserver {
         await this.matchRecorderIPC.stopRecording();
 
         const gameId = this.gameData?.gameId.toString() as string;
-        const filePath = path.join(app.getPath('videos'), VIDEO_DIRECTORY, gameId + '.' + VIDEO_FORMAT);        
+        const filePath = path.join(app.getPath('videos'), VIDEO_DIRECTORY, gameId + '.' + VIDEO_FORMAT);
 
         try {
-          
+
           // get recording metadata
-          const metadata = await getMetadata(filePath);        
+          const metadata = await getMetadata(filePath);
 
           // get player data
           let player = this.gameData?.teamOne.find(p => p.summonerInternalName === this.clientManager.getPlayer()?.username);
-          
+
           if (player === undefined) {
             player = this.gameData?.teamTwo.find(p => p.summonerInternalName === this.clientManager.getPlayer()?.username);
           }
@@ -147,11 +147,13 @@ export class MatchObserver {
               .fetch();
 
             if (res.ok) {
-              mainWindow?.webContents.send(RecordingIPC.Created, await res.json());
+              mainWindow?.webContents.send(RecordingIPC.Created, {
+                recording: await res.json(),
+                thumbnail: await getThumbnail(gameId, "recordings")
+              });
             }
-
           }
-          
+
         } catch (err) {
           console.log(err);
         }

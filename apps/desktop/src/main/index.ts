@@ -10,7 +10,25 @@ import env from '../env';
 import { videoServer } from './videoServer';
 import { SettingsManager } from './settingsManager';
 import { SETTINGS_PATH } from './constants';
+import { ffmpegPath, ffprobePath } from 'ffmpeg-ffprobe-static';
+import _ffmpeg from 'fluent-ffmpeg';
 
+
+// Configure ffmpeg
+if (app.isPackaged) {
+  const unpackedPath = path.resolve(process.resourcesPath, 'app.asar.unpacked', 'node_modules')
+  const customFfmpegPath = path.join(unpackedPath, (ffmpegPath as string).split('node_modules')[1]);
+  const customFfprobePath = path.join(unpackedPath, (ffprobePath as string).split('node_modules')[1]);
+  _ffmpeg.setFfmpegPath(customFfmpegPath);
+  _ffmpeg.setFfprobePath(customFfprobePath);
+} else {
+  _ffmpeg.setFfmpegPath(ffmpegPath as string);
+  _ffmpeg.setFfprobePath(ffprobePath as string);
+}
+
+export const ffmpeg = _ffmpeg;
+
+// Register IPC listeners
 registerChannels();
 
 export let mainWindow: BrowserWindow;
@@ -121,11 +139,7 @@ app.whenReady().then(async() => {
   session.defaultSession.webRequest.onBeforeSendHeaders(filter, async(details, callback) => {
     const cookies =  await session.defaultSession.cookies.get({ url: env.RENDERER_VITE_APP_URL });
     for (const cookie of cookies) {
-      if (details.requestHeaders['Cookie']) {
-        details.requestHeaders['Cookie'] += `${cookie.name}=${cookie.value};`;
-      } else {
-        details.requestHeaders['Cookie'] = `${cookie.name}=${cookie.value};`;
-      }
+      details.requestHeaders['Cookie'] = `${cookie.name}=${cookie.value};`;
     }
     callback({ requestHeaders: details.requestHeaders })
   })
