@@ -130,16 +130,16 @@ const Settings = () => {
 
   useEffect(() => {
     const settings = window.api.settings.get();
-    
+
     if (settings) {
       dispatch({
-        action: "SET", 
+        action: "SET",
         value: settingsToState(settings)
       })
     }
   }, [])
 
-  return ( 
+  return (
     <Page>
       <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-50 pb-3">
         <PageTitle>
@@ -148,7 +148,7 @@ const Settings = () => {
         <Divider/>
       </PageInnerHeader>
       <PageBody className="grid grid-cols-2 gap-x-12 pb-12">
-        
+
         <Heading2 className="col-span-full"> Account Settings </Heading2>
         <div>
           <Heading3> Profile </Heading3>
@@ -179,7 +179,11 @@ const Settings = () => {
           <Paragraph>
             Include audio from your microphone in the recordings.
           </Paragraph>
-          <Switch rootClass="mt-5" value={state.recordMic} onChange={(value) => dispatch({ action: "SET_RECORD_MIC", value })}/>
+          <Switch
+          aria-label="Toggle Record Microphone"
+          rootClass="mt-5"
+          value={state.recordMic}
+          onChange={(value) => dispatch({ action: "SET_RECORD_MIC", value })}/>
         </div>
 
         <div className="mt-9">
@@ -193,7 +197,7 @@ const Settings = () => {
         <div className="mt-9">
           <Heading3> Highlight Time Frame </Heading3>
           <Paragraph>
-            The length of the highlight captured when pressing the <b> shortcut key. </b>  
+            The length of the highlight captured when pressing the <b> shortcut key. </b>
           </Paragraph>
           <Select width={156} className="mt-5" value={state.highlightTimeframe} options={timeframeOptions}/>
         </div>

@@ -25,7 +25,7 @@ export const ProfilePicker = ({ className }: ProfilePickerProps) => {
 
   const [isOpen, setOpen] = useState<boolean>(false);
   const { summoner } = useSummoner();
-  
+
   return (
     <div className={cn(
       "bg-woodsmoke-400 text-star-dust-300 border-woodsmoke-50 border flex items-center",
@@ -35,7 +35,7 @@ export const ProfilePicker = ({ className }: ProfilePickerProps) => {
       { summoner
         ?
         <Fragment>
-          <RoundImage className="border-none outline outline-woodsmoke-50" src={Asset.profileIcon(summoner.profileIconId)}/>
+          <RoundImage alt="Summoner profile icon" className="border-none outline outline-woodsmoke-50" src={Asset.profileIcon(summoner.profileIconId)}/>
           <div className="mr-6 ml-1.5 flex items-center gap-1">
             <div className="truncate max-w-24">
               <span className="text-star-dust-300 font-medium "> { summoner.name } </span>
@@ -68,7 +68,7 @@ const ProfilePickerModal = ({ onClose } : ProfilePickerModalProps) => {
   const options: SelectOption[] = REGIONS.map((r, i) => ({
     id: i,
     value: r,
-    onClick: () => setValue("region", i) 
+    onClick: () => setValue("region", i)
   }))
 
   const { summoner, setSummoner } = useSummoner();
@@ -92,12 +92,12 @@ const ProfilePickerModal = ({ onClose } : ProfilePickerModalProps) => {
 
     const [name, tag] = form.username.split('#');
     const result = await mutateAsync({ name, tag, region: REGIONS[form.region] });
-    
+
     if (result.status === "success") {
       setSummoner(result.summoner);
       onClose();
     }
-    
+
   });
 
 
@@ -134,7 +134,7 @@ const ProfilePickerModal = ({ onClose } : ProfilePickerModalProps) => {
         }
         />
 
-        { data?.status === "error" && 
+        { data?.status === "error" &&
           <ErrorMessage>
             { data.message }
           </ErrorMessage>

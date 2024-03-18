@@ -11,6 +11,7 @@ import { timestampToMinutes } from "@renderer/util/time";
 import { Fragment } from "react";
 import BannedChampion from "./BannedChampion";
 import { getChampionIdByKey } from "@root/constants";
+import { round } from "@renderer/util/number";
 
 export type ScoreboardTableProps = {
   className?: string,
@@ -23,12 +24,12 @@ const ScoreboardTable = ({ className, match }: ScoreboardTableProps) => {
 
   const blueTeam = participants.slice(0, 5);
   const redTeam = participants.slice(5, participants.length);
-  const winner = (team: 'BLUE' | 'RED') => match.winningTeam === team ? 'Won' : 'Lost';
+  const winner = (team: 'BLUE' | 'RED') => match.winningTeam === team ? 'WON' : 'LOST';
 
   return (
     <div className={cn("flex flex-col text-star-dust-300 text-sm", className)}>
       <div className="bg-woodsmoke-400 rounded-t-lg px-5 py-1.5 grid grid-cols-[1fr,4fr,1fr] items-center">
-        <p className="text-star-dust-200 font-medium py-2.5"> BLUE TEAM
+        <p className="text-star-dust-200 font-medium py-2.5"> Blue Team
           <span className={cn("ml-2", match.winningTeam === 'BLUE' ? "text-accent-green": "text-accent-red")}> { winner('BLUE') } </span>
         </p>
         <div className="flex gap-16 justify-center">
@@ -47,9 +48,9 @@ const ScoreboardTable = ({ className, match }: ScoreboardTableProps) => {
             }) }
           </div>
        </div>
-        <p className="text-star-dust-200 font-medium justify-self-end py-2.5"> 
+        <p className="text-star-dust-200 font-medium justify-self-end py-2.5">
           <span className={cn("mr-2", match.winningTeam === 'RED' ? "text-accent-green": "text-accent-red")}> { winner('RED') } </span>
-          RED TEAM
+          Red Team
         </p>
       </div>
       <div className="grid grid-cols-[3fr,auto,3fr] items-center gap-5 bg-woodsmoke-700 rounded-b-lg p-5">
@@ -60,7 +61,7 @@ const ScoreboardTable = ({ className, match }: ScoreboardTableProps) => {
             return (
               <Fragment key={i}>
                 <Player player={blueTeam[i]} start={match.start} finish={match.finish} teamKills={aggregateTeamKills(match.participants, 'BLUE')}/>
-                { //@ts-expect-error 
+                { //@ts-expect-error
                   pos && <Position className="mx-1 2xl:mx-5"/>
                 }
                 <Player inverse player={redTeam[i]} start={match.start} finish={match.finish} teamKills={aggregateTeamKills(match.participants, 'RED')}/>
@@ -93,7 +94,7 @@ const Player = ({ player, inverse = false, teamKills, start, finish }: PlayerPro
         "grid grid-cols-[3rem,1fr] grid-rows-2 gap-x-3 items-center text-sm",
         inverse && "grid-cols-[1fr,3rem] order-3"
       )}>
-        <RoundImage className={cn("row-span-2 w-full h-full", inverse && "col-start-2 row-start-1",
+        <RoundImage alt={player.champion} className={cn("row-span-2 w-full h-full", inverse && "col-start-2 row-start-1",
         player.team === "BLUE" ? "border-accent-blue" : "border-accent-red")}
         src={Asset.champion(player.champion)}/>
         <p className={cn("text-star-dust-200 max-w-24 truncate", inverse && "place-self-end")}> { player.username } </p>
@@ -101,7 +102,7 @@ const Player = ({ player, inverse = false, teamKills, start, finish }: PlayerPro
       </div>
 
       <div className={cn("grid grid-cols-2 gap-x-4", inverse && "order-2 justify-items-end")}>
-        <Stat value={calcKDA({ kills: player.kills, assists: player.assists, deaths: player.deaths })} type='KDA'/>
+        <Stat value={round(calcKDA({ kills: player.kills, assists: player.assists, deaths: player.deaths }))} type='KDA'/>
         <KDA stats={{ kills: player.kills, assists: player.assists, deaths: player.deaths }}/>
         <Stat value={`${player.cs} (${calcCSPM(player.cs, timestampToMinutes(finish - start))})`} type='CS'/>
         <Stat value={calcKP(player.kills, player.assists, teamKills)} type='KP'/>
@@ -112,16 +113,16 @@ const Player = ({ player, inverse = false, teamKills, start, finish }: PlayerPro
         inverse && "flex-row-reverse 2xl:col-start-1 2xl:col-end-2 order-3 2xl:order-1"
       )}>
         <div className="flex 2xl:grid 2xl:grid-cols-2 2xl:grid-rows-2 gap-1.5">
-          <SquareImage src={Asset.primaryRune(player.primaryRune)}/>
-          <SquareImage className="p-0.5" src={Asset.secondaryRune(player.secondaryRune)}/>
-          <SquareImage src={Asset.summonerSpell(player.summonerOne)}/>
-          <SquareImage src={Asset.summonerSpell(player.summonerTwo)}/>
+          <SquareImage alt="primary rune" src={Asset.primaryRune(player.primaryRune)}/>
+          <SquareImage alt="secondary rune" className="p-0.5" src={Asset.secondaryRune(player.secondaryRune)}/>
+          <SquareImage alt="summoner spell one" src={Asset.summonerSpell(player.summonerOne)}/>
+          <SquareImage alt="summoner spell two" src={Asset.summonerSpell(player.summonerTwo)}/>
         </div>
         <div className="flex 2xl:grid 2xl:grid-cols-3 gap-1.5">
           { player.items.slice(0, player.items.length - 1).map((i) => {
             return (
               i._id !== 0
-              ? <SquareImage key={i.slot} src={Asset.item(i._id)}/>
+              ? <SquareImage alt={`Item ${i.slot}`} key={i.slot} src={Asset.item(i._id)}/>
               : <div key={i.slot} className="w-5 h-5 rounded bg-woodsmoke-200"/>
             )
           }) }
@@ -129,7 +130,7 @@ const Player = ({ player, inverse = false, teamKills, start, finish }: PlayerPro
         <div>
           {
             trinket._id !== 0
-            ? <SquareImage src={Asset.item(trinket._id)}/>
+            ? <SquareImage alt="trinket" src={Asset.item(trinket._id)}/>
             : <div className="w-5 h-5 rounded bg-woodsmoke-200"/>
           }
         </div>

@@ -1,11 +1,21 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
-  "include": ["electron.vite.config.*", "src/main/**/*", "src/preload/**/*", "electron.vite.config.ts", "src/constants.ts", "src/env.ts", "src/shared"],
+  "include": [
+    "electron.vite.config.*",
+    "src/main/**/*",
+    "src/preload/**/*",
+    "electron.vite.config.ts",
+    "src/constants.ts",
+    "src/env.ts",
+    "src/shared",
+    "setup-files"
+  ],
   "compilerOptions": {
     "composite": true,
     "types": [
       "electron-vite/node",
-      "vitest/globals"
+      "@types/jest",
+      "./src/vite-env.d.ts"
     ]
   }
 }

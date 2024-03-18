@@ -34,12 +34,13 @@ export const StatSummary = ({ className }: StatSummaryProps) => {
       </p>
 
       <Divider className="mx-5 pb-5"/>
-      
+
       { !isLoading ?
           summary ?
             <div className="flex items-center pt-0 p-3 pr-5">
               <PieChart className="mr-2" width={68} height={68} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
                 <Pie
+                  className="focus:outline-none"
                   isAnimationActive={false}
                   dataKey="value"
                   innerRadius={18}
@@ -55,12 +56,12 @@ export const StatSummary = ({ className }: StatSummaryProps) => {
                   }) }
                 </Pie>
               </PieChart>
-              
+
               <div className="mr-5">
                 <Stat  value={round(winRate * 100) + '%'} type="WR"/>
                 <p className="text-sm text-star-dust-400"> { summary.totalMatches } Games </p>
               </div>
-      
+
               <div>
                 <Stat value={round(summary.kda)} type="KDA"/>
                 <KDA className="text-star-dust-400" stats={{
@@ -69,7 +70,7 @@ export const StatSummary = ({ className }: StatSummaryProps) => {
                   assists: round(summary.avgAssists)
                 }}/>
               </div>
-      
+
             </div>
           : null
         : <Loading className="mt-7 mb-11"/>

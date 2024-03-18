@@ -1,21 +1,16 @@
-import ffmpeg from 'fluent-ffmpeg';
 import { app, ipcMain } from 'electron';
 import path from 'path';
 import { HIGHLIGHTS_SUBDIRECTORY, THUMBNAIL_FORMAT, VIDEO_DIRECTORY, VIDEO_FORMAT } from '../../../constants';
 import { fileExists } from '../../util/file';
-import { captureThumbnail } from '../../../shared/util/recording';
 import { FileIPC, HighlightIPC } from '../../../shared/ipc';
 import { mkdir, readFile, unlink } from 'fs/promises';
 import { ObjectId } from 'bson';
-import { ffmpegPath, ffprobePath } from 'ffmpeg-ffprobe-static';
 import { HighlightTimeframe, IRecording } from '@fyp/types';
 import { MainRequestBuilder } from '../../util/request';
 import { getApiCookieString } from '../../util/cookie';
-import { mainWindow, settingsManager } from '../..';
+import { ffmpeg, mainWindow, settingsManager } from '../..';
 import { defaultSettings } from '../../../shared/settings';
-
-ffmpeg.setFfmpegPath(ffmpegPath as string);
-ffmpeg.setFfprobePath(ffprobePath as string);
+import { FfprobeData } from 'fluent-ffmpeg';
 
 export type VideoData = {
   name: string,
@@ -25,12 +20,31 @@ export type VideoData = {
   length?: number
 }
 
-export const getMetadata = (filePath: string): Promise<ffmpeg.FfprobeData> => {
+export const getMetadata = (filePath: string): Promise<FfprobeData> => {
   return new Promise((resolve, reject) => {
     ffmpeg.ffprobe(filePath, (err, data) => {
       if (err) reject(err);
       else resolve(data);
     })
+  })
+}
+
+export const captureThumbnail = async(filePath: string): Promise<string> => {
+  const thumbnailPath = filePath.replace(VIDEO_FORMAT, THUMBNAIL_FORMAT);
+  return new Promise((resolve, reject) => {
+    try {
+      ffmpeg()
+      .input(filePath)
+      .inputFormat('mp4')
+      .videoCodec('mjpeg')
+      .frames(1)
+      .output(thumbnailPath)
+      .on('end', () => resolve(thumbnailPath))
+      .on('error', () => reject())
+      .run()
+    } catch (err) {
+      reject(err);
+    }
   })
 }
 
@@ -77,38 +91,40 @@ const createHighlight = async({
       })
       .on('error', (err) => {
         console.log(err);
-        reject();
+        reject(err);
       })
       .run()
   })
 }
 
-export default () => {
+export const getThumbnail = async(id: string, type: 'recordings' | 'highlights') => {
+  const videoDir = path.join(app.getPath('videos'), VIDEO_DIRECTORY, type === 'highlights' ? type : '');
+  const thumbnailPath = path.join(videoDir, `${id}.${THUMBNAIL_FORMAT}`);
+  const videoPath = path.join(videoDir, `${id}.${VIDEO_FORMAT}`);
 
-  ipcMain.handle(FileIPC.GetThumbnail, async(_, id: string, type: 'recordings' | 'highlights') => {
-
-    const videoDir = path.join(app.getPath('videos'), VIDEO_DIRECTORY, type === 'highlights' ? type : '');
-    const thumbnailPath = path.join(videoDir, `${id}.${THUMBNAIL_FORMAT}`);
-    const videoPath = path.join(videoDir, `${id}.${VIDEO_FORMAT}`);
-
-    if (!await fileExists(thumbnailPath)) {
-      if (!await fileExists(videoPath)) {
-        return {
-          message: 'VIDEO_NOT_FOUND'
-        }
-      } else {
-        await captureThumbnail(videoPath);
+  if (!await fileExists(thumbnailPath)) {
+    if (!await fileExists(videoPath)) {
+      return {
+        message: 'VIDEO_NOT_FOUND'
       }
+    } else {
+      await captureThumbnail(videoPath);
     }
+  }
 
-    const data = await readFile(thumbnailPath, 'base64');
+  const data = await readFile(thumbnailPath, 'base64');
 
-    return {
+  return {
       id: id,
       message: 'OK',
       path: `data:image/jpeg;base64,${data}`
-    }
-    
+  }
+}
+
+export default () => {
+
+  ipcMain.handle(FileIPC.GetThumbnail, async(_, id: string, type: 'recordings' | 'highlights') => {
+    return await getThumbnail(id, type);
   });
 
   ipcMain.handle(FileIPC.CreateHighlights, async(_, { timeframes, recording, matchDuration }: {
@@ -168,7 +184,7 @@ export default () => {
           tags: highlightTimeframe.tags
         })
         .fetch()
-    
+
         if (res.ok) {
           const highlight = await res.json();
           mainWindow?.webContents.send(HighlightIPC.Created, {
@@ -186,7 +202,7 @@ export default () => {
     Promise.all(apiPromises);
 
   })
-  
+
   ipcMain.handle(FileIPC.CreateHighlight, async(_, { timeframe, recording }: {
     timeframe: HighlightTimeframe,
     recording: IRecording
@@ -272,7 +288,7 @@ export default () => {
         await unlink(thumbnailPath);
       } catch (err) {
         console.log(err);
-        
+
       }
     }
 

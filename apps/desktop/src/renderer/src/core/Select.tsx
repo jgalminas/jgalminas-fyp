@@ -28,9 +28,9 @@ const Select = ({ value, className, options, width, label, name, menuClass }: Se
   return (
     <div className="flex flex-col gap-1.5">
       { label && Label }
-      <DropdownMenu onOpenChange={(state) => setOpen(state)}>      
+      <DropdownMenu onOpenChange={(state) => setOpen(state)}>
         <DropdownMenuTrigger style={{ minWidth: width }} className={cn("bg-woodsmoke-400 text-star-dust-300 border-woodsmoke-50 border flex items-center",
-        "focus:outline-none text-sm px-3 py-2 min-w-[12rem] w-fit gap-6 rounded-md", className)}>
+        "text-sm px-3 py-2 min-w-[12rem] w-fit gap-6 rounded-md", className)}>
           { value.value }
           <ChevronDown className={cn("text-star-dust-400 w-5 h-5 ml-auto transition-all", isOpen && "rotate-180")}/>
         </DropdownMenuTrigger>
@@ -41,7 +41,8 @@ const Select = ({ value, className, options, width, label, name, menuClass }: Se
         )}>
           { options.map((opt, key) => {
             return (
-              <DropdownMenuItem key={opt.id} className="hover:bg-woodsmoke-500 px-3 py-2 cursor-pointer" onClick={() => opt.onClick(options[key])}>
+              <DropdownMenuItem key={opt.id} onClick={() => opt.onClick(options[key])}
+              className="hover:bg-woodsmoke-500 px-3 py-2 cursor-pointer focus:bg-woodsmoke-500 focus:outline-none">
                 { opt.value }
               </DropdownMenuItem>
             )

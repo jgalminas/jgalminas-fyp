@@ -10,7 +10,7 @@
     "strict": true,
     "skipLibCheck": true,
     "types": [
-      "vitest/globals"
+      "@types/jest"
     ]
   },
   "include": [

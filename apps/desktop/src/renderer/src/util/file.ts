@@ -5,13 +5,16 @@ export const  fileSize = (size: number): string[] => {
   const megabyte = kilobyte * 1024;
   const gigabyte = megabyte * 1024;
 
-  if (size < kilobyte) {
-      return [size.toString(), 'B'];
-  } else if (size < megabyte) {
-      return [round(size / kilobyte), 'Kb'];
-  } else if (size < gigabyte) {
-      return [round(size / megabyte), 'Mb'];
-  } else {
-      return [round(size / gigabyte), 'Gb'];
-  }
+    if (size < 0) {
+        return ['0', 'B'];
+    }
+    else if (size < kilobyte) {
+        return [size.toString(), 'B'];
+    } else if (size < megabyte) {
+        return [round(size / kilobyte), 'Kb'];
+    } else if (size < gigabyte) {
+        return [round(size / megabyte), 'Mb'];
+    } else {
+        return [round(size / gigabyte), 'Gb'];
+    }
 }

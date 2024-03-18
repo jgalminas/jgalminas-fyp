@@ -1,5 +1,3 @@
-import { webEnvSchema } from '@fyp/env'; 
 
-const env = webEnvSchema.parse(process.env);
-
+const env = import.meta.env;
 export default env;

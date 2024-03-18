@@ -13,8 +13,9 @@ import SquareImage from "@renderer/core/SquareImage";
 import { queue } from "@renderer/util/queue";
 import { getPlayer } from "@renderer/util/match";
 import { Summoner, useSummoner } from "@renderer/SummonerContext";
-import { WithTooltip } from "@renderer/core/WithTooltip";
-import { UsernameTooltip } from "@renderer/core/tooltips/UsernameTooltip";
+// import { WithTooltip } from "@renderer/core/WithTooltip";
+// import { UsernameTooltip } from "@renderer/core/tooltips/UsernameTooltip";
+import { round } from "@renderer/util/number";
 
 
 export type MatchCardProps = {
@@ -40,7 +41,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
         "w-2 mr-5 2lg:mr-0 min-w-[0.5rem] min-h-full rounded-l-lg row-span-3",
         match.winningTeam === user.team ? 'bg-accent-blue' : 'bg-accent-red'
       )}/>
-      
+
       <div className="pt-5 2lg:pt-2.5">
         { // @ts-expect-error
           user.position && <Role/>
@@ -59,29 +60,29 @@ const MatchCard = ({ match }: MatchCardProps) => {
 
       <div className="col-start-2 col-end-6 row-start-2 2lg:row-start-1 grid grid-cols-[auto,auto,1fr] 2lg:col-start-4 2lg:col-end-5 grid-rows-2 gap-x-5 gap-y-0.5 items-center 2lg:pt-5">
         <div className="row-span-2 relative">
-          <RoundImage className="h-11 w-11" src={Asset.champion(user.champion)}/>
+          <RoundImage alt={user.champion} className="h-11 w-11" src={Asset.champion(user.champion)}/>
           <p className="absolute translate-x-1 translate-y-1 bottom-0 right-0 bg-woodsmoke-50 text-center w-5 h-5 text-[0.625rem] rounded-full leading-[1.25rem]">
             { user.level }
           </p>
         </div>
         <KDA stats={{ kills: user.kills, assists: user.assists, deaths: user.deaths }}/>
-        <Stat value={calcKDA({ kills: user.kills, assists: user.assists, deaths: user.deaths })} type='KDA'/>
+        <Stat value={round(calcKDA({ kills: user.kills, assists: user.assists, deaths: user.deaths }))} type='KDA'/>
         <Stat value={calcKP(user.kills, user.assists, aggregateTeamKills(match.participants, user.team))} type='KP'/>
         <Stat value={`${user.cs} (${calcCSPM(user.cs, timestampToMinutes(match.finish - match.start))})`} type='CS'/>
       </div>
 
       <div className="col-start-2 col-end-6 row-start-3 2lg:col-start-4 2lg:col-end-5 2lg:row-start-2 self-start mt-1 flex flex-row 2lg:flex-col 1.5xl:flex-row gap-3 1.5xl:gap-5 pb-5">
         <div className="col-start-1 flex mr-3 gap-1.5">
-          <SquareImage src={Asset.primaryRune(user.primaryRune)}/>
-          <SquareImage className="p-0.5" src={Asset.secondaryRune(user.secondaryRune)}/>
-          <SquareImage className="ml-1.5" src={Asset.summonerSpell(user.summonerOne)}/>
-          <SquareImage src={Asset.summonerSpell(user.summonerTwo)}/>
+          <SquareImage alt="primary rune" src={Asset.primaryRune(user.primaryRune)}/>
+          <SquareImage alt="secondary rune" className="p-0.5" src={Asset.secondaryRune(user.secondaryRune)}/>
+          <SquareImage alt="summoner spell one" className="ml-1.5" src={Asset.summonerSpell(user.summonerOne)}/>
+          <SquareImage alt="summoner spell two" src={Asset.summonerSpell(user.summonerTwo)}/>
         </div>
         <div className="col-start-2 flex gap-1.5 pr-3">
           { user.items.map((i) => {
             return (
               i._id !== 0
-              ? <SquareImage key={i.slot} src={Asset.item(i._id)}/>
+              ? <SquareImage alt={`item ${i.slot}`} key={i.slot} src={Asset.item(i._id)}/>
               : <div key={i.slot} className="w-5 h-5 rounded bg-woodsmoke-200"/>
             )
           }) }
@@ -93,7 +94,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
           { match.participants.filter(p => p.team === user.team).sort((a, b) => a.participantId > b.participantId ? 1 : -1).map((p) => {
             return (
               <div className="flex items-center gap-2" key={p.username}>
-                <SquareImage src={Asset.champion(p.champion)}/>
+                <SquareImage alt={p.champion} src={Asset.champion(p.champion)}/>
                 {/* <WithTooltip tooltip={<UsernameTooltip username={p.username} tag={p.tag}/>}> */}
                   <p className="text-star-dust-300 text-xs max-w-[3rem] truncate"> { p.username } </p>
                 {/* </WithTooltip> */}
@@ -108,7 +109,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
                 {/* <WithTooltip tooltip={<UsernameTooltip username={p.username} tag={p.tag}/>}> */}
                   <p className="text-star-dust-300 text-xs max-w-[3rem] truncate"> { p.username } </p>
                 {/* </WithTooltip> */}
-                <SquareImage src={Asset.champion(p.champion)}/>
+                <SquareImage alt={p.champion} src={Asset.champion(p.champion)}/>
               </div>
             )
           }) }

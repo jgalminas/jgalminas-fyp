@@ -10,13 +10,13 @@ export type ButtonProps = {
 } & ButtonHTMLAttributes<HTMLButtonElement>
 
 const Button = forwardRef(({ children, className, isLoading, styleType = "regular", ...rest }: ButtonProps, ref: ForwardedRef<HTMLButtonElement>) => {
-  
+
   const isDisabled = isLoading || rest.disabled;
-  
+
   return (
     <button disabled={isDisabled} ref={ref} {...rest}
     className={cn(
-      "h-fit w-fit px-3.5 py-1.5 text-star-dust-200 rounded-sm2 text-sm font-medium transition-colors",
+      "h-fit w-fit px-3.5 py-1.5 text-white rounded-sm2 text-sm font-medium transition-colors",
       "items-center flex gap-2.5",
       isDisabled && "opacity-80",
       styleType === "regular"

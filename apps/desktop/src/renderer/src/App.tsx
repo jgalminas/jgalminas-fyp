@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import AuthProvider from './auth/AuthContext';
 import SecureRoute from './auth/SecureRoute';
@@ -35,7 +35,7 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+      <HashRouter>
         <AuthProvider>
           <SummonerProvider>
             <WebSocketProvider client={wsClient}>
@@ -62,12 +62,12 @@ const App = () => {
                   <Route path='settings' element={<SecureRoute element={<Settings/>}/>}/>
                   <Route path='editor/:matchId/:recordingId' element={<SecureRoute element={<EditorPage/>}/>}/>
                 </Route>
-                
+
               </Routes>
             </WebSocketProvider>
           </SummonerProvider>
         </AuthProvider>
-      </BrowserRouter>
+      </HashRouter>
   </QueryClientProvider>
   )
 }

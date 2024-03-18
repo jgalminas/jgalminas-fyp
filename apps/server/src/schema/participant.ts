@@ -27,8 +27,7 @@ const ParticipantSchema = new Schema<IParticipant>({
   assists: { type: Number, required: true },
   deaths: { type: Number, required: true },
   cs: { type: Number, required: true },
-  level: { type: Number, required: true },
-  // bannedChampion: { type: String, required: true }
+  level: { type: Number, required: true }
 });
 
 export const Participant = mongoose.model<IParticipant>('Participant', ParticipantSchema);

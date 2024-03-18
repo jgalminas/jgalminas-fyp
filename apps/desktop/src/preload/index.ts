@@ -4,7 +4,22 @@ import { MatchRecorder } from './matchRecorder';
 import { ClientIPC, FileIPC, SettingsIPC } from '../shared/ipc';
 import { HighlightTimeframe, IRecording } from '@fyp/types';
 import { Settings } from '../shared/settings';
+import _ffmpeg from 'fluent-ffmpeg';
+import { ffmpegPath, ffprobePath } from 'ffmpeg-ffprobe-static';
+import path from 'path';
 
+if (ipcRenderer.sendSync("packaged") === true) {
+  const unpackedPath = path.resolve(process.resourcesPath, 'app.asar.unpacked', 'node_modules')
+  const customFfmpegPath = path.join(unpackedPath, (ffmpegPath as string).split('node_modules')[1]);
+  const customFfprobePath = path.join(unpackedPath, (ffprobePath as string).split('node_modules')[1]);
+  _ffmpeg.setFfmpegPath(customFfmpegPath);
+  _ffmpeg.setFfprobePath(customFfprobePath);
+} else {
+  _ffmpeg.setFfmpegPath(ffmpegPath as string);
+  _ffmpeg.setFfprobePath(ffprobePath as string);
+}
+
+export const ffmpeg = _ffmpeg;
 export type PreloadAPI = typeof api;
 
 // Custom APIs for renderer
@@ -36,7 +51,7 @@ const api = {
   },
   events: {
     on: <T>(channel: string, callback: (event: IpcRendererEvent, data: T) => void) => {
-      
+
       const subscription = (event: IpcRendererEvent, data: T) => callback(event, data);
       ipcRenderer.on(channel, subscription);
 
