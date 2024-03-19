@@ -57,9 +57,7 @@ export class MatchObserver {
     const ws = await createWebSocketConnection();
 
     ws.subscribe('/lol-gameflow/v1/gameflow-phase', async(data) => {
-
       if (data === GameEvent.START) {
-
         try {
           const req = await createHttp1Request({
             method: 'GET',
@@ -90,7 +88,11 @@ export class MatchObserver {
           console.log(err);
         }
 
-      } else if (data === GameEvent.FINISH && this.gameData && QUEUE.includes(this.gameData.queue.id as typeof QUEUE[number])) {
+      } else if (
+        data === GameEvent.FINISH
+        && this.gameData
+        && QUEUE.includes(this.gameData.queue.id as typeof QUEUE[number])
+        ) {
 
         const matchId = new ObjectId().toString();
 

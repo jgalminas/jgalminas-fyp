@@ -47,7 +47,7 @@ const Login = () => {
   return (
     <div className="flex h-screen justify-center items-center bg-woodsmoke-900">
       <div className="w-full h-full hidden md:block">
-        <img src={splash} className="h-full w-full object-cover"/>
+        <img alt="background image" src={splash} className="h-full w-full object-cover"/>
       </div>
 
       <div className="flex flex-col gap-10 w-full md:w-3/5 ml-auto h-full items-center justify-center">

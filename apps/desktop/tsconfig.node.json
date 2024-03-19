@@ -8,8 +8,9 @@
     "src/constants.ts",
     "src/env.ts",
     "src/shared",
-    "setup-files"
-  ],
+    "setup-files",
+    "e2e"
+, "setup-files/playwright/auth.setup.ts"  ],
   "compilerOptions": {
     "composite": true,
     "types": [

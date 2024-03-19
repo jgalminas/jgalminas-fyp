@@ -8,7 +8,7 @@ export type InputProps = {
 } & InputHTMLAttributes<HTMLInputElement>
 
 const Input = forwardRef(({ error, label, className, ...rest }: InputProps, ref: ForwardedRef<HTMLInputElement>) => {
-  
+
   const Error = <p className="text-accent-red text-sm"> { error } </p>;
   const Label = <label htmlFor={rest?.name} className="text-sm font-medium text-star-dust-300"> { label } </label>;
 

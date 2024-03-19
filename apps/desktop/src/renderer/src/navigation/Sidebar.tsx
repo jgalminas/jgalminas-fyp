@@ -14,7 +14,7 @@ export type SidebarProps = {
 const Sidebar = ({ className }: SidebarProps) => {
 
   return (
-    <div id="sidebar" className={cn("flex flex-col text-sm min-w-20 bg-woodsmoke-700 pt-28", className)}>
+    <nav id="sidebar" className={cn("flex flex-col text-sm min-w-20 bg-woodsmoke-700 pt-28", className)}>
 
       <SidebarLink to="/" icon={Home}>
         Home
@@ -36,7 +36,7 @@ const Sidebar = ({ className }: SidebarProps) => {
         Settings
       </SidebarLink>
 
-    </div>
+    </nav>
   )
 }
 
