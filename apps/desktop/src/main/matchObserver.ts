@@ -3,7 +3,7 @@ import { ObjectId } from 'bson';
 import { getMetadata, getThumbnail } from "./ipc/recording/file";
 import path from "path";
 import { app } from "electron";
-import { VIDEO_DIRECTORY, VIDEO_FORMAT } from "../constants";
+import { VIDEO_FORMAT } from "../constants";
 import { MatchRecorderIPC } from "./matchRecorderIPC";
 import { ClientManager } from "./clientManager";
 import { CHAMPIONS } from "../constants";
@@ -12,6 +12,7 @@ import { getApiCookieString } from "./util/cookie";
 import { mainWindow } from ".";
 import { RecordingIPC } from "../shared/ipc";
 import { QUEUE } from "@fyp/types";
+import { VIDEO_DIRECTORY } from "./constants";
 
 export enum GameEvent {
   START = "GameStart",

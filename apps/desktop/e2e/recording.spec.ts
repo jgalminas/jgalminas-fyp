@@ -29,7 +29,21 @@ test.afterAll(async() => {
   await app.close();
 });
 
-test('save screenshot', async () => {
+test('Navigate to recordings page', async () => {
+  const page = await app.firstWindow();
+
+  await page.getByRole('link', { name: /Home/ }).waitFor();
+
+});
+
+test('Watch a recording', async () => {
+  const page = await app.firstWindow();
+
+  await page.getByRole('link', { name: /Home/ }).waitFor();
+
+});
+
+test('Delete a recording', async () => {
   const page = await app.firstWindow();
 
   await page.getByRole('link', { name: /Home/ }).waitFor();

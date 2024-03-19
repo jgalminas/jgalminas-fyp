@@ -1,14 +1,15 @@
 import express, { Express } from 'express';
 import path from 'path';
-import { HIGHLIGHTS_SUBDIRECTORY, VIDEO_DIRECTORY, VIDEO_FORMAT } from '../constants';
+import { HIGHLIGHTS_SUBDIRECTORY, VIDEO_FORMAT } from '../constants';
 import { app } from 'electron';
 import fs from 'fs';
 import range from 'range-parser';
+import { VIDEO_DIRECTORY } from './constants';
 
 export const videoServer: Express = express();
 
 videoServer.get('/recording/:id', (req, res) => {
-  
+
   const id = req.params.id;
   const videoPath = path.join(app.getPath('videos'), VIDEO_DIRECTORY, `${id}.${VIDEO_FORMAT}`);
 
@@ -44,7 +45,7 @@ videoServer.get('/recording/:id', (req, res) => {
 })
 
 videoServer.get('/highlight/:id', (req, res) => {
-  
+
   const id = req.params.id;
   const videoPath = path.join(app.getPath('videos'), VIDEO_DIRECTORY, HIGHLIGHTS_SUBDIRECTORY, `${id}.${VIDEO_FORMAT}`);
 

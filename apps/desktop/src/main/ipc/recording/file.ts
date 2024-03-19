@@ -1,6 +1,6 @@
 import { app, ipcMain } from 'electron';
 import path from 'path';
-import { HIGHLIGHTS_SUBDIRECTORY, THUMBNAIL_FORMAT, VIDEO_DIRECTORY, VIDEO_FORMAT } from '../../../constants';
+import { HIGHLIGHTS_SUBDIRECTORY, THUMBNAIL_FORMAT, VIDEO_FORMAT } from '../../../constants';
 import { fileExists } from '../../util/file';
 import { FileIPC, HighlightIPC } from '../../../shared/ipc';
 import { mkdir, readFile, unlink } from 'fs/promises';
@@ -11,6 +11,7 @@ import { getApiCookieString } from '../../util/cookie';
 import { ffmpeg, mainWindow, settingsManager } from '../..';
 import { defaultSettings } from '../../../shared/settings';
 import { FfprobeData } from 'fluent-ffmpeg';
+import { VIDEO_DIRECTORY } from '../../constants';
 
 export type VideoData = {
   name: string,

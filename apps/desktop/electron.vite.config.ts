@@ -7,13 +7,13 @@ import dotenv from 'dotenv';
 import { expand } from 'dotenv-expand';
 import { chunkSplitPlugin } from 'vite-plugin-chunk-split';
 
-const env = dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
-expand(env);
-
 /**
 * @type {import('electron-vite').UserConfig}
 */
-export default () => {
+export default ({ mode }) => {
+
+  const env = dotenv.config({ path: path.join(__dirname, '..', '..', mode === 'production' ? '.env.production' : '.env') });
+  expand(env);
 
   return defineConfig({
     main: {

@@ -1,10 +1,11 @@
 import { ipcRenderer } from "electron";
-import { GAME_CLIENT_NAME, THUMBNAIL_FORMAT, VIDEO_DIRECTORY, VIDEO_FORMAT } from "../constants";
+import { GAME_CLIENT_NAME, THUMBNAIL_FORMAT, VIDEO_FORMAT } from "../constants";
 import { Readable } from "stream";
 import path from "path";
 import { PathIPC, RecorderIPC, SettingsIPC } from "../shared/ipc";
 import { Settings } from "../shared/settings";
 import { ffmpeg } from ".";
+import { VIDEO_DIRECTORY } from "./constants";
 
 export class MatchRecorder {
 
