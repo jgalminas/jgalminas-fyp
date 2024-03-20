@@ -74,7 +74,7 @@ const RecordingCard = ({ queryKey, data, position }: RecordingCardProps) => {
 
 
   return (
-    <Card className="flex p-0">
+    <Card data-test-id="recording-card" className="flex p-0">
       { data.thumbnail.message !== 'OK'
         ? (
           <div className="aspect-video w-[19.56rem] text-star-dust-300 flex flex-col items-center justify-center gap-3">
@@ -106,7 +106,7 @@ const RecordingCard = ({ queryKey, data, position }: RecordingCardProps) => {
         <LinkButton disabled={data.thumbnail.message !== "OK"} to={`/editor/${data.recording.match}/${data.recording._id}`}>
           Create Highlight
         </LinkButton>
-        <LinkButton to={`/matches/${data.recording.match}`} type='text'> View Game </LinkButton>
+        <LinkButton to={`/matches/${data.recording.match}`} type='text'> View Match </LinkButton>
       </div>
     </div>
 

@@ -48,6 +48,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         storageState: './setup-files/playwright/user.json',
+        testIdAttribute: 'data-test-id'
       },
       dependencies: ['setup']
     },

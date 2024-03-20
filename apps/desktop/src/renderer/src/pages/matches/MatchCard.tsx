@@ -31,7 +31,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
   const Role = user.position && RoleIcons[user.position];
 
   return (
-    <Card className={cn(
+    <Card data-test-id="match-card" className={cn(
       "grid grid-cols-[min-content,min-content,auto] gap-y-4",
       "2lg:grid-cols-[min-content,min-content,auto,0.9fr] 2lg:gap-y-2.5",
       "xl:grid-cols-[min-content,min-content,0.75fr,2.2fr,minmax(0,1.2fr),0.9fr]",
