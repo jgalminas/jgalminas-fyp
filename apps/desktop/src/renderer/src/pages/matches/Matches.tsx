@@ -55,7 +55,7 @@ const Matches = () => {
         pages: IMatch[][]
       }
     ) => {
-        
+
         let items = prev ?? { pageParams: [0], pages: [] };
         items = {
           pageParams: items.pageParams,
@@ -67,7 +67,7 @@ const Matches = () => {
             ...items.pages
           ]
         }
-        
+
         return items;
       })
     }
@@ -83,7 +83,7 @@ const Matches = () => {
 
   const matches = data?.pages.flat();
 
-  return ( 
+  return (
     <Page header={<DefaultHeader/>} pageClass={ summoner ? "max-w-[80rem]" : "max-w-[60rem]"} contentClass="gap-0">
       <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-50 pb-3">
         <PageTitle> Played Matches </PageTitle>
@@ -121,11 +121,9 @@ const Matches = () => {
             : <Loading className="w-full my-24"/>
           }
           { summoner &&
-            <div className="mt-5">
-              <div className="sticky top-32 flex flex-col gap-6">
-                <StatSummary/>
-                <ChampionStats/>
-              </div>
+            <div className="mt-5 flex flex-col gap-6">
+              <StatSummary/>
+              <ChampionStats/>
             </div>
           }
         </div>
