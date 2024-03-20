@@ -34,27 +34,27 @@ test.afterEach(async() => {
   await page.getByRole('link', { name: /Home/ }).click();
 })
 
-test('Navigate to the recordings page', async () => {
+test('Navigate to the highlights page', async () => {
   const page = await app.firstWindow();
 
   await page.getByRole('navigation').waitFor();
-  await page.getByRole('link', { name: /Recordings/ }).click();
+  await page.getByRole('link', { name: /Highlights/ }).click();
 
-  expect(page.getByRole('heading', { name: /Match Recordings/ })).toBeInViewport();
+  expect(page.getByRole('heading', { name: /All Highlights/ })).toBeInViewport();
 });
 
-test('Watch a recording', async () => {
+test('Watch a highlight', async () => {
   const page = await app.firstWindow();
 
   await page.getByRole('navigation').waitFor();
-  await page.getByRole('link', { name: /Recordings/ }).click();
+  await page.getByRole('link', { name: /Highlights/ }).click();
 
-  const recording = page.getByTestId(/recording-card/).first();
-  await recording.waitFor();
+  const highlight = page.getByTestId(/highlight-card/).first();
+  await highlight.waitFor();
 
-  await recording.getByTestId(/video-thumbnail/).getByRole('button').click();
+  await highlight.getByTestId(/video-thumbnail/).getByRole('button').click();
 
-  const modal = page.getByTestId(/recording-modal/);
+  const modal = page.getByTestId(/highlight-modal/);
   await modal.waitFor();
 
   expect(modal).toBeVisible();
@@ -62,7 +62,7 @@ test('Watch a recording', async () => {
 
   await modal.getByRole('button', { name: /Close/ }).click();
 
-  const heading = page.getByRole('heading', { name: /Match Recordings/ });
+  const heading = page.getByRole('heading', { name: /All Highlights/ });
   await heading.waitFor();
 });
 
@@ -70,8 +70,8 @@ test('Navigate to associated match', async () => {
   const page = await app.firstWindow();
 
   await page.getByRole('navigation').waitFor();
-  await page.getByRole('link', { name: /Recordings/ }).click();
-  expect(page.getByRole('heading', { name: /Match Recordings/ })).toBeInViewport();
+  await page.getByRole('link', { name: /Highlights/ }).click();
+  expect(page.getByRole('heading', { name: /All Highlights/ })).toBeInViewport();
 
   await page.getByRole('link', { name: /View Match/ }).first().click();
   const matchDetailsHeading = page.getByRole('heading', { name: /Match Details/ });
@@ -80,6 +80,6 @@ test('Navigate to associated match', async () => {
   expect(matchDetailsHeading).toBeInViewport();
 });
 
-// test('Delete a recording', async () => {
+// test('Delete a highlight', async () => {
 
 // });
