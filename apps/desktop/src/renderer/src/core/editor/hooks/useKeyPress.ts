@@ -7,17 +7,17 @@ export type useKeyPressProps = {
 }
 
 export const useKeyPress = ({ key, callback, deps = [] }: useKeyPressProps) => {
-  
-  useEffect(() => {
 
+  useEffect(() => {
     const handlePress = (e: KeyboardEvent) => {
       if (e.code.toLowerCase() === key) {
+        e.preventDefault();
         callback();
       }
     }
 
-    document.addEventListener("keypress", handlePress);
+    document.addEventListener("keydown", handlePress);
 
-    return () => document.removeEventListener("keypress", handlePress);
+    return () => document.removeEventListener("keydown", handlePress);
   }, deps)
 }

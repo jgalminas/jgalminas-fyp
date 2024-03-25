@@ -185,7 +185,7 @@ export const Editor = ({ events, recording }: EditorProps) => {
   const closeModal = () => setModalState({ state: "HIDDEN" });
 
   return (
-    <div className="w-full grid grid-rows-[auto,1fr,auto,auto]" onWheel={onScroll}>
+    <div data-test-id="editor" className="w-full grid grid-rows-[auto,1fr,auto,auto]" onWheel={onScroll}>
 
       <div className="flex justify-end p-5">
         <Button onClick={create}>
@@ -471,7 +471,6 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }:
 
   // TODO:
   // account for scroll position in move
-  // drag (maybe)
   // prevent cursor from chaging to red circle
 
   const prevOffsetX = useRef<number>(0);

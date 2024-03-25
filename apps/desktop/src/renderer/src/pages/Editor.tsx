@@ -28,7 +28,7 @@ export const EditorPage = () => {
 
   return (
     <div className="h-screen grid grid-rows-[auto,1fr] overflow-hidden">
-      <DefaultHeader/>
+      <DefaultHeader back={-1}/>
       { !isLoading
         ?
         isData ?
@@ -37,7 +37,7 @@ export const EditorPage = () => {
         <InfoMessage>
           Recording Not Found
         </InfoMessage>
-        : 
+        :
         <div className="flex justify-center items-center">
           <Loading/>
         </div>

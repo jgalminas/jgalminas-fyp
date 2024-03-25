@@ -33,7 +33,7 @@ export class AIService {
       })
 
       proc.stderr.on('data', async(err) => {
-        await unlink(tempFilePath); // remove temp file
+        //   await unlink(tempFilePath); // remove temp file
         reject(err);
       })
 

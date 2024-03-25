@@ -2,7 +2,7 @@ import ChevronLeft from '@assets/icons/ChevronLeft.svg?react';
 import LinkButton from './core/LinkButton';
 
 export type BackButtonProps = {
-  to: string
+  to: string | -1
 }
 
 const BackButton = ({ to }: BackButtonProps) => {
