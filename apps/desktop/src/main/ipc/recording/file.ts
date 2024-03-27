@@ -267,7 +267,7 @@ export default () => {
       }
     }
 
-  })
+  });
 
   ipcMain.handle(FileIPC.Delete, async(_, { id, fileName, type }: { id: string, fileName: string, type: 'recording' | 'highlight' }) => {
     const videoDir = path.join(app.getPath('videos'), VIDEO_DIRECTORY, type === 'highlight' ? type + 's' : '');

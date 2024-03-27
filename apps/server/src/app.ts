@@ -44,6 +44,7 @@ const sessionParser = session({
   rolling: true,
   cookie: {
     maxAge: 604_800_000, // 1 week,
+    httpOnly: true,
     sameSite: 'strict'
   },
   store: MongoStore.create({

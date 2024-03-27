@@ -44,39 +44,137 @@ test('Navigate to the editor via a recording', async () => {
   await page.getByTestId(/editor/).waitFor();
 });
 
-// test('Watch a recording', async () => {
-//   const page = await app.firstWindow();
+test('Play/pause recording', async () => {
+  const page = await app.firstWindow();
 
-//   await page.getByRole('navigation').waitFor();
-//   await page.getByRole('link', { name: /Recordings/ }).click();
+  await page.getByRole('navigation').waitFor();
+  await page.getByRole('link', { name: /Recordings/ }).click();
 
-//   const recording = page.getByTestId(/recording-card/).first();
-//   await recording.waitFor();
+  await page.getByRole('link', { name: /Create Highlight/ }).first().click();
+  await page.getByTestId(/editor/).waitFor();
 
-//   await recording.getByTestId(/video-thumbnail/).getByRole('button').click();
+  const video = page.locator('video');
+  expect(video).toHaveJSProperty('currentTime', 0);
 
-//   const modal = page.getByTestId(/recording-modal/);
-//   await modal.waitFor();
+  // Play recording for 1 second
+  await page.getByRole('button', { name: /Play/ }).click();
+  await page.waitForTimeout(1000);
+  await page.getByRole('button', { name: /Pause/ }).click();
 
-//   expect(modal).toBeVisible();
-//   expect(modal).toBeInViewport();
+  const currentTime = await video.evaluate(e => (e as HTMLVideoElement).currentTime);
+  expect(Math.round(currentTime) * 1000).toBe(1000);
+});
 
-//   await modal.getByRole('button', { name: /Close/ }).click();
+test('Fast forward', async () => {
+  const page = await app.firstWindow();
 
-//   const heading = page.getByRole('heading', { name: /Match Recordings/ });
-//   await heading.waitFor();
-// });
+  await page.getByRole('navigation').waitFor();
+  await page.getByRole('link', { name: /Recordings/ }).click();
 
-// test('Navigate to associated match', async () => {
-//   const page = await app.firstWindow();
+  await page.getByRole('link', { name: /Create Highlight/ }).first().click();
+  await page.getByTestId(/editor/).waitFor();
 
-//   await page.getByRole('navigation').waitFor();
-//   await page.getByRole('link', { name: /Recordings/ }).click();
-//   expect(page.getByRole('heading', { name: /Match Recordings/ })).toBeInViewport();
+  const video = page.locator('video');
+  expect(video).toHaveJSProperty('currentTime', 0);
 
-//   await page.getByRole('link', { name: /View Match/ }).first().click();
-//   const matchDetailsHeading = page.getByRole('heading', { name: /Match Details/ });
-//   await matchDetailsHeading.waitFor({ state: 'visible' });
+  await page.getByRole('button', { name: /Fast Forward/ }).click();
 
-//   expect(matchDetailsHeading).toBeInViewport();
-// });
+  const currentTime = await video.evaluate(e => (e as HTMLVideoElement).currentTime);
+  expect(Math.round(currentTime) * 1000).toBe(15_000);
+});
+
+test('Rewind back', async () => {
+  const page = await app.firstWindow();
+
+  await page.getByRole('navigation').waitFor();
+  await page.getByRole('link', { name: /Recordings/ }).click();
+
+  await page.getByRole('link', { name: /Create Highlight/ }).first().click();
+  await page.getByTestId(/editor/).waitFor();
+
+  const video = page.locator('video');
+  await video.evaluate(e => (e as HTMLVideoElement).currentTime = 20);
+  expect(video).toHaveJSProperty('currentTime', 20);
+
+  await page.getByRole('button', { name: /Rewind/ }).last().click();
+
+  const currentTime = await video.evaluate(e => (e as HTMLVideoElement).currentTime);
+  expect(Math.round(currentTime) * 1000).toBe(5000);
+});
+
+test('Rewind to start', async () => {
+  const page = await app.firstWindow();
+
+  await page.getByRole('navigation').waitFor();
+  await page.getByRole('link', { name: /Recordings/ }).click();
+
+  await page.getByRole('link', { name: /Create Highlight/ }).first().click();
+  await page.getByTestId(/editor/).waitFor();
+
+  const video = page.locator('video');
+  await video.evaluate(e => (e as HTMLVideoElement).currentTime = 20);
+  expect(video).toHaveJSProperty('currentTime', 20);
+
+  await page.getByRole('button', { name: /Rewind To Start/ }).click();
+
+  const currentTime = await video.evaluate(e => (e as HTMLVideoElement).currentTime);
+  expect(Math.round(currentTime) * 1000).toBe(0);
+});
+
+test('Skip to end', async () => {
+  const page = await app.firstWindow();
+
+  await page.getByRole('navigation').waitFor();
+  await page.getByRole('link', { name: /Recordings/ }).click();
+
+  await page.getByRole('link', { name: /Create Highlight/ }).first().click();
+  await page.getByTestId(/editor/).waitFor();
+
+  const video = page.locator('video');
+  expect(video).toHaveJSProperty('currentTime', 0);
+
+  await page.getByRole('button', { name: /Skip To End/ }).click();
+
+  const duration = await video.evaluate(e => (e as HTMLVideoElement).duration);
+  const currentTime = await video.evaluate(e => (e as HTMLVideoElement).currentTime);
+
+  expect(currentTime).toBe(duration);
+});
+
+test('Drag time cursor', async () => {
+  const page = await app.firstWindow();
+
+  await page.getByRole('navigation').waitFor();
+  await page.getByRole('link', { name: /Recordings/ }).click();
+
+  await page.getByRole('link', { name: /Time Drag Area/ }).first().click();
+  await page.getByTestId(/editor/).waitFor();
+
+  const video = page.locator('video');
+  expect(video).toHaveJSProperty('currentTime', 0);
+
+  await page.getByLabel(/Time Cursor/).dragTo(page.getByLabel(/Draggable Aria/), { targetPosition: { y: 0, x: 100 } });
+
+  const currentTime = await video.evaluate(e => (e as HTMLVideoElement).currentTime);
+  expect(currentTime).not.toBe(0);
+});
+
+test('Create highlight', async () => {
+  const page = await app.firstWindow();
+
+  await page.getByRole('navigation').waitFor();
+  await page.getByRole('link', { name: /Recordings/ }).click();
+
+  await page.getByRole('link', { name: /Create Highlight/ }).first().click();
+  await page.getByTestId(/editor/).waitFor();
+
+  const video = page.locator('video');
+  expect(video).toHaveJSProperty('currentTime', 0);
+
+  const draggableAria = page.getByLabel(/Slider Drag Area/);
+  await page.getByLabel(/Slider Right/).last().dragTo(draggableAria, { targetPosition: { y: 0, x: 200 } });
+  await page.getByLabel(/Slider Left/).dragTo(draggableAria, { force: true, targetPosition: { y: 0, x: 100 } });
+
+  await page.getByRole('button', { name: /Create Highlight/ }).click();
+  await page.getByText(/Success/).waitFor();
+});
