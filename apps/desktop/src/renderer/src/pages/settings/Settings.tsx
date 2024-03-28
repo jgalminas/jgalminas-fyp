@@ -171,7 +171,7 @@ const Settings = () => {
           <Paragraph>
             The frame rate at which matches are recorded. Higher frame rate leads to better quality, but uses more space and resources.
           </Paragraph>
-          <Select width={118} className="mt-5" value={state.frameRate} options={fpsOptions}/>
+          <Select aria-label="FPS Dropdown" width={118} className="mt-5" value={state.frameRate} options={fpsOptions}/>
         </div>
 
         <div>
@@ -191,7 +191,7 @@ const Settings = () => {
           <Paragraph>
             The resolution at which matches are recorded. Higher resolution leads to better quality, but uses more space and resources.
           </Paragraph>
-          <Select width={156} className="mt-5" value={state.resolution} options={resolutionOptions}/>
+          <Select aria-label="Resolution Dropdown" width={156} className="mt-5" value={state.resolution} options={resolutionOptions}/>
         </div>
 
         <div className="mt-9">
@@ -199,7 +199,7 @@ const Settings = () => {
           <Paragraph>
             The length of the highlight captured when pressing the <b> shortcut key. </b>
           </Paragraph>
-          <Select width={156} className="mt-5" value={state.highlightTimeframe} options={timeframeOptions}/>
+          <Select aria-label="Highlight Length Dropdown" width={156} className="mt-5" value={state.highlightTimeframe} options={timeframeOptions}/>
         </div>
 
         <div className="mt-9">
@@ -208,7 +208,7 @@ const Settings = () => {
             A mouse or keyboard key combination which can be pressed during the to create a highlight.
             Pressing this key will capture a clip in reverse based on the <b> highlight time frame </b> you have selected.
           </Paragraph>
-          <KeySelector className="mt-5" value={state.shortcutKey} onChange={(value) => dispatch({ action: "SET_SHORTCUT", value })}/>
+          <KeySelector aria-label="Shortcut Selector" className="mt-5" value={state.shortcutKey} onChange={(value) => dispatch({ action: "SET_SHORTCUT", value })}/>
         </div>
 
       </PageBody>

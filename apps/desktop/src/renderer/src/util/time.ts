@@ -40,7 +40,7 @@ export const formatMatchLength = (start: number, finish: number) => {
     const formattedHours = hours > 0 ? `${hours < 10 ? `0${hours}` : `${hours}`}h ` : '';
     const formattedMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
     const formattedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
-    
+
     return `${formattedHours}${formattedMinutes}m ${formattedSeconds}s`;
 }
 

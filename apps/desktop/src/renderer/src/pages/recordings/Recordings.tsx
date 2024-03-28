@@ -112,7 +112,7 @@ const Recordings = () => {
   return (
     <Page  contentClass="gap-0">
       <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-10 pb-3">
-        <PageTitle> Game Recordings </PageTitle>
+        <PageTitle> Match Recordings </PageTitle>
         <div className="flex items-center gap-3">
           <Select value={queueFilter} options={queueOptions}/>
           <Select value={dateFilter} options={dateOptions}/>

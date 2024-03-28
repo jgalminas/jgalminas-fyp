@@ -31,7 +31,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
   const Role = user.position && RoleIcons[user.position];
 
   return (
-    <Card className={cn(
+    <Card data-test-id="match-card" className={cn(
       "grid grid-cols-[min-content,min-content,auto] gap-y-4",
       "2lg:grid-cols-[min-content,min-content,auto,0.9fr] 2lg:gap-y-2.5",
       "xl:grid-cols-[min-content,min-content,0.75fr,2.2fr,minmax(0,1.2fr),0.9fr]",
@@ -55,7 +55,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
 
       <div className="col-start-4 pt-5 2lg:pt-0 col-end-5 row-start-1 2lg:col-start-3 2lg:row-start-2 flex flex-col text-sm text-star-dust-300 self-start 2lg:pb-5">
         <p className="font-bold"> { match.winningTeam === user.team ? 'Victory' : 'Defeat' } </p>
-        <p> { formatMatchLength(match.start, match.finish) } </p>
+        <p aria-label="Match Duration"> { formatMatchLength(match.start, match.finish) } </p>
       </div>
 
       <div className="col-start-2 col-end-6 row-start-2 2lg:row-start-1 grid grid-cols-[auto,auto,1fr] 2lg:col-start-4 2lg:col-end-5 grid-rows-2 gap-x-5 gap-y-0.5 items-center 2lg:pt-5">

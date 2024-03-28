@@ -7,7 +7,7 @@ import { ClientManager } from './clientManager';
 import { MatchObserver } from './matchObserver';
 import { MatchRecorderIPC } from './matchRecorderIPC';
 import env from '../env';
-import { videoServer } from './videoServer';
+import { videoServerHttp } from './videoServer';
 import { SettingsManager } from './settingsManager';
 import { SETTINGS_PATH } from './constants';
 import { ffmpegPath, ffprobePath } from 'ffmpeg-ffprobe-static';
@@ -150,6 +150,7 @@ app.whenReady().then(async() => {
 
 });
 
-videoServer.listen(env.RENDERER_VITE_VIDEO_SERVER_PORT, () => {
-  console.log("Video server running on: " + env.RENDERER_VITE_VIDEO_SERVER_PORT);
+videoServerHttp.listen(0, () => {
+  // @ts-expect-error
+  console.log("Video server running on: " + videoServerHttp.address()?.port);
 });

@@ -185,7 +185,7 @@ export const Editor = ({ events, recording }: EditorProps) => {
   const closeModal = () => setModalState({ state: "HIDDEN" });
 
   return (
-    <div className="w-full grid grid-rows-[auto,1fr,auto,auto]" onWheel={onScroll}>
+    <div data-test-id="editor" className="w-full grid grid-rows-[auto,1fr,auto,auto]" onWheel={onScroll}>
 
       <div className="flex justify-end p-5">
         <Button onClick={create}>
@@ -207,6 +207,7 @@ export const Editor = ({ events, recording }: EditorProps) => {
         className="p-1.5 hover:bg-woodsmoke-300">
           <RewindToStart className="w-5 h-5"/>
         </Button>
+
         <Button aria-label="Rewind" styleType="text" onClick={rewind}
         className="p-1.5 hover:bg-woodsmoke-300">
           <Rewind className="w-5 h-5"/>
@@ -229,6 +230,7 @@ export const Editor = ({ events, recording }: EditorProps) => {
         className="p-1.5 hover:bg-woodsmoke-300">
           <FastForward className="w-5 h-5"/>
         </Button>
+
         <Button aria-label="Skip To End" styleType="text" onClick={forwardToEnd}
         className="p-1.5 hover:bg-woodsmoke-300">
           <ForwardToEnd className="w-5 h-5"/>
@@ -391,7 +393,7 @@ export const Timeline = ({
   return (
     <div className={cn("bg-woodsmoke-600 select-none", className)}>
       <div className="grid grid-cols-3 border-y items-center justify-between text-star-dust-300 border-woodsmoke-200 px-2 py-0.5 text-sm">
-        <p className="col-start-2 justify-self-center">
+        <p aria-label="duration" className="col-start-2 justify-self-center">
           <span className="font-medium"> { secToLength(pxToSec(position, maxWidth, length)) } </span>
           <span className="text-star-dust-400 mx-1"> / </span>
           <span className="text-star-dust-400"> { secToLength(length) } </span>
@@ -401,7 +403,7 @@ export const Timeline = ({
           className="p-1.5 hover:bg-woodsmoke-300">
             <ZoomOut className="w-5 h-5"/>
           </Button>
-          <p> { zoom }% </p>
+          <p aria-label="zoom"> { zoom }% </p>
           <Button aria-label="Zoom In" styleType="text" onClick={zoomIn}
           className="p-1.5 hover:bg-woodsmoke-300">
             <ZoomIn className="w-5 h-5"/>
@@ -409,7 +411,7 @@ export const Timeline = ({
         </div>
       </div>
 
-      <div className="overflow-x-auto flex flex-col relative px-5">
+      <div aria-label="Time Drag Area" className="overflow-x-auto flex flex-col relative px-5">
         <TimeCursor
         maxWidth={maxWidth}
         offset={timelineRef.current?.offsetLeft ?? 0}
@@ -471,7 +473,6 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }:
 
   // TODO:
   // account for scroll position in move
-  // drag (maybe)
   // prevent cursor from chaging to red circle
 
   const prevOffsetX = useRef<number>(0);
@@ -531,27 +532,29 @@ const Slider = ({ maxWidth, width, setWidth, offset, setOffset, minRange = 50 }:
   }
 
   return (
-    <div className="w-full bg-woodsmoke-800 rounded-lg mb-2 select-none" style={{ width: maxWidth }} onClick={onClick}>
+    <div aria-label="Slider Drag Area" className="w-full bg-woodsmoke-800 rounded-lg mb-2 select-none" style={{ width: maxWidth }} onClick={onClick}>
       <div style={{ width: width, marginLeft: offset, maxWidth: maxWidth - offset }}
       className="flex h-12 bg-science-blue-600 bg-opacity-15 border-2 rounded-lg border-science-blue-600">
         <div
-          draggable
-          onDragStart={onDragStart}
-          onDrag={(e) => onDrag(e, "left")}
-          className={cn(
-            "p-1 min-h-full bg-science-blue-600 bg-opacity-25 cursor-col-resize resize",
-            "flex items-center justify-center text-science-blue-600"
-            )}>
+        aria-label="Slider Left"
+        draggable
+        onDragStart={onDragStart}
+        onDrag={(e) => onDrag(e, "left")}
+        className={cn(
+          "p-1 min-h-full bg-science-blue-600 bg-opacity-25 cursor-col-resize resize",
+          "flex items-center justify-center text-science-blue-600"
+        )}>
           ||
         </div>
         <div
-          draggable
-          onDragStart={onDragStart}
-          onDrag={(e) => onDrag(e, "right")}
-          className={cn(
-            "p-1 min-h-full bg-science-blue-600 bg-opacity-25 cursor-col-resize resize",
-            "ml-auto flex items-center justify-center text-science-blue-600"
-            )}>
+        aria-label="Slider Right"
+        draggable
+        onDragStart={onDragStart}
+        onDrag={(e) => onDrag(e, "right")}
+        className={cn(
+          "p-1 min-h-full bg-science-blue-600 bg-opacity-25 cursor-col-resize resize",
+          "ml-auto flex items-center justify-center text-science-blue-600"
+        )}>
           ||
         </div>
       </div>
@@ -594,6 +597,7 @@ export const TimeCursor = ({ position, setPosition, offset, maxWidth }: TimeCurs
 
   return (
     <div
+    aria-label="Time Cursor"
     ref={elementRef}
     draggable
     onDragStart={onDragStart}

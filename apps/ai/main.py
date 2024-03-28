@@ -56,6 +56,7 @@ with open(path, 'r') as file:
 data = json.loads(input_obj['data'])
 puuid = input_obj['puuid']
 
+
 PLAYER_ID = get_participant_id(puuid)
 
 cols = ['gold_diff', 'kills', 'assists', 'deaths', 'baron_kills', 'dragon_kills', 'horde_kills', 'herald_kills', 'turret_kills']
@@ -106,8 +107,6 @@ for i in range(0, len(frames)):
           highlight['tags'].append('Death')
       elif (PLAYER_ID in event['assistingParticipantIds']):
         rows[i]['assists'] += 1
-    # elif (event['type'] == 'TURRET_PLATE_DESTROYED' and event['killerId'] == PLAYER_ID):
-    #   rows[i]['plate_kills'] += 1
     elif (
         event['type'] == 'ELITE_MONSTER_KILL'
         and (event['killerId'] == PLAYER_ID or PLAYER_ID in event['assistingParticipantIds'] and is_teammate(PLAYER_ID, event['killerId']))

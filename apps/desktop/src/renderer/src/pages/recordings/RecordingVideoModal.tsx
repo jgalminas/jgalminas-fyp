@@ -25,7 +25,7 @@ const RecordingVideoModal = () => {
   if (!data) return null;
 
   return (
-    <Modal className="h-fit flex flex-col rounded-lg drop-shadow-2xl" onClose={navigateBack}>
+    <Modal data-test-id="recording-modal" className="h-fit flex flex-col rounded-lg drop-shadow-2xl" onClose={navigateBack}>
       <div className="flex p-1.5">
         <button aria-label="Close" className="ml-auto p-1.5 rounded-md hover:bg-woodsmoke-200" onClick={navigateBack}>
           <X className="text-star-dust-300 h-5 w-5"/>
@@ -40,7 +40,7 @@ const RecordingVideoModal = () => {
         </div>
         <div className="flex gap-3 ml-auto">
           <LinkButton to={`/editor/${data.match}/${data._id}`}> Create Highlight </LinkButton>
-          <LinkButton className="hover:bg-woodsmoke-200" to={`/matches/${data.match}`} type='text'> View Game </LinkButton>
+          <LinkButton className="hover:bg-woodsmoke-200" to={`/matches/${data.match}`} type='text'> View Match </LinkButton>
         </div>
       </div>
     </Modal>

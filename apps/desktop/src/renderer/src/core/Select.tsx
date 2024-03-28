@@ -16,10 +16,11 @@ export type SelectProps = {
   options: SelectOption[],
   width?: number,
   label?: string,
-  name?: string
+  name?: string,
+  'aria-label'?: string,
 }
 
-const Select = ({ value, className, options, width, label, name, menuClass }: SelectProps) => {
+const Select = ({ value, className, options, width, label, name, menuClass, 'aria-label': ariaLabel }: SelectProps) => {
 
   const [isOpen, setOpen] = useState<boolean>(false);
 
@@ -29,7 +30,7 @@ const Select = ({ value, className, options, width, label, name, menuClass }: Se
     <div className="flex flex-col gap-1.5">
       { label && Label }
       <DropdownMenu onOpenChange={(state) => setOpen(state)}>
-        <DropdownMenuTrigger style={{ minWidth: width }} className={cn("bg-woodsmoke-400 text-star-dust-300 border-woodsmoke-50 border flex items-center",
+        <DropdownMenuTrigger aria-label={ariaLabel} style={{ minWidth: width }} className={cn("bg-woodsmoke-400 text-star-dust-300 border-woodsmoke-50 border flex items-center",
         "text-sm px-3 py-2 min-w-[12rem] w-fit gap-6 rounded-md", className)}>
           { value.value }
           <ChevronDown className={cn("text-star-dust-400 w-5 h-5 ml-auto transition-all", isOpen && "rotate-180")}/>

@@ -30,7 +30,7 @@ export const HighlightVideoModal = ({ viewGame = true }: HighlightVideoModalProp
   if (!data) return null;
 
   return (
-    <Modal className="h-fit flex flex-col rounded-lg drop-shadow-2xl" onClose={navigateBack}>
+    <Modal data-test-id="highlight-modal" className="h-fit flex flex-col rounded-lg drop-shadow-2xl" onClose={navigateBack}>
       <div className="flex p-1.5">
         <button aria-label="Close" className="ml-auto p-1.5 rounded-md hover:bg-woodsmoke-200" onClick={navigateBack}>
           <X className="text-star-dust-300 h-5 w-5"/>
@@ -52,7 +52,7 @@ export const HighlightVideoModal = ({ viewGame = true }: HighlightVideoModalProp
 
         <div className="flex gap-3 ml-auto">
           { viewGame &&
-            <LinkButton className="hover:bg-woodsmoke-200" to={`/matches/${data.match}`} type='text'> View Game </LinkButton>
+            <LinkButton className="hover:bg-woodsmoke-200" to={`/matches/${data.match}`} type='text'> View Match </LinkButton>
           }
         </div>
       </div>

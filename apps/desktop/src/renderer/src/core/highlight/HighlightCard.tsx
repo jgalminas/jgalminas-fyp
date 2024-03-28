@@ -75,7 +75,7 @@ const HighlightCard = ({ queryKey, data, position, playPath, linkToGame = false 
   ]
 
   return (
-    <Card className="flex p-0">
+    <Card data-test-id="highlight-card" className="flex p-0">
       { data.thumbnail.message !== "OK"
         ? (
           <div className="aspect-video w-[19.56rem] text-star-dust-300 flex flex-col items-center justify-center gap-3">
@@ -111,7 +111,7 @@ const HighlightCard = ({ queryKey, data, position, playPath, linkToGame = false 
         <div className="flex gap-3">
           <LinkButton to={`/matches/${data.highlight.match}`} type='text'
           className="px-0 hover:bg-transparent">
-            View Game
+            View Match
           </LinkButton>
         </div>
       }

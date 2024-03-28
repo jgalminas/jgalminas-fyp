@@ -1,14 +1,14 @@
 import { cn } from "@fyp/class-name-helper"
 import { KeyCombo } from "@root/shared/types"
-import { Fragment, useState } from "react"
+import { Fragment, HTMLAttributes, useState } from "react"
 
 export type KeySelectorProps = {
   value: KeyCombo,
   onChange: (value: KeyCombo) => void,
   className?: string
-}
+} & HTMLAttributes<HTMLButtonElement>
 
-export const KeySelector = ({ className, value, onChange }: KeySelectorProps) => {
+export const KeySelector = ({ className, value, onChange, ...rest }: KeySelectorProps) => {
 
   const [inEdit, setInEdit] = useState<boolean>(false);
 
@@ -38,7 +38,7 @@ export const KeySelector = ({ className, value, onChange }: KeySelectorProps) =>
   }
 
   return (
-    <button onClick={onEdit} className={cn(
+    <button {...rest} onClick={onEdit} className={cn(
       "bg-woodsmoke-400 text-star-dust-300 border-woodsmoke-50 border flex items-center",
       "text-sm pl-3 pr-1 py-1 min-w-[8rem] w-fit gap-6 rounded-lg",
       className

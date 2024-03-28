@@ -3,7 +3,7 @@ import { ObjectId } from 'bson';
 import { getMetadata, getThumbnail } from "./ipc/recording/file";
 import path from "path";
 import { app } from "electron";
-import { VIDEO_DIRECTORY, VIDEO_FORMAT } from "../constants";
+import { VIDEO_FORMAT } from "../constants";
 import { MatchRecorderIPC } from "./matchRecorderIPC";
 import { ClientManager } from "./clientManager";
 import { CHAMPIONS } from "../constants";
@@ -12,6 +12,7 @@ import { getApiCookieString } from "./util/cookie";
 import { mainWindow } from ".";
 import { RecordingIPC } from "../shared/ipc";
 import { QUEUE } from "@fyp/types";
+import { VIDEO_DIRECTORY } from "./constants";
 
 export enum GameEvent {
   START = "GameStart",
@@ -52,47 +53,40 @@ export class MatchObserver {
     this.matchRecorderIPC = matchRecorderIPC;
   }
 
-  public observe = async() => {
+  private onStart = async() => {
+    try {
+      const req = await createHttp1Request({
+        method: 'GET',
+        url: '/lol-gameflow/v1/session',
+      }, await authenticate({ awaitConnection: true }));
 
-    const ws = await createWebSocketConnection();
+      const data: any = await req.json()['gameData'];
 
-    ws.subscribe('/lol-gameflow/v1/gameflow-phase', async(data) => {
+      this.gameData = {
+        gameId: data.gameId,
+        isCustomGame: data.isCustomGame,
+        queue: {
+          id: data.queue.id,
+          gameMode: data.queue.gameMode,
+          isRanked: data.queue.isRanked,
+          mapId: data.queue.mapId,
+          type: data.queue.type
+        },
+        teamOne: data.teamOne,
+        teamTwo: data.teamTwo
+      };
 
-      if (data === GameEvent.START) {
+      if (QUEUE.includes(this.gameData.queue.id as typeof QUEUE[number])) {
+        this.matchRecorderIPC.startRecording(this.gameData);
+      }
 
-        try {
-          const req = await createHttp1Request({
-            method: 'GET',
-            url: '/lol-gameflow/v1/session',
-          }, await authenticate({ awaitConnection: true }));
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
-          const data: any = await req.json()['gameData'];
-
-          this.gameData = {
-            gameId: data.gameId,
-            isCustomGame: data.isCustomGame,
-            queue: {
-              id: data.queue.id,
-              gameMode: data.queue.gameMode,
-              isRanked: data.queue.isRanked,
-              mapId: data.queue.mapId,
-              type: data.queue.type
-            },
-            teamOne: data.teamOne,
-            teamTwo: data.teamTwo
-          };
-
-          if (QUEUE.includes(this.gameData.queue.id as typeof QUEUE[number])) {
-            this.matchRecorderIPC.startRecording(this.gameData);
-          }
-
-        } catch (err) {
-          console.log(err);
-        }
-
-      } else if (data === GameEvent.FINISH && this.gameData && QUEUE.includes(this.gameData.queue.id as typeof QUEUE[number])) {
-
-        const matchId = new ObjectId().toString();
+  private onFinish = async() => {
+    const matchId = new ObjectId().toString();
 
         new MainRequestBuilder()
         .route('/v1/match')
@@ -115,11 +109,7 @@ export class MatchObserver {
         const filePath = path.join(app.getPath('videos'), VIDEO_DIRECTORY, gameId + '.' + VIDEO_FORMAT);
 
         try {
-
-          // get recording metadata
           const metadata = await getMetadata(filePath);
-
-          // get player data
           let player = this.gameData?.teamOne.find(p => p.summonerInternalName === this.clientManager.getPlayer()?.username);
 
           if (player === undefined) {
@@ -159,8 +149,21 @@ export class MatchObserver {
         }
 
         this.gameData = null;
-      }
+  }
 
+  public observe = async() => {
+
+    const ws = await createWebSocketConnection();
+
+    ws.subscribe('/lol-gameflow/v1/gameflow-phase', async(data) => {
+      if (data === GameEvent.START) {
+        await this.onStart();
+      } else if (
+        data === GameEvent.FINISH
+        && this.gameData
+        && QUEUE.includes(this.gameData.queue.id as typeof QUEUE[number])) {
+        await this.onFinish();
+      }
     });
 
   };
