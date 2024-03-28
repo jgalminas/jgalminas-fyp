@@ -1,14 +1,14 @@
 import { IpcRendererEvent, contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { MatchRecorder } from './matchRecorder';
-import { ClientIPC, FileIPC, SettingsIPC } from '../shared/ipc';
+import { ClientIPC, ConfigIPC, FileIPC, SettingsIPC } from '../shared/ipc';
 import { HighlightTimeframe, IRecording } from '@fyp/types';
 import { Settings } from '../shared/settings';
 import _ffmpeg from 'fluent-ffmpeg';
 import { ffmpegPath, ffprobePath } from 'ffmpeg-ffprobe-static';
 import path from 'path';
 
-if (ipcRenderer.sendSync("packaged") === true) {
+if (ipcRenderer.sendSync(ConfigIPC.IsPackaged) === true) {
   const unpackedPath = path.resolve(process.resourcesPath, 'app.asar.unpacked', 'node_modules')
   const customFfmpegPath = path.join(unpackedPath, (ffmpegPath as string).split('node_modules')[1]);
   const customFfprobePath = path.join(unpackedPath, (ffprobePath as string).split('node_modules')[1]);
@@ -63,7 +63,8 @@ const api = {
   settings: {
     get: (): Settings | undefined => ipcRenderer.sendSync(SettingsIPC.Get),
     set: async(settings: Settings): Promise<void> => await ipcRenderer.invoke(SettingsIPC.Set, settings)
-  }
+  },
+  getVideoPort: () => ipcRenderer.sendSync(ConfigIPC.VideoPort)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -29,11 +29,6 @@ test.afterAll(async() => {
   await app.close();
 });
 
-test.afterEach(async() => {
-  const page = await app.firstWindow();
-  await page.getByRole('link', { name: /Home/ }).click();
-})
-
 test('Navigate to the editor via a recording', async () => {
   const page = await app.firstWindow();
 
@@ -55,6 +50,7 @@ test('Play/pause recording', async () => {
 
   const video = page.locator('video');
   expect(video).toHaveJSProperty('currentTime', 0);
+  await page.waitForLoadState('networkidle');
 
   // Play recording for 1 second
   await page.getByRole('button', { name: /Play/ }).click();
@@ -76,6 +72,7 @@ test('Fast forward', async () => {
 
   const video = page.locator('video');
   expect(video).toHaveJSProperty('currentTime', 0);
+  await page.waitForLoadState('networkidle');
 
   await page.getByRole('button', { name: /Fast Forward/ }).click();
 
@@ -95,6 +92,7 @@ test('Rewind back', async () => {
   const video = page.locator('video');
   await video.evaluate(e => (e as HTMLVideoElement).currentTime = 20);
   expect(video).toHaveJSProperty('currentTime', 20);
+  await page.waitForLoadState('networkidle');
 
   await page.getByRole('button', { name: /Rewind/ }).last().click();
 
@@ -114,6 +112,7 @@ test('Rewind to start', async () => {
   const video = page.locator('video');
   await video.evaluate(e => (e as HTMLVideoElement).currentTime = 20);
   expect(video).toHaveJSProperty('currentTime', 20);
+  await page.waitForLoadState('networkidle');
 
   await page.getByRole('button', { name: /Rewind To Start/ }).click();
 
@@ -132,6 +131,7 @@ test('Skip to end', async () => {
 
   const video = page.locator('video');
   expect(video).toHaveJSProperty('currentTime', 0);
+  await page.waitForLoadState('networkidle');
 
   await page.getByRole('button', { name: /Skip To End/ }).click();
 
@@ -147,13 +147,15 @@ test('Drag time cursor', async () => {
   await page.getByRole('navigation').waitFor();
   await page.getByRole('link', { name: /Recordings/ }).click();
 
-  await page.getByRole('link', { name: /Time Drag Area/ }).first().click();
+  await page.getByRole('link', { name: /Create Highlight/ }).first().click();
   await page.getByTestId(/editor/).waitFor();
 
   const video = page.locator('video');
   expect(video).toHaveJSProperty('currentTime', 0);
 
-  await page.getByLabel(/Time Cursor/).dragTo(page.getByLabel(/Draggable Aria/), { targetPosition: { y: 0, x: 100 } });
+  await page.waitForLoadState('networkidle');
+
+  await page.getByLabel(/Time Cursor/).dragTo(page.getByLabel(/Time Drag Area/), { targetPosition: { y: 0, x: 100 } });
 
   const currentTime = await video.evaluate(e => (e as HTMLVideoElement).currentTime);
   expect(currentTime).not.toBe(0);
@@ -170,6 +172,8 @@ test('Create highlight', async () => {
 
   const video = page.locator('video');
   expect(video).toHaveJSProperty('currentTime', 0);
+
+  await page.waitForLoadState('networkidle');
 
   const draggableAria = page.getByLabel(/Slider Drag Area/);
   await page.getByLabel(/Slider Right/).last().dragTo(draggableAria, { targetPosition: { y: 0, x: 200 } });

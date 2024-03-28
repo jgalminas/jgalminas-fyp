@@ -1,4 +1,5 @@
-import express, { Express } from 'express';
+import express from 'express';
+import { createServer } from 'http';
 import path from 'path';
 import { HIGHLIGHTS_SUBDIRECTORY, VIDEO_FORMAT } from '../constants';
 import { app } from 'electron';
@@ -6,7 +7,8 @@ import fs from 'fs';
 import range from 'range-parser';
 import { VIDEO_DIRECTORY } from './constants';
 
-export const videoServer: Express = express();
+export const videoServer = express();
+export const videoServerHttp = createServer(videoServer);
 
 videoServer.get('/recording/:id', (req, res) => {
 

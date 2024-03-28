@@ -29,18 +29,12 @@ test.afterAll(async() => {
   await app.close();
 });
 
-test.afterEach(async() => {
-  const page = await app.firstWindow();
-  await page.getByRole('link', { name: /Home/ }).click();
-})
-
 test('Navigate to the recordings page', async () => {
   const page = await app.firstWindow();
 
   await page.getByRole('navigation').waitFor();
   await page.getByRole('link', { name: /Recordings/ }).click();
-
-  expect(page.getByRole('heading', { name: /Match Recordings/ })).toBeInViewport();
+  await page.getByRole('heading', { name: /Match Recording/ }).waitFor();
 });
 
 test('Watch a recording', async () => {
@@ -74,12 +68,5 @@ test('Navigate to associated match', async () => {
   expect(page.getByRole('heading', { name: /Match Recordings/ })).toBeInViewport();
 
   await page.getByRole('link', { name: /View Match/ }).first().click();
-  const matchDetailsHeading = page.getByRole('heading', { name: /Match Details/ });
-  await matchDetailsHeading.waitFor({ state: 'visible' });
-
-  expect(matchDetailsHeading).toBeInViewport();
+  await page.getByRole('heading', { name: /Match Details/ }).waitFor();
 });
-
-// test('Delete a recording', async () => {
-
-// });

@@ -29,18 +29,12 @@ test.afterAll(async() => {
   await app.close();
 });
 
-test.afterEach(async() => {
-  const page = await app.firstWindow();
-  await page.getByRole('link', { name: /Home/ }).click();
-})
-
 test('Navigate to the highlights page', async () => {
   const page = await app.firstWindow();
 
   await page.getByRole('navigation').waitFor();
   await page.getByRole('link', { name: /Highlights/ }).click();
-
-  expect(page.getByRole('heading', { name: /All Highlights/ })).toBeInViewport();
+  await page.getByRole('heading', { name: /All Highlights/ }).waitFor();
 });
 
 test('Watch a highlight', async () => {
@@ -74,10 +68,7 @@ test('Navigate to associated match', async () => {
   expect(page.getByRole('heading', { name: /All Highlights/ })).toBeInViewport();
 
   await page.getByRole('link', { name: /View Match/ }).first().click();
-  const matchDetailsHeading = page.getByRole('heading', { name: /Match Details/ });
-  await matchDetailsHeading.waitFor({ state: 'visible' });
-
-  expect(matchDetailsHeading).toBeInViewport();
+  await page.getByRole('heading', { name: /Match Details/ }).waitFor();
 });
 
 // test('Delete a highlight', async () => {

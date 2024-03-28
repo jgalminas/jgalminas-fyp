@@ -7,8 +7,4 @@ export default () => {
     e.returnValue = app.getPath(path);
   })
 
-  ipcMain.on("packaged", (e) => {
-    e.returnValue = app.isPackaged;
-  })
-
 }

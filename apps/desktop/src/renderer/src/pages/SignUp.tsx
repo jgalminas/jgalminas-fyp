@@ -51,7 +51,7 @@ const SignUp = () => {
   });
 
   return (
-    <div className="flex h-screen justify-center items-center bg-woodsmoke-900">
+    <div className="flex h-screen justify-center items-center">
       <div className="w-full h-full hidden md:block">
         <img alt="background image" src={splash} className="h-full w-full object-cover"/>
       </div>

@@ -16,6 +16,11 @@ export enum PathIPC {
   Get = "path:get"
 }
 
+export enum ConfigIPC {
+  VideoPort = "video:port",
+  IsPackaged = "packaged"
+}
+
 export enum ClientIPC {
   Player = "client:player",
   Status = "client:status"

@@ -4,6 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  @apply bg-woodsmoke-900;
+}
 
 * {
   font-family: 'Inter', sans-serif;

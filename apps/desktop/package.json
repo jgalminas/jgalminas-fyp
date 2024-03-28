@@ -6,7 +6,8 @@
   "author": "example.com",
   "homepage": "https://www.electronjs.org",
   "scripts": {
-    "e2e": "pnpm exec playwright test",
+    "e2e:account": "pnpm exec playwright test --project=account",
+    "e2e": "pnpm exec playwright test --project=tests",
     "test": "jest",
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",

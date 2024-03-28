@@ -43,14 +43,21 @@ export default defineConfig({
       testMatch: /.\\*.setup.ts/,
     },
     {
-      name: 'chromium',
-      testDir: './e2e',
+      name: 'tests',
+      testDir: './e2e/other',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: './setup-files/playwright/user.json',
         testIdAttribute: 'data-test-id'
       },
       dependencies: ['setup']
+    },
+    {
+      name: 'account',
+      testDir: './e2e/account',
+      use: {
+        ...devices['Desktop Chrome'],
+        testIdAttribute: 'data-test-id'
+      }
     },
   ],
 

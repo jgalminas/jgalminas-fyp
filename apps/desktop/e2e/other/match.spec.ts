@@ -29,18 +29,12 @@ test.afterAll(async() => {
   await app.close();
 });
 
-test.afterEach(async() => {
-  const page = await app.firstWindow();
-  await page.getByRole('link', { name: /Home/ }).click();
-})
-
 test('Navigate to matches page', async () => {
   const page = await app.firstWindow();
 
   await page.getByRole('navigation').waitFor();
   await page.getByRole('link', { name: /Matches/ }).click();
-
-  expect(page.getByRole('heading', { name: /Played Matches/ })).toBeInViewport();
+  await page.getByRole('heading', { name: /Played Matches/ }).waitFor();
 });
 
 test('View match details', async () => {

@@ -42,7 +42,7 @@ export const Profile = ({ className }: ProfileProps) => {
             <span className="text-star-dust-400 text-xs"> #{ summoner.tag } </span>
           </div>
         </Fragment>
-        : <Link to='/settings' className="mr-6 px-2 rounded-md py-2 hover:bg-woodsmoke-600"> Set profile </Link>
+        : <Link to='/settings' className="px-2 rounded-md py-2 hover:bg-woodsmoke-600 mr-auto"> Set profile </Link>
       }
       <Dropdown
       aria-label="Options"
