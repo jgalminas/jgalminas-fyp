@@ -72,9 +72,6 @@ passportConfig(passport);
 
 
 httpServer.on('upgrade', (req, socket, head) => {
-
-  console.log("upgrade before parse: ", req.headers.cookie);
-
   // @ts-expect-error
   sessionParser(req, {}, () => {
     

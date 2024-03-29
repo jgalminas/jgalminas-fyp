@@ -6,8 +6,6 @@ export const webEnvSchema = z.object({
   RENDERER_VITE_PORT: z.string(),
   RENDERER_VITE_APP_URL: z.string(),
   RENDERER_VITE_API_URL: z.string(),
-  RENDERER_VITE_VIDEO_SERVER_URL: z.string(),
-  RENDERER_VITE_VIDEO_SERVER_PORT: z.string(),
   RENDERER_VITE_SOCKET_URL: z.string()
 });
 
