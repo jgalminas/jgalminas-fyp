@@ -31,56 +31,13 @@ The system consists of six components which are required to achieve the function
 
 ## Tools & Technologies
 
-These are some of the main tools and technologies that were used in this project. 
+These are some of the main tools and technologies that were used in this project.
 
-<div style="display: flex; flex-direction: column; gap: 0.5rem;">
-  <div style="display: flex; align-items: center;">
-    <img alt="React icon" style="height: 3rem; width: 3rem;" src="./readme_assets/react.png">
-    <span style="padding-left: 12px;">
-      React was used to build the interactive interfaces with ease.
-    </span>
-  </div>
-
-  <div style="display: flex; align-items: center;">
-    <img alt="TypeScript icon" style="height: 3rem; width: 3rem;" src="./readme_assets/typescript.png">
-    <span style="padding-left: 12px;">
-      TypeScript was the main programming language, used both on client-side and server-side.
-    </span>
-  </div>
-  
-  <div style="display: flex; align-items: center;">
-    <img alt="Node.js icon" style="height: 3rem; width: 3rem;" src="./readme_assets/nodejs.png">
-    <span style="padding-left: 12px;">
-      Node.js served as the backbone for both server-side operations and the desktop application.
-    </span>
-  </div>
-
-  <div style="display: flex; align-items: center;">
-    <img alt="Electron icon" style="height: 3rem; width: 3rem;" src="./readme_assets/electron.png">
-    <span style="padding-left: 12px;">
-      Electron served as a framework for building a desktop application using web technologies.
-    </span>
-  </div>
-
-  <div style="display: flex; align-items: center;">
-    <img alt="Turborepo icon" style="height: 3rem; width: 3rem;" src="./readme_assets/turborepo.png">
-    <span style="padding-left: 12px;">
-      Turborepo streamlined code reuse and type sharing across the stack.
-    </span>
-  </div>
-
-  <div style="display: flex; align-items: center;">
-    <img alt="MongoDB icon" style="height: 3rem; width: 3rem;" src="./readme_assets/mongodb.png">
-    <span style="padding-left: 12px;">
-      MongoDB was used to persist dynamic data.
-    </span>
-  </div>
-
-  <div style="display: flex; align-items: center;">
-    <img alt="Python icon" style="height: 3rem; width: 3rem;" src="./readme_assets/python.png">
-    <span style="padding-left: 12px;">
-      Python was used to create an unsupervised machine learning model for automatic highlight creation.
-    </span>
-  </div>
-</div>
+* <kbd>React</kbd> was used to build the interactive interfaces with ease.
+* <kbd>TypeScript</kbd> was the main programming language, used both on client-side and server-side.
+* <kbd>Node.js</kbd> served as the backbone for both server-side operations and the desktop application.
+* <kbd>Electron</kbd> served as a framework for building a desktop application using web technologies.
+* <kbd>Turborepo</kbd> streamlined code reuse and type sharing across the stack.
+* <kbd>MongoDB</kbd> was used to persist dynamic data.
+* <kbd>Python</kbd> was used to create an unsupervised machine learning model for automatic highlight creation.
 
