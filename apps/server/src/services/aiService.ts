@@ -4,6 +4,7 @@ import { spawn } from 'child_process';
 import { writeFile, unlink } from 'fs/promises'; 
 import { randomUUID } from 'crypto'
 import path from 'path';
+import env from "../env";
 
 export class AIService {
 
@@ -12,7 +13,7 @@ export class AIService {
 
       const baseDir = path.join(__dirname, '..', '..');
 
-      const aiPath = path.join(baseDir, os.platform() === 'win32' ? 'ai.exe' : 'ai');
+      const aiPath = path.join(baseDir, env.AI_PATH);
       const tempFilePath = path.join(baseDir, randomUUID() + '.json');
 
       const input = JSON.stringify({

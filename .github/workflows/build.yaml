@@ -1,0 +1,35 @@
+name: Package Application with Pyinstaller
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      name: Checkout Code
+
+    - name: Package Application
+      uses: JackMcKew/pyinstaller-action-linux@python3.10
+      with:
+        path: apps/ai
+
+    - name: Copy AI executible to server
+      run: mv apps/ai/dist/linux/main/main apps/server
+
+    - uses: mr-smithers-excellent/docker-build-push@v6
+      name: Build & push Docker image
+      with:
+        image: fyp-server
+        tags: latest
+        registry: ghcr.io
+        dockerfile: apps/server/Dockerfile
+        directory: .
+        username: ${{ secrets.GHCR_USERNAME }}
+        password: ${{ secrets.GHCR_TOKEN }}

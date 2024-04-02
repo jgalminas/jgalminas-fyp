@@ -8,7 +8,7 @@ FROM base AS pruner
 RUN apk add --no-cache libc6-compat
 RUN apk update
 WORKDIR /app
-RUN pnpm add -g turbo
+RUN pnpm add -g turbo@1.12.4
 COPY . .
 RUN turbo prune @fyp/server --docker
 
@@ -25,9 +25,8 @@ COPY --from=pruner /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 RUN pnpm install
 
 COPY --from=pruner /app/out/full/ .
-COPY turbo.json turbo.json
 
-RUN pnpm turbo run build --filter=server...
+RUN pnpm turbo run build --filter=server
 
 
 # RUNNING IN PRODUCTION

@@ -16,6 +16,8 @@ export const serverEnvSchema = z.object({
   API_URL: z.string(),
   RIOT_KEY: z.string(),
 
+  AI_PATH: z.string(),
+
   MODE: z.string(),
 
   // DATABASE
