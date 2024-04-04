@@ -48,15 +48,15 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     const getSession = async() => {
-      
-      try {        
+
+      try {
 
         const res = await new ClientRequestBuilder()
           .route('/v1/auth/session')
           .fetch();
 
         const data = await res.json();
-  
+
         if (res.ok) {
           setSession({
             loading: false,
