@@ -13,6 +13,7 @@ import { SETTINGS_PATH } from './constants';
 import { ffmpegPath, ffprobePath } from 'ffmpeg-ffprobe-static';
 import _ffmpeg from 'fluent-ffmpeg';
 
+const isProduction = env.MODE === 'production';
 
 // Configure ffmpeg
 if (app.isPackaged) {
@@ -58,7 +59,7 @@ function createWindow(): void {
     }
   })
 
-  if (!app.isPackaged) {
+  if (!isProduction) {
     mainWindow.webContents.openDevTools();
   }
 
@@ -120,7 +121,7 @@ app.on('window-all-closed', () => {
 app.whenReady().then(async() => {
   protocol.handle('local', (req) => net.fetch(req.url.replace('local:\\', 'file:\\')));
 
-  if (env.MODE !== 'production') {
+  if (!isProduction) {
     // Handle auth cookies for incoming and outgoing requests
     const filter = {
       urls: [

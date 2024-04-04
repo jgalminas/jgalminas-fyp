@@ -27,12 +27,14 @@ const SummonerProvider = ({ children }: SummonerProviderProps) => {
   useEffect(() => {
     if (session?.summoner) {
       setSummoner(session.summoner);
+    } else {
+      setSummoner(undefined);
     }
   }, [session])
 
   const context: SummonerContext = {
     summoner: summoner,
-    setSummoner: (summoner) => setSummoner(summoner) 
+    setSummoner: (summoner) => setSummoner(summoner)
   };
 
   return (
