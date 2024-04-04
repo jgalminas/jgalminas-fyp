@@ -28,6 +28,7 @@ export default ({ mode }) => {
       build: {
         minify: 'terser'
       },
+      envPrefix: 'RENDERER_VITE_',
     },
     renderer: {
       resolve: {
