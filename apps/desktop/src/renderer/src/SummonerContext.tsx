@@ -1,6 +1,7 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { IUser } from "@fyp/types";
 import { useAuth } from "./auth/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type Summoner = Pick<IUser, "summoner">["summoner"];
 
@@ -22,6 +23,7 @@ const SummonerProvider = ({ children }: SummonerProviderProps) => {
 
   const [summoner, setSummoner] = useState<Summoner>(undefined);
 
+  const queryClient = useQueryClient();
   const { session } = useAuth();
 
   useEffect(() => {
@@ -34,7 +36,10 @@ const SummonerProvider = ({ children }: SummonerProviderProps) => {
 
   const context: SummonerContext = {
     summoner: summoner,
-    setSummoner: (summoner) => setSummoner(summoner)
+    setSummoner: (summoner) => {
+      setSummoner(summoner);
+      queryClient.removeQueries();
+    }
   };
 
   return (

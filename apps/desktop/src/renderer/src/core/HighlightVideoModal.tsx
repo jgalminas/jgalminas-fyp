@@ -52,7 +52,7 @@ export const HighlightVideoModal = ({ viewGame = true }: HighlightVideoModalProp
 
         <div className="flex gap-3 ml-auto">
           { viewGame &&
-            <LinkButton className="hover:bg-woodsmoke-200" to={`/matches/${data.match}`} type='text'> View Match </LinkButton>
+            <LinkButton className="hover:bg-woodsmoke-200" to={`/matches/${data.match}?champion=${data.champion}`} type='text'> View Match </LinkButton>
           }
         </div>
       </div>

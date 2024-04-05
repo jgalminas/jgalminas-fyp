@@ -106,7 +106,7 @@ const RecordingCard = ({ queryKey, data, position }: RecordingCardProps) => {
         <LinkButton disabled={data.thumbnail.message !== "OK"} to={`/editor/${data.recording.match}/${data.recording._id}`}>
           Create Highlight
         </LinkButton>
-        <LinkButton to={`/matches/${data.recording.match}`} type='text'> View Match </LinkButton>
+        <LinkButton to={`/matches/${data.recording.match}?champion=${data.recording.champion}`} type='text'> View Match </LinkButton>
       </div>
     </div>
 

@@ -10,13 +10,12 @@ import { Outlet, useParams } from "react-router";
 import Tabs, { Tab } from "./Tabs";
 import Divider from "@renderer/core/page/Divider";
 import { DefaultHeader } from "@renderer/navigation/DefaultHeader";
-import { getPlayer } from "@renderer/util/match";
-import { useSummoner } from "@renderer/SummonerContext";
 import { BackgroundImage } from "./BackgroundImage";
+import { useSearchParams } from "react-router-dom";
 
 const Match = () => {
-  
-  const { summoner } = useSummoner();
+
+  const [params] = useSearchParams();
 
   const { matchId } = useParams();
   const { isLoading, isError, data } = useQuery({
@@ -32,13 +31,11 @@ const Match = () => {
 
   if (isError || isLoading || !data) return null;
 
-  const player = getPlayer(data, summoner);
-
   return (
     <Page header={<DefaultHeader back="/matches"/>}
     pageClass="max-w-[80rem]" contentClass="gap-0" className="z-10">
-        
-      <BackgroundImage champion={player.champion}/>
+
+      <BackgroundImage champion={params.get('champion') ?? ""}/>
 
       <PageInnerHeader className="gap-0 z-10">
         <PageTitle> Match Details </PageTitle>
