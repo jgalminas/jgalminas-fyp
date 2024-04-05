@@ -30,7 +30,7 @@ export const getMetadata = (filePath: string): Promise<FfprobeData> => {
   })
 }
 
-export const captureThumbnail = async(filePath: string): Promise<string> => {
+export const captureThumbnail = async(filePath: string, seek: string = "00:00"): Promise<string> => {
   const thumbnailPath = filePath.replace(VIDEO_FORMAT, THUMBNAIL_FORMAT);
   return new Promise((resolve, reject) => {
     try {
@@ -38,6 +38,7 @@ export const captureThumbnail = async(filePath: string): Promise<string> => {
       .input(filePath)
       .inputFormat('mp4')
       .videoCodec('mjpeg')
+      .seekInput(seek)
       .frames(1)
       .output(thumbnailPath)
       .on('end', () => resolve(thumbnailPath))
@@ -109,7 +110,7 @@ export const getThumbnail = async(id: string, type: 'recordings' | 'highlights')
         message: 'VIDEO_NOT_FOUND'
       }
     } else {
-      await captureThumbnail(videoPath);
+      await captureThumbnail(videoPath, type === 'recordings' ? "03:00" : "00:00");
     }
   }
 

@@ -1,6 +1,7 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { ClientRequestBuilder } from "@renderer/util/request";
 import { IUser } from "@fyp/types";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type Session = {
   sessionId: string
@@ -45,6 +46,7 @@ export type SignUpData = {
 const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const [session, setSession] = useState<{ loading: boolean, session: Session | null }>({ loading: true, session: null });
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const getSession = async() => {
@@ -166,6 +168,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         .route('/v1/auth/logout')
         .fetch();
 
+      queryClient.removeQueries();
       setSession({ ...session, session: null });
 
     } catch {  }

@@ -129,6 +129,7 @@ export class MatchRecorder {
         .input(filePath)
         .inputFormat('mp4')
         .videoCodec('mjpeg')
+        .seekInput('03:00')
         .frames(1)
         .output(thumbnailPath)
         .on('end', () => resolve(thumbnailPath))
