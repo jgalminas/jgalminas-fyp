@@ -44,7 +44,7 @@ test.beforeEach(async() => {
   const page = await app.firstWindow();
 
   try {
-    await page.getByRole('heading', { name: /Home/ }).waitFor({ timeout: 5000 });
+    await page.getByRole('heading', { name: /Welcome/ }).waitFor({ timeout: 5000 });
     await page.getByLabel(/Options/).click();
     await page.getByRole('menuitem', { name: /Sign Out/ }).click();
   } catch (error) { }
@@ -58,7 +58,7 @@ test('Log in', async () => {
   await page.getByRole('button', { name: /Sign In/ }).click();
 
   await page.getByRole('navigation').waitFor();
-  await page.getByRole('heading', { name: /Home/ }).waitFor();
+  await page.getByRole('heading', { name: /Welcome/ }).waitFor();
 });
 
 test('Sign up', async () => {
@@ -72,5 +72,5 @@ test('Sign up', async () => {
   await page.getByRole('button', { name: /Sign Up/ }).click();
 
   await page.getByRole('navigation').waitFor();
-  await page.getByRole('heading', { name: /Home/ }).waitFor();
+  await page.getByRole('heading', { name: /Welcome/ }).waitFor();
 });

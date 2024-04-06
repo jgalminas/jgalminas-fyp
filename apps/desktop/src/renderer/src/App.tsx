@@ -1,5 +1,5 @@
-import { HashRouter, Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
+import Home from './pages/home/Home';
 import AuthProvider from './auth/AuthContext';
 import SecureRoute from './auth/SecureRoute';
 import Main from './layouts/Main';
@@ -44,7 +44,11 @@ const App = () => {
                 <Route path='signup' element={<UnauthedOnlyRoute element={<SignUp/>}/>}/>
 
                 <Route path='/' element={<SecureRoute element={<Main/>}/>}>
-                  <Route index element={<SecureRoute element={<Home/>}/>}/>
+                  <Route index element={<SecureRoute element={<Navigate to='/home' replace/>}/>}/>
+                  <Route path='/home' element={<SecureRoute element={<Home/>}/>}>
+                    <Route path=':id' element={<SecureRoute element={<HighlightVideoModal viewGame={true}/>}/>}/>
+                  </Route>
+
                   <Route path='matches' element={<SecureRoute element={<Matches/>}/>}/>
                   <Route path='matches/:matchId' element={<SecureRoute element={<Match/>}/>}>
                     <Route index element={<SecureRoute element={<ScoreBoard/>}/>}/>
