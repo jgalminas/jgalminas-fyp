@@ -23,10 +23,12 @@ const Match = () => {
     queryFn: () => getMatchById(matchId as string)
   })
 
+  const champion = params.get('champion') ?? ""
+
   const tabs: Tab[] = [
-    { name: 'Scoreboard', href: `/matches/${matchId}` },
-    { name: 'Timeline', href: `/matches/${matchId}/timeline` },
-    { name: 'Highlights', href: `/matches/${matchId}/highlights` }
+    { name: 'Scoreboard', href: `/matches/${matchId}?champion=${champion}` },
+    { name: 'Timeline', href: `/matches/${matchId}/timeline?champion=${champion}` },
+    { name: 'Highlights', href: `/matches/${matchId}/highlights?champion=${champion}` }
   ]
 
   if (isError || isLoading || !data) return null;
@@ -35,7 +37,7 @@ const Match = () => {
     <Page header={<DefaultHeader back="/matches"/>}
     pageClass="max-w-[80rem]" contentClass="gap-0" className="z-10">
 
-      <BackgroundImage champion={params.get('champion') ?? ""}/>
+      <BackgroundImage champion={champion}/>
 
       <PageInnerHeader className="gap-0 z-10">
         <PageTitle> Match Details </PageTitle>
