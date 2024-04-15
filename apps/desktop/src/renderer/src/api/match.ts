@@ -11,11 +11,12 @@ export const getMatchById = async (id: string): Promise<Match> => {
 
 export const getMatches = async (
   filters: {
-    date: string | number,
-    champion: string,
-    role: string,
-    queue: string | number,
-    start?: number
+    date?: string | number,
+    champion?: string,
+    role?: string,
+    queue?: string | number,
+    start?: number,
+    offset?: number
   }
 ): Promise<Match[]> => {
   const res = await new ClientRequestBuilder()

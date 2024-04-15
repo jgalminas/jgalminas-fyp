@@ -15,7 +15,7 @@ export class MatchRecorder {
   private videosPath = path.join(ipcRenderer.sendSync(PathIPC.Get, 'videos'), VIDEO_DIRECTORY);
   private gameId: string | undefined;
 
-  public init = async() => {
+  public constructor() {
     ipcRenderer.on(RecorderIPC.Start, async(_, game) => {
       const client = await this.getGameClient();
       this.gameId = game.gameId.toString();
@@ -129,6 +129,7 @@ export class MatchRecorder {
         .input(filePath)
         .inputFormat('mp4')
         .videoCodec('mjpeg')
+        .seekInput('03:00')
         .frames(1)
         .output(thumbnailPath)
         .on('end', () => resolve(thumbnailPath))

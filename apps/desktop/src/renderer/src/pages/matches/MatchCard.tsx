@@ -117,7 +117,7 @@ const MatchCard = ({ match }: MatchCardProps) => {
       </div>
 
       <div className="row-span-3 2lg:row-span-2 col-start-6 font-medium text-sm text-star-dust-200 align-middle justify-self-center pr-5">
-        <Link to={`/matches/${match._id}`}> View Details </Link>
+        <Link to={`/matches/${match._id}?champion=${user.champion}`}> View Details </Link>
       </div>
 
     </Card>

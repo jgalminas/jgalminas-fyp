@@ -1,5 +1,7 @@
 # Nexus - League of Legends Analytics/Recording Application (COMP3000)
 
+![image](https://github.com/jgalminas/jgalminas-fyp/assets/63853949/7b6aa4b8-abbb-4f9f-bc76-9a5ba0055bcb)
+
 ## Introduction
 
 League of Legends is a fast-paced online multiplayer game that requires strategy, teamwork and individual skill. Due to its competitive nature, players strive to improve and climb the ladder, however, the complexity and skill ceilling of the game makes it challening. Some players turn to software solutions for assistance, but few are effective. Nexus aims to provide a better solution which helps players learn and improve by providing the necessary tools to analyse, review and learn from their previous matches while automating as many of the processes and features of the application as possible to improve user experience.

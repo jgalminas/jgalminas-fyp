@@ -83,8 +83,10 @@ const Matches = () => {
 
   const matches = data?.pages.flat();
 
+  const showStats = matches && matches?.length > 0 && summoner;
+
   return (
-    <Page header={<DefaultHeader/>} pageClass={ summoner ? "max-w-[80rem]" : "max-w-[60rem]"} contentClass="gap-0">
+    <Page header={<DefaultHeader/>} pageClass="max-w-[80rem]" contentClass="gap-0">
       <PageInnerHeader className="sticky top-0 bg-woodsmoke-900 z-50 pb-3">
         <PageTitle> Played Matches </PageTitle>
         <div className="flex items-center gap-3">
@@ -95,7 +97,7 @@ const Matches = () => {
         </div>
       </PageInnerHeader>
       <PageBody>
-        <div className={cn("grid gap-8", summoner ? "grid-cols-[minmax(0,60rem),minmax(0,20rem)]" : "grid-cols-1")}>
+        <div className={cn("grid gap-8", showStats ? "grid-cols-[minmax(0,60rem),minmax(0,20rem)]" : "grid-cols-1")}>
           { !isLoading ?
               <div>
                 <div className="flex flex-col gap-5">
@@ -120,7 +122,7 @@ const Matches = () => {
               </div>
             : <Loading className="w-full my-24"/>
           }
-          { summoner &&
+          { showStats &&
             <div className="mt-5 flex flex-col gap-6">
               <StatSummary/>
               <ChampionStats/>

@@ -17,7 +17,8 @@ export const StatSummary = ({ className }: StatSummaryProps) => {
 
   const { data: summary, isLoading } = useQuery({
     queryKey: ['summary'],
-    queryFn: getSummary
+    queryFn: getSummary,
+    refetchOnMount: true
   });
 
   const winRate = (summary ? summary.totalWins : 1) / (summary ? summary.totalMatches : 1);

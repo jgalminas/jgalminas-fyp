@@ -3,7 +3,7 @@ import { useSummoner } from "@renderer/SummonerContext"
 import RoundImage from "@renderer/core/RoundImage"
 import { Asset } from "@renderer/util/asset"
 import { Fragment } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import Dropdown, { DropdownOption } from "./Dropdown"
 import { useAuth } from "@renderer/auth/AuthContext"
 import ChevronDown from '@assets/icons/ChevronDown.svg?react';
@@ -15,9 +15,15 @@ export type ProfileProps = {
 export const Profile = ({ className }: ProfileProps) => {
 
   const { summoner } = useSummoner();
+  const navigate = useNavigate();
   const { signOut } = useAuth();
 
   const options: DropdownOption[] = [
+    {
+      id: 1,
+      value: "Settings",
+      onClick: () => navigate('/settings')
+    },
     {
       id: 0,
       value: "Sign Out",

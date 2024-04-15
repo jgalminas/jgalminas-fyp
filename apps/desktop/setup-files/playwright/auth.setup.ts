@@ -38,11 +38,11 @@ setup('Authenticate', async () => {
     await page.getByRole('button', { name: /Sign In/ }).click();
 
     await page.getByRole('navigation').waitFor();
-    await page.getByRole('heading', { name: /Home/ }).waitFor();
+    await page.getByRole('heading', { name: /Welcome/ }).waitFor();
   }
 
   try {
-    await page.getByRole('heading', { name: /Home/ }).waitFor({ timeout: 5000 });
+    await page.getByRole('heading', { name: /Welcome/ }).waitFor({ timeout: 5000 });
     await page.getByLabel(/Options/).click();
     await page.getByRole('menuitem', { name: /Sign Out/ }).click();
     await login();

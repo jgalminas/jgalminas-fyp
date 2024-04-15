@@ -1,6 +1,6 @@
 
 export type PageTitleProps = {
-  children: string
+  children: string | string[]
 }
 
 const PageTitle = ({ children }: PageTitleProps) => {

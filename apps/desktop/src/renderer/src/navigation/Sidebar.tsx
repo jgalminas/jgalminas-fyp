@@ -16,7 +16,7 @@ const Sidebar = ({ className }: SidebarProps) => {
   return (
     <nav id="sidebar" className={cn("flex flex-col text-sm min-w-20 bg-woodsmoke-700 pt-28", className)}>
 
-      <SidebarLink to="/" icon={Home}>
+      <SidebarLink to="/home" icon={Home}>
         Home
       </SidebarLink>
 

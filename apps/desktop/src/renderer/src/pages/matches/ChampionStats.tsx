@@ -14,7 +14,8 @@ export const ChampionStats = () => {
 
   const { data, isLoading } = useQuery({
     queryKey: ['champion-stats'],
-    queryFn: getChampionStats
+    queryFn: getChampionStats,
+    refetchOnMount: true
   });
 
   return (

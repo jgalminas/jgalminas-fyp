@@ -22,6 +22,8 @@ if (ipcRenderer.sendSync(ConfigIPC.IsPackaged) === true) {
 export const ffmpeg = _ffmpeg;
 export type PreloadAPI = typeof api;
 
+new MatchRecorder();
+
 // Custom APIs for renderer
 
 const api = {
@@ -83,9 +85,3 @@ if (process.contextIsolated) {
   // @ts-ignore (define in dts)
   window.api = api;
 }
-
-const init = async() => {
-  await new MatchRecorder().init();
-}
-
-init();
