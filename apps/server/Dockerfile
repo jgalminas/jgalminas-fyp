@@ -1,5 +1,5 @@
 FROM node:21-alpine AS base
-RUN npm install -g pnpm
+RUN npm install -g pnpm@8.6.10
 ENV PNPM_HOME /usr/local/bin
 
 # PRUNING STAGE
@@ -34,6 +34,7 @@ FROM base AS producttion
 
 WORKDIR /app
 COPY --from=builder /app .
+RUN chmod +x ./*
 EXPOSE $PORT
 
 CMD ["node", "./apps/server/dist/index.js"]
