@@ -1,2 +1,3 @@
+import env from "../env";
 
-export const VIDEO_DIRECTORY = import.meta.env.RENDERER_VITE_RECORDINGS_FOLDER;
+export const VIDEO_DIRECTORY = env.RENDERER_VITE_RECORDINGS_FOLDER;

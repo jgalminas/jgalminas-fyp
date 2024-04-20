@@ -6,6 +6,7 @@ import htmlEnv from 'vite-plugin-html-env';
 import dotenv from 'dotenv';
 import { expand } from 'dotenv-expand';
 import { chunkSplitPlugin } from 'vite-plugin-chunk-split';
+import EnvironmentPlugin from 'vite-plugin-environment';
 
 /**
 * @type {import('electron-vite').UserConfig}
@@ -17,14 +18,14 @@ export default ({ mode }) => {
 
   return defineConfig({
     main: {
-      plugins: [externalizeDepsPlugin(), chunkSplitPlugin()],
+      plugins: [externalizeDepsPlugin(), chunkSplitPlugin(), EnvironmentPlugin('all', { prefix: 'RENDERER_VITE_' })],
       envPrefix: 'RENDERER_VITE_',
       build: {
         minify: 'terser'
       },
     },
     preload: {
-      plugins: [externalizeDepsPlugin(), chunkSplitPlugin()],
+      plugins: [externalizeDepsPlugin(), chunkSplitPlugin(), EnvironmentPlugin('all', { prefix: 'RENDERER_VITE_' })],
       build: {
         minify: 'terser'
       },
@@ -49,6 +50,7 @@ export default ({ mode }) => {
         }),
         svgr(),
         react(),
+        EnvironmentPlugin('all', { prefix: 'RENDERER_VITE_' }),
         chunkSplitPlugin({
           strategy: 'single-vendor',
           customChunk: (args) => {
