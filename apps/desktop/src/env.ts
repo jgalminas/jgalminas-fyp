@@ -1,3 +1,3 @@
 
-const env = import.meta.env;
+const env = process.env;
 export default env;
