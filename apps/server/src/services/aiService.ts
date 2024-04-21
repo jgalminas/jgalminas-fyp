@@ -1,5 +1,4 @@
 import { HighlightTimeframe, IMatch } from "@fyp/types";
-import os from 'os';
 import { spawn } from 'child_process';
 import { writeFile, unlink } from 'fs/promises'; 
 import { randomUUID } from 'crypto'
@@ -34,7 +33,7 @@ export class AIService {
       })
 
       proc.stderr.on('data', async(err) => {
-        //   await unlink(tempFilePath); // remove temp file
+        console.log(err.toString());
         reject(err);
       })
 

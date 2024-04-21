@@ -50,7 +50,7 @@ if len(sys.argv) != 2:
 
 path = sys.argv[1]
 
-with open(path, 'r') as file:
+with open(path, 'r', encoding='utf-8') as file:
   input_obj = json.load(file)
 
 data = json.loads(input_obj['data'])
